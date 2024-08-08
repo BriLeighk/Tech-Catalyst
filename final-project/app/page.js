@@ -177,7 +177,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="py-10 bg-darkGrey text-white w-full">
           <div className="container mx-auto px-6 text-center">
-            <p className="text-sm">&copy; {new Date().getFullYear()} Headstarter. All rights reserved.</p>
+            <p className="text-sm">&copy; {new Date().getFullYear()} Catalyst. All rights reserved.</p>
           </div>
         </footer>
       </main>
