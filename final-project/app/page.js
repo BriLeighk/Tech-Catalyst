@@ -151,7 +151,7 @@ export default function Home() {
         {/* Sign Up Section */}
         <section id="signup" className="py-20 bg-primary text-white w-full">
           <div className="container mx-auto px-6 text-center">
-            <h2 className="text-3xl font-heading mb-6">Join Headstarter</h2>
+            <h2 className="text-3xl font-heading mb-6">Join Catalyst</h2>
             <p className="text-lg font-light mb-8 max-w-2xl">
               Start your journey with Catalyst and unlock new opportunities in tech.
             </p>
