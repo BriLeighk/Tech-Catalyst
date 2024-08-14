@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+html, body {
+  width: 100%;
+  overflow-x: hidden; /* Prevent horizontal overflow */
   font-family: 'Roboto', sans-serif;
   background-color: #e9f5fd;
   color: #1A202C;

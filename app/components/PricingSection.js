@@ -1,6 +1,7 @@
 import { CheckIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react';
 import Switch from 'react-switch';
+import Link from 'next/link';
 
 const freeFeatures = [
   'Access to community-uploaded resources',
@@ -22,29 +23,27 @@ export default function PricingSection() {
   const [isMonthly, setIsMonthly] = useState(true);
 
   return (
-    <div className="bg-white py-24 sm:py-32"> {/* Change background color */}
+    <div className="bg-gray-900 py-24 sm:py-32">
       <div className="mx-auto max-w-8xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl sm:text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Free vs Premium Features</h2>
-
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Free vs Premium Features</h2>
         </div>
 
-        <div className="flex flex-col lg:flex-row lg:space-x-6" style={{ marginTop: '20px' }}> {/* Flex container for the cards */}
+        <div className="flex flex-col lg:flex-row lg:space-x-6" style={{ marginTop: '20px' }}>
           {/* Free Tier */}
-          <div className="mt-16 rounded-3xl ring-1 ring-gray-200 lg:mt-0 lg:flex-1 lg:max-w-none" style={{ width: '100%' }}> {/* Adjusted width */}
+          <div className="mt-16 rounded-3xl ring-1 ring-gray-300 lg:mt-0 lg:flex-1 lg:max-w-none" style={{ width: '100%' }}>
             <div className="p-8 sm:p-10 lg:flex-auto">
-              <h3 className="text-2xl font-bold tracking-tight text-gray-900 text-center">Free Tier</h3>
-              <p className="mt-6 text-base leading-7 text-gray-600 text-center">
-                Our Free Tier offers limited access to our resource library, job listings, and events calendar. <br/> 
-                
+              <h3 className="text-2xl font-bold tracking-tight text-white text-center">Free Tier</h3>
+              <p className="mt-6 text-base leading-7 text-gray-300 text-center">
+                Our Free Tier offers limited access to our resource library, job listings, and events calendar. <br/>
               </p>
               <div className="mt-10 flex items-center gap-x-4">
                 <h4 className="flex-none text-sm font-semibold leading-6 text-indigo-600">What's included</h4>
-                <div className="h-px flex-auto bg-gray-100" />
+                <div className="h-px flex-auto bg-gray-300" />
               </div>
               <ul
                 role="list"
-                className="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-600 sm:grid-cols-2 sm:gap-6"
+                className="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-300 sm:grid-cols-2 sm:gap-6"
               >
                 {freeFeatures.map((feature) => (
                   <li key={feature} className="flex gap-x-3">
@@ -62,12 +61,11 @@ export default function PricingSection() {
                     <span className="text-5xl font-bold tracking-tight text-gray-900">$0.00</span>
                     <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                   </p>
-                  <a
-                    href="/register"
-                    className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Create Account
-                  </a>
+                  <Link href="/Register">
+                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                      Create Account
+                    </div>
+                  </Link>
                 </div>
                  <p className="mt-6 text-xs leading-5 text-gray-600">
                   Create an account now for early access to our platform, discounts on premium features, and to gain a custom First User Badge on your profile. <br/> <em>Eligible for the first 100 users only.</em>
@@ -77,19 +75,19 @@ export default function PricingSection() {
           </div>
 
           {/* Premium Yearly Tier - Monthly or Yearly (discount on year) */}
-          <div className="mt-16 w-full max-w-2xl rounded-3xl ring-1 ring-gray-200 lg:mt-0 lg:flex-1 lg:max-w-none"> {/* Adjusted width */}
+          <div className="mt-16 rounded-3xl ring-1 ring-gray-300 lg:mt-0 lg:flex-1 lg:max-w-none" style={{ width: '100%' }}>
             <div className="p-8 sm:p-10 lg:flex-auto">
-              <h3 className="text-2xl font-bold tracking-tight text-gray-900 text-center">Premium</h3>
-              <p className="mt-6 text-base leading-7 text-gray-600 text-center">
+              <h3 className="text-2xl font-bold tracking-tight text-white text-center">Premium</h3>
+              <p className="mt-6 text-base leading-7 text-gray-300 text-center">
                 Our Premium Tier offers unlimited access to our resources, job listings, and events calendar. <br/> 
               </p>
               <div className="mt-10 flex items-center gap-x-4">
                 <h4 className="flex-none text-sm font-semibold leading-6 text-indigo-600">What's included</h4>
-                <div className="h-px flex-auto bg-gray-100" />
+                <div className="h-px flex-auto bg-gray-300" />
               </div>
               <ul
                 role="list"
-                className="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-600 sm:grid-cols-2 sm:gap-6"
+                className="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-300 sm:grid-cols-2 sm:gap-6"
               >
                 {premiumFeatures.map((feature) => (
                   <li key={feature} className="flex gap-x-3">
@@ -128,12 +126,11 @@ export default function PricingSection() {
                     </span>
                     <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                   </p>
-                  <a
-                    href="/register"
-                    className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Coming Soon
-                  </a>
+                  <Link href="/Register">
+                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                      Coming Soon
+                    </div>
+                  </Link>
                 </div>
                 <p className="mt-6 text-xs leading-5 text-gray-600">
                   Choose between monthly and yearly plans. <br/>
@@ -145,19 +142,19 @@ export default function PricingSection() {
           </div>
 
           {/* Lifetime membership */}
-          <div className="mt-16 w-full max-w-2xl rounded-3xl ring-1 ring-gray-200 lg:mt-0 lg:flex-1 lg:max-w-none"> {/* Adjusted width */}
+          <div className="mt-16 rounded-3xl ring-1 ring-gray-300 lg:mt-0 lg:flex-1 lg:max-w-none" style={{ width: '100%' }}>
             <div className="p-8 sm:p-10 lg:flex-auto">
-              <h3 className="text-2xl font-bold tracking-tight text-gray-900 text-center">Lifetime membership</h3>
-              <p className="mt-6 text-base leading-7 text-gray-600 text-center">
+              <h3 className="text-2xl font-bold tracking-tight text-white text-center">Lifetime membership</h3>
+              <p className="mt-6 text-base leading-7 text-gray-300 text-center">
                 Pay once, and own unlimited access to our features forever. <br/>
               </p> 
               <div className="mt-10 flex items-center gap-x-4">
                 <h4 className="flex-none text-sm font-semibold leading-6 text-indigo-600">What's included</h4>
-                <div className="h-px flex-auto bg-gray-100" />
+                <div className="h-px flex-auto bg-gray-300" />
               </div>
               <ul
                 role="list"
-                className="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-600 sm:grid-cols-2 sm:gap-6"
+                className="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-300 sm:grid-cols-2 sm:gap-6"
               >
                 {premiumFeatures.map((feature) => (
                   <li key={feature} className="flex gap-x-3">
@@ -175,12 +172,11 @@ export default function PricingSection() {
                     <span className="text-5xl font-bold tracking-tight text-gray-900">$249</span>
                     <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                   </p>
-                  <a
-                    href="/register"
-                    className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Coming Soon
-                  </a>
+                  <Link href="/Register">
+                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                      Coming Soon
+                    </div>
+                  </Link>
                 </div>
                 <p className="mt-6 text-xs leading-5 text-gray-600">
                 <em>Price equivalent to 2 years of premium.</em><br/><br/><br/></p>
