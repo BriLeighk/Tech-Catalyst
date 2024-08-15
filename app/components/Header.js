@@ -18,24 +18,33 @@ export default function Header() {
     };
 
     const handleScroll = (id) => {
-        const element = document.getElementById(id);
-        if (element) {
-            const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
-            const startPosition = window.pageYOffset;
-            const distance = targetPosition - startPosition;
-            const duration = 1500; // Duration in milliseconds
-            let start = null;
+        const scrollToSection = () => {
+            const element = document.getElementById(id);
+            if (element) {
+                const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                const startPosition = window.pageYOffset;
+                const distance = targetPosition - startPosition;
+                const duration = 1500; // Duration in milliseconds
+                let start = null;
 
-            window.requestAnimationFrame(function step(timestamp) {
-                if (!start) start = timestamp;
-                const progress = timestamp - start;
-                const percent = Math.min(progress / duration, 1);
-                const easedPercent = easeInOutCubic(percent);
-                window.scrollTo(0, startPosition + distance * easedPercent);
-                if (progress < duration) {
-                    window.requestAnimationFrame(step);
-                }
-            });
+                window.requestAnimationFrame(function step(timestamp) {
+                    if (!start) start = timestamp;
+                    const progress = timestamp - start;
+                    const percent = Math.min(progress / duration, 1);
+                    const easedPercent = easeInOutCubic(percent);
+                    window.scrollTo(0, startPosition + distance * easedPercent);
+                    if (progress < duration) {
+                        window.requestAnimationFrame(step);
+                    }
+                });
+            }
+        };
+
+        if (window.location.pathname !== '/') {
+            window.location.href = `/#${id}`;
+            window.addEventListener('load', scrollToSection);
+        } else {
+            scrollToSection();
         }
     };
 

@@ -21,7 +21,7 @@ export default function Login() {
           sessionStorage.setItem('user', JSON.stringify(userCredential.user));
           window.location.href = '/Dashboard';
       } catch (err) {
-          setError('Error logging in'); // Handle errors
+          setError('Incorrect email or password'); // Handle errors
       }
     };
 
@@ -61,10 +61,12 @@ export default function Login() {
             MozBoxShadow: '0px 0px 35px 5px rgba(8,20,30,2)',
             border: '2px solid white'
           }}>
+            {error && <p className="text-red-800 text-right mt-0 pt-0" style={{position: 'fixed', transform: 'translate(130%, -40%)'}}>{error}</p>}
 
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
               Log In
             </h2>
+            
             <div className="mt-20 sm:mx-auto sm:w-full sm:max-w-sm">
               <form onSubmit={handleLogin} className="space-y-6">
                 
@@ -85,6 +87,7 @@ export default function Login() {
                     />
                   </div>
                 </div>
+                
   
                 <div>
                   <div className="flex items-center justify-between">
@@ -108,7 +111,7 @@ export default function Login() {
                       autoComplete="current-password"
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
-                    {error && <p className="text-red-800 text-right mt-0 pt-0">{error}</p>}
+                    
                   </div>
                 </div>
   

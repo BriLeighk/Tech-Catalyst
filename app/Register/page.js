@@ -12,6 +12,7 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [errorColor, setErrorColor] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -31,9 +32,11 @@ export default function Register() {
             // Add user to Brevo contact list
             const response = await axios.post('/api/addRegisterContact', { email, firstname, lastname });
             if (response.status === 200) {
-                console.log('Successfully added to Brevo');
+              setError('Account created successfully!');
+              setErrorColor('text-green-400'); // Set color to green-400
             } else {
-                console.error('Failed to add to Brevo');
+              setError('Account creation failed. Please try again.');
+              setErrorColor('text-red-500'); // Set color to red-500
             }
 
             window.location.href = '/Login'; // Navigate to login page after registration
@@ -84,11 +87,15 @@ export default function Register() {
             MozBoxShadow: '0px 0px 35px 5px rgba(8,20,30,2)',
             border: '2px solid white'
           }}>
-            {error && <p className="text-red-800 text-right mt-0 pt-0">{error}</p>}
+            {error && <p className={`${errorColor} text-right mt-0 pt-0`}>{error}</p>}
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
               Create Account
             </h2>
-            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm" 
+              style={{
+                position: 'fixed', 
+                transform: `translate(10%, ${error ? '-12%' : '0%'})`
+              }}>
               <form onSubmit={handleSubmit} className="space-y-6">
 
                 <div>
