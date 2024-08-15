@@ -1,4 +1,29 @@
+import { useState } from 'react';
+import axios from 'axios';
+
 export default function NewsletterSection() {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('/api/addContact', { email });
+      if (response.status === 200) {
+        setMessage('Successfully subscribed!');
+      } else {
+        setMessage('Subscription failed. Please try again.');
+      }
+    } catch (error) {
+      setMessage('An error occurred. Please try again.');
+    }
+    setEmail('');
+  };
+
   return (
     <div className="relative isolate bg-gray-900 py-16 sm:py-20 lg:py-32 min-h-screen flex flex-col justify-center">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -8,7 +33,7 @@ export default function NewsletterSection() {
             <p className="mt-4 text-lg leading-8 text-gray-300">
               Subscribe to our newsletter to get the latest updates on our platform and gain early access to new features.
             </p>
-            <div className="mt-6 flex max-w-md gap-x-4">
+            <form onSubmit={handleFormSubmit} className="mt-6 flex max-w-md gap-x-4">
               <label htmlFor="email-address" className="sr-only">
                 Email address
               </label>
@@ -19,6 +44,8 @@ export default function NewsletterSection() {
                 required
                 placeholder="Enter your email"
                 autoComplete="email"
+                value={email}
+                onChange={handleEmailChange}
                 className="min-w-0 flex-auto rounded-md border-0 bg-white/5 px-3.5 py-2 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
               />
               <button
@@ -27,7 +54,8 @@ export default function NewsletterSection() {
               >
                 Subscribe
               </button>
-            </div>
+            </form>
+            {message && <p className="mt-4 text-sm text-gray-300">{message}</p>}
           </div>
         </div>
       </div>
