@@ -1,6 +1,7 @@
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
+import { checkUserLoggedIn } from '../utils/auth'; // Import the utility function
 
 // Navigation bar
 const navigation = [
@@ -35,6 +36,15 @@ export default function Header() {
                     window.requestAnimationFrame(step);
                 }
             });
+        }
+    };
+
+    const handleLoginClick = async () => {
+        const isLoggedIn = await checkUserLoggedIn();
+        if (isLoggedIn) {
+            window.location.href = '/Dashboard';
+        } else {
+            window.location.href = '/Login';
         }
     };
 
@@ -74,9 +84,12 @@ export default function Header() {
                     ))}
                 </div>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <a href="#" className="text-sm font-semibold leading-6 text-white">
+                    <button
+                        onClick={handleLoginClick}
+                        className="text-sm font-semibold leading-6 text-white"
+                    >
                         Log in <span aria-hidden="true">&rarr;</span>
-                    </a>
+                    </button>
                 </div>
             </nav>
             <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
@@ -113,12 +126,12 @@ export default function Header() {
                                 ))}
                             </div>
                             <div className="py-6">
-                                <a
-                                    href="/Login"
+                                <button
+                                    onClick={handleLoginClick}
                                     className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-300 hover:bg-gray-800"
                                 >
                                     Log in
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>

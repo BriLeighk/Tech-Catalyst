@@ -5,9 +5,8 @@ import Features from './components/FeatureSection.js'
 import Pricing from './components/PricingSection.js'
 import Newsletter from './components/NewsletterSection.js'
 import About from './components/AboutSection.js'
-import Link from 'next/link'
 import Header from './components/Header.js'
-
+import { checkUserLoggedIn } from './utils/auth'; // Import the utility function
 
 export default function Home() {
 
@@ -27,7 +26,15 @@ export default function Home() {
     console.log("Email submitted:", email);
     setEmail("");
     // Handle the email submission, like sending it to a backend API.
+  };
 
+  const handleRegisterClick = async () => {
+    const isLoggedIn = await checkUserLoggedIn();
+    if (isLoggedIn) {
+      window.location.href = '/Dashboard';
+    } else {
+      window.location.href = '/Register';
+    }
   };
 
   if (!isClient) {
@@ -54,20 +61,23 @@ export default function Home() {
         </div>
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl" style={{ fontFamily: 'CustomFont' }}>
               The Tech Catalyst
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-300" style={{ fontFamily: 'CustomFont' }}>
             Empowering CS Students with tools, opportunities, and connections
             to excel in the tech industry.
             </p>
             {/*Hero Section Buttons - Links to Register Page */}
             <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link href="/Register">
-                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                      Get Started
-                    </div>
-                  </Link>
+            <button
+              onClick={handleRegisterClick}
+              className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              style={{ fontFamily: 'CustomFont' }}
+            >
+               
+                Get Started
+              </button>
             </div>
           </div>
         </div>

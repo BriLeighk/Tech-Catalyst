@@ -2,6 +2,8 @@ import { CheckIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react';
 import Switch from 'react-switch';
 import Link from 'next/link';
+import { checkUserLoggedIn } from '../utils/auth'; // Import the auth function
+import Popup from './Popup'; // Import the Popup component
 
 const freeFeatures = [
   'Access to community-uploaded resources',
@@ -21,9 +23,20 @@ const premiumFeatures = [
 
 export default function PricingSection() {
   const [isMonthly, setIsMonthly] = useState(true);
+  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+
+  const handleButtonClick = async () => {
+    const isLoggedIn = await checkUserLoggedIn();
+    if (isLoggedIn) {
+      setShowPopup(true);
+    } else {
+      window.location.href = '/Register';
+    }
+  };
 
   return (
     <div className="bg-gray-900 py-24 sm:py-32">
+      {showPopup && <Popup setShowPopup={setShowPopup} />} {/* Conditionally render the Popup */}
       <div className="mx-auto max-w-8xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl sm:text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Free vs Premium Features</h2>
@@ -61,11 +74,12 @@ export default function PricingSection() {
                     <span className="text-5xl font-bold tracking-tight text-gray-900">$0.00</span>
                     <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                   </p>
-                  <Link href="/Register">
-                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+
+                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      onClick={handleButtonClick}
+                    >
                       Create Account
                     </div>
-                  </Link>
                 </div>
                  <p className="mt-6 text-xs leading-5 text-gray-600">
                   Create an account now for early access to our platform, discounts on premium features, and to gain a custom First User Badge on your profile. <br/> <em>Eligible for the first 100 users only.</em>
@@ -103,10 +117,10 @@ export default function PricingSection() {
                   <Switch
                     checked={!isMonthly}
                     onChange={() => setIsMonthly(!isMonthly)}
-                    onColor="#ff9900"
-                    offColor="#86d3ff"
-                    offHandleColor="#0052cc"
-                    onHandleColor="#ffcc00"
+                    onColor="#818cf8"
+                    offColor="#60a5fa"
+                    offHandleColor="#1d4ed8"
+                    onHandleColor="#4338ca"
                     handleDiameter={28}
                     uncheckedIcon={false}
                     checkedIcon={false}
@@ -126,11 +140,11 @@ export default function PricingSection() {
                     </span>
                     <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                   </p>
-                  <Link href="/Register">
-                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      onClick={handleButtonClick}
+                    >
                       Coming Soon
                     </div>
-                  </Link>
                 </div>
                 <p className="mt-6 text-xs leading-5 text-gray-600">
                   Choose between monthly and yearly plans. <br/>
@@ -172,11 +186,12 @@ export default function PricingSection() {
                     <span className="text-5xl font-bold tracking-tight text-gray-900">$249</span>
                     <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                   </p>
-                  <Link href="/Register">
-                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+
+                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      onClick={handleButtonClick}
+                    >
                       Coming Soon
                     </div>
-                  </Link>
                 </div>
                 <p className="mt-6 text-xs leading-5 text-gray-600">
                 <em>Price equivalent to 2 years of premium.</em><br/><br/><br/></p>

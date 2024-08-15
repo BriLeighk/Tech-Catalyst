@@ -1,20 +1,14 @@
+'use client'
+import React, { useState, useEffect } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { doc, getDoc } from 'firebase/firestore';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth, db } from '../firebase'; // Import initialized auth and db
 
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
     // add more tabs here
-]
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
 ]
 
 function classNames(...classes) {
@@ -22,6 +16,56 @@ function classNames(...classes) {
 }
 
 export default function Dashboard() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async (user) => {
+      if (user) {
+        const userDoc = doc(db, 'users', user.uid);
+        const userSnapshot = await getDoc(userDoc);
+
+        if (userSnapshot.exists()) {
+          const userData = userSnapshot.data();
+          setUser({
+            ...user,
+            firstname: userData.firstname,
+            lastname: userData.lastname,
+            email: userData.email,
+            imageUrl: userData.imageUrl || '/placeholder.png'
+          });
+        }
+      }
+    };
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      fetchUserData(user); // Fetch user data from Firestore
+    });
+
+    return () => unsubscribe(); // Cleanup subscription on unmount
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      window.location.href = '/Login';
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const userNavigation = [
+    { name: 'Your Profile', href: '#' },
+    { name: 'Settings', href: '#' },
+    { name: 'Sign out', href: '#', onClick: handleSignOut },
+  ]
+
+  const initialUser = user ? {
+    name: user.firstname + ' ' + user.lastname,
+    email: user.email,
+    imageUrl: user.imageUrl
+  } : { name: '', email: '', imageUrl: '/placeholder.png' };
+
   return (
     <>
       <div className="relative isolate bg-gray-900 h-[800px] overflow-hidden" style={{margin: '0',padding: '0'}}>
@@ -98,7 +142,7 @@ export default function Dashboard() {
                       <MenuButton className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
-                        <img alt="" src={user.imageUrl} className="h-8 w-8 rounded-full" />
+                        <img alt="" src={initialUser.imageUrl} className="h-8 w-8 rounded-full" />
                       </MenuButton>
                     </div>
                     <MenuItems
@@ -110,6 +154,7 @@ export default function Dashboard() {
                           <a
                             href={item.href}
                             className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
+                            onClick={item.onClick}
                           >
                             {item.name}
                           </a>
@@ -151,11 +196,11 @@ export default function Dashboard() {
             <div className="border-t border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  <img alt="" src={user.imageUrl} className="h-10 w-10 rounded-full" />
+                  <img alt="" src={'/placeholder.png'} className="h-10 w-10 rounded-full" />
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium leading-none text-white">{user.name}</div>
-                  <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
+                  <div className="text-base font-medium leading-none text-white">{initialUser.name}</div>
+                  <div className="text-sm font-medium leading-none text-gray-400">{initialUser.email}</div>
                 </div>
                 <button
                   type="button"
@@ -173,6 +218,7 @@ export default function Dashboard() {
                     as="a"
                     href={item.href}
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                    onClick={item.onClick}
                   >
                     {item.name}
                   </DisclosureButton>

@@ -1,8 +1,41 @@
 'use client'
-
+import { useEffect, useState } from 'react';
+import { auth } from '../firebase';
 import Header from '../components/Header'
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
 
 export default function Login() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+
+    // Check if user is already logged in
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+          if (user) {
+              window.location.href = '/Dashboard'; // Navigate to user dashboard
+          }
+      });
+
+      return () => unsubscribe(); // Cleanup subscription on unmount
+    }, []);
+
+    const handleLogin = async (e) => {
+      e.preventDefault();
+      setError('');
+
+      try {
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          // User is logged in, start session and redirect to dashboard
+          sessionStorage.setItem('user', JSON.stringify(userCredential.user));
+          window.location.href = '/Dashboard';
+      } catch (err) {
+          setError('Error logging in'); // Handle errors
+      }
+    };
+
     return (
       <>
         <Header />
@@ -44,9 +77,8 @@ export default function Login() {
               Log In
             </h2>
             <div className="mt-20 sm:mx-auto sm:w-full sm:max-w-sm">
-              <form action="#" method="POST" className="space-y-6">
-
-
+              <form onSubmit={handleLogin} className="space-y-6">
+                
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-300">
                     Email address
@@ -55,7 +87,9 @@ export default function Login() {
                     <input
                       id="email"
                       name="email"
-                      type="email"
+                      type="text"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                       autoComplete="email"
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -79,10 +113,13 @@ export default function Login() {
                       id="password"
                       name="password"
                       type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                       autoComplete="current-password"
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
+                    {error && <p className="text-red-800 text-right mt-0 pt-0">{error}</p>}
                   </div>
                 </div>
   

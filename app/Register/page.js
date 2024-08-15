@@ -1,8 +1,44 @@
 'use client'
-
+import { useState } from 'react';
 import Header from '../components/Header'
+import { auth, db } from '../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore'; // Import Firestore functions
 
 export default function Register() {
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // Store additional user information in Firestore
+            await setDoc(doc(db, 'users', user.uid), {
+                firstname,
+                lastname,
+                email
+            });
+
+            window.location.href = '/Login'; // Navigate to login page after registration
+        } catch (err) {
+          if (err.code === 'auth/email-already-in-use') {
+            setError('This email is already associated with another account');
+          } else if (err.message) { // Check if there's a specific error message
+              setError(err.message);
+          } else {
+              setError('Error creating account'); // Fallback error message
+          }
+        }
+    };
+
     return (
       <>
         <Header />
@@ -39,12 +75,12 @@ export default function Register() {
             MozBoxShadow: '0px 0px 35px 5px rgba(8,20,30,2)',
             border: '2px solid white'
           }}>
-
+            {error && <p className="text-red-800 text-right mt-0 pt-0">{error}</p>}
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
               Create Account
             </h2>
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-              <form action="#" method="POST" className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
 
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-300">
@@ -54,9 +90,11 @@ export default function Register() {
                     <input
                       id="firstname"
                       name="firstname"
-                      type="firstname"
+                      type="text"
                       required
                       autoComplete="firstname"
+                      value={firstname}
+                      onChange={(e) => setFirstname(e.target.value)}
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -70,9 +108,11 @@ export default function Register() {
                     <input
                       id="lastname"
                       name="lastname"
-                      type="lastname"
+                      type="text"
                       required
                       autoComplete="lastname"
+                      value={lastname}
+                      onChange={(e) => setLastname(e.target.value)}
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -89,6 +129,8 @@ export default function Register() {
                       type="email"
                       required
                       autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -112,6 +154,8 @@ export default function Register() {
                       type="password"
                       required
                       autoComplete="current-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
