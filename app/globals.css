@@ -1,0 +1,22 @@
+@font-face {
+  font-family: 'CustomFont';
+  src: url('/fonts/CustomFont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  width: 100%;
+  overflow-x: hidden; /* Prevent horizontal overflow */
+  font-family: 'CustomFont', sans-serif;
+  background-color: #e9f5fd;
+  color: #1A202C;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Poppins', sans-serif;
+}
