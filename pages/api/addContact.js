@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
     let createContact = new SibApiV3Sdk.CreateContact();
     createContact.email = email;
-    createContact.listIds = [parseInt(process.env.BREVO_LIST_ID)];
+    createContact.listIds = [parseInt(process.env.BREVO_NEWSLETTER_ID)];
 
     try {
       await apiInstance.createContact(createContact);

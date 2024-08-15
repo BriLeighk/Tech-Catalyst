@@ -4,6 +4,7 @@ import Header from '../components/Header'
 import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore'; // Import Firestore functions
+import axios from 'axios'; // Import axios
 
 export default function Register() {
   const [firstname, setFirstname] = useState('');
@@ -27,15 +28,23 @@ export default function Register() {
                 email
             });
 
+            // Add user to Brevo contact list
+            const response = await axios.post('/api/addRegisterContact', { email, firstname, lastname });
+            if (response.status === 200) {
+                console.log('Successfully added to Brevo');
+            } else {
+                console.error('Failed to add to Brevo');
+            }
+
             window.location.href = '/Login'; // Navigate to login page after registration
         } catch (err) {
-          if (err.code === 'auth/email-already-in-use') {
-            setError('This email is already associated with another account');
-          } else if (err.message) { // Check if there's a specific error message
-              setError(err.message);
-          } else {
-              setError('Error creating account'); // Fallback error message
-          }
+            if (err.code === 'auth/email-already-in-use') {
+                setError('This email is already associated with another account');
+            } else if (err.message) { // Check if there's a specific error message
+                setError(err.message);
+            } else {
+                setError('Error creating account'); // Fallback error message
+            }
         }
     };
 

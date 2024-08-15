@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { auth } from '../firebase';
 import Header from '../components/Header'
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -10,17 +10,6 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-
-    // Check if user is already logged in
-    useEffect(() => {
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) {
-              window.location.href = '/Dashboard'; // Navigate to user dashboard
-          }
-      });
-
-      return () => unsubscribe(); // Cleanup subscription on unmount
-    }, []);
 
     const handleLogin = async (e) => {
       e.preventDefault();
