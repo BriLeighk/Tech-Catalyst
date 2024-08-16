@@ -7,7 +7,6 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from '../firebase'; // Import initialized auth and db
 
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
     // add more tabs here
 ]
 
@@ -55,7 +54,6 @@ export default function Dashboard() {
   };
 
   const userNavigation = [
-    { name: 'Your Profile', href: '#' },
     { name: 'Settings', href: '#' },
     { name: 'Sign out', href: '#', onClick: handleSignOut },
   ]
@@ -68,7 +66,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="relative isolate bg-gray-900 h-[800px] overflow-hidden" style={{margin: '0',padding: '0'}}>
+      <div className="relative isolate bg-[#140D0C] h-[800px] overflow-hidden" style={{margin: '0',padding: '0'}}>
         <div
           aria-hidden="true"
           className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -78,7 +76,7 @@ export default function Dashboard() {
               clipPath:
                 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
             }}
-            className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#07d2fb] to-[#0819b5] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+            className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#5A3A2F] to-[#2B1D1A] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
           />
         </div>
         <div
@@ -90,10 +88,10 @@ export default function Dashboard() {
               clipPath:
                 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
             }}
-            className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#0819b5] to-[#07d2fb] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
+            className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#5A3A2F] to-[#2B1D1A] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
           />
         </div>
-        <Disclosure as="nav" className="bg-gray-900">
+        <Disclosure as="nav" className="bg-[#140D0C]">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-20 items-center justify-between">
               <div className="flex items-center">
@@ -115,7 +113,7 @@ export default function Dashboard() {
                         href={item.href}
                         aria-current={item.current ? 'page' : undefined}
                         className={classNames(
-                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          item.current ? 'bg-[#1E1412] text-white' : 'text-gray-300 hover:bg-[#140D0C] hover:text-white',
                           'rounded-md px-3 py-2 text-sm font-medium',
                         )}
                       >
@@ -129,7 +127,7 @@ export default function Dashboard() {
                 <div className="ml-4 flex items-center md:ml-6">
                   <button
                     type="button"
-                    className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                    className="relative rounded-full bg-[#140D0C] p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                   >
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">View notifications</span>
@@ -139,7 +137,7 @@ export default function Dashboard() {
                   {/* Profile dropdown */}
                   <Menu as="div" className="relative ml-3">
                     <div>
-                      <MenuButton className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                      <MenuButton className="relative flex max-w-xs items-center rounded-full bg-[#140D0C] text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
                         <img alt="" src={initialUser.imageUrl} className="h-8 w-8 rounded-full" />
@@ -153,7 +151,7 @@ export default function Dashboard() {
                         <MenuItem key={item.name}>
                           <a
                             href={item.href}
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
+                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-[#b79994]"
                             onClick={item.onClick}
                           >
                             {item.name}
@@ -166,7 +164,11 @@ export default function Dashboard() {
               </div>
               <div className="-mr-2 flex md:hidden">
                 {/* Mobile menu button */}
-                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-[#1E1412] p-2 text-[#F2F4E6] hover:bg-[#442718] hover:text-[#1E1412] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                style={{
+                  transition: 'background-color 0.3s ease-in-out',
+                }}
+                >
                   <span className="absolute -inset-0.5" />
                   <span className="sr-only">Open main menu</span>
                   <Bars3Icon aria-hidden="true" className="block h-6 w-6 group-data-[open]:hidden" />
@@ -185,7 +187,7 @@ export default function Dashboard() {
                   href={item.href}
                   aria-current={item.current ? 'page' : undefined}
                   className={classNames(
-                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                    item.current ? 'bg-[#140D0C] text-white' : 'text-gray-300 hover:bg-[#b79994] hover:text-white',
                     'block rounded-md px-3 py-2 text-base font-medium',
                   )}
                 >
@@ -204,7 +206,7 @@ export default function Dashboard() {
                 </div>
                 <button
                   type="button"
-                  className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  className="relative ml-auto flex-shrink-0 rounded-full bg-[#140D0C] p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
@@ -217,8 +219,11 @@ export default function Dashboard() {
                     key={item.name}
                     as="a"
                     href={item.href}
-                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-[#1E1412] hover:text-white"
                     onClick={item.onClick}
+                    style={{
+                      transition: 'background-color 0.2s ease-in-out',
+                    }}
                   >
                     {item.name}
                   </DisclosureButton>
@@ -228,7 +233,7 @@ export default function Dashboard() {
           </DisclosurePanel>
         </Disclosure>
 
-        <header className="bg-gray-900 shadow">
+        <header className=" text-center">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
           </div>

@@ -14,6 +14,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.png" type="image/png" />
+      </head>
       <body className={playfair.className}>
         {children} {/* Ensure children are rendered here */}
       </body>

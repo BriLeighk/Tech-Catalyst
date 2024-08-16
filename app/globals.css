@@ -1,9 +1,5 @@
-@font-face {
-  font-family: 'CustomFont';
-  src: url('/fonts/CustomFont.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -12,11 +8,21 @@
 html, body {
   width: 100%;
   overflow-x: hidden; /* Prevent horizontal overflow */
-  font-family: 'CustomFont', sans-serif;
-  background-color: #e9f5fd;
-  color: #1A202C;
+  font-family: 'Playfair Display', serif; /* Apply the custom font to all text */
+  font-style: normal; /* Set font style to italic */
+  font-weight: 400; /* Set font weight to 400 */
 }
 
-h1, h2, h3, h4 {
-  font-family: 'Poppins', sans-serif;
+h1, h2, h3, h4, dt {
+  font-family: "Playfair Display", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: italic;
+}
+
+h5, h6, h7, h8, h9, p, dd, li, th, td {
+  font-family: "Playfair Display", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
