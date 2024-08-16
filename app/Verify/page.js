@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { doc, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -7,29 +7,31 @@ import axios from 'axios';
 
 export default function Verify() {
   const [code, setCode] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailParam = urlParams.get('email');
+    const codeParam = urlParams.get('code');
+    if (emailParam && codeParam) {
+      setEmail(emailParam);
+      setCode(codeParam);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const email = urlParams.get('email');
-    const password = sessionStorage.getItem('password'); // Retrieve the password from session storage
-
-    if (!password) {
-      setError('Password not found. Please register again.');
-      return;
-    }
-
     try {
       const docRef = doc(db, 'verifications', email);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        const { verificationCode, timestamp, firstname, lastname } = docSnap.data();
+        const { verificationCode, timestamp, firstname, lastname, password } = docSnap.data(); // Retrieve password
         const now = new Date();
         const codeTimestamp = timestamp.toDate();
         const timeDifference = now - codeTimestamp;
@@ -53,13 +55,22 @@ export default function Verify() {
             email
           });
 
-          // Add user to Brevo contact list and send email using template #3
+          // Add user to Brevo contact list
           try {
             await axios.post('/api/addRegisterContact', { email, firstname, lastname });
-            await axios.post('/api/sendWelcomeEmail', { email, firstname, lastname });
+
+            // Introduce a 10-second delay before sending the welcome email
+            setTimeout(async () => {
+              try {
+                await axios.post('/api/sendWelcomeEmail', { email, firstname, lastname });
+              } catch (err) {
+                console.error('Error sending welcome email:', err);
+                setError('Error sending welcome email');
+              }
+            }, 10000); // 10-second delay
           } catch (err) {
-            console.error('Error adding contact to Brevo or sending email:', err);
-            setError('Error adding contact to Brevo or sending email');
+            console.error('Error adding contact to Brevo:', err);
+            setError('Error adding contact to Brevo');
             return;
           }
 

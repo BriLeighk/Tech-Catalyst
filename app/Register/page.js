@@ -23,7 +23,7 @@ export default function Register() {
             sessionStorage.setItem('password', password);
 
             // Generate verification code and send email
-            const response = await axios.post('/api/sendVerificationCode', { email, firstname, lastname });
+            const response = await axios.post('/api/sendVerificationCode', { email, firstname, lastname, password });
             if (response.status === 200) {
                 // Navigate to verification page
                 window.location.href = `/Verify?email=${email}`;
@@ -97,6 +97,7 @@ export default function Register() {
                       value={firstname}
                       onChange={(e) => setFirstname(e.target.value)}
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#b79994] sm:text-sm sm:leading-6"
+                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px' }}
                     />
                   </div>
                 </div>
@@ -115,6 +116,7 @@ export default function Register() {
                       value={lastname}
                       onChange={(e) => setLastname(e.target.value)}
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#b79994] sm:text-sm sm:leading-6"
+                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px' }}
                     />
                   </div>
                 </div>
@@ -133,6 +135,7 @@ export default function Register() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#b79994] sm:text-sm sm:leading-6"
+                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px' }}
                     />
                   </div>
                 </div>
@@ -153,6 +156,7 @@ export default function Register() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#b79994] sm:text-sm sm:leading-6"
+                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px' }}
                     />
                   </div>
                 </div>
