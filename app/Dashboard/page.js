@@ -30,7 +30,8 @@ export default function Dashboard() {
             firstname: userData.firstname,
             lastname: userData.lastname,
             email: userData.email,
-            imageUrl: userData.imageUrl || '/placeholder.png'
+            imageUrl: userData.imageUrl || '/placeholder.png',
+            password: '*'.repeat(8) // Fixed-length masked password
           });
         }
       }
@@ -140,7 +141,7 @@ export default function Dashboard() {
                       <MenuButton className="relative flex max-w-xs items-center rounded-full bg-[#140D0C] text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
-                        <img alt="" src={initialUser.imageUrl} className="h-8 w-8 rounded-full" />
+                        <img alt="" src={initialUser.imageUrl} className="h-16 w-16 rounded-full" />
                       </MenuButton>
                     </div>
                     <MenuItems
@@ -198,7 +199,7 @@ export default function Dashboard() {
             <div className="border-t border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  <img alt="" src={'/placeholder.png'} className="h-10 w-10 rounded-full" />
+                  <img alt="" src={'/placeholder.png'} className="h-14 w-14 rounded-full" />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">{initialUser.name}</div>
@@ -242,7 +243,16 @@ export default function Dashboard() {
           <div className="b mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             {/* Your content */}
             
-            </div>
+            
+          </div>
+          {user && (
+              <div className="flex flex-col items-center space-y-4">
+                <img alt="" src={user.imageUrl} className="h-24 w-24 rounded-full" />
+                <div className="text-white text-xl font-bold">{user.firstname} {user.lastname}</div>
+                <div className="text-gray-400">{user.email}</div>
+                <div className="text-gray-400">{'*'.repeat(8)}</div>
+              </div>
+            )}
         </main>
       </div>
     </>

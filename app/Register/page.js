@@ -19,38 +19,21 @@ export default function Register() {
         setError('');
 
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
+            // Store the password in session storage
+            sessionStorage.setItem('password', password);
 
-            // Store additional user information in Firestore
-            await setDoc(doc(db, 'users', user.uid), {
-                firstname,
-                lastname,
-                email
-            });
-
-            // Add user to Brevo contact list
-            const response = await axios.post('/api/addRegisterContact', { email, firstname, lastname });
+            // Generate verification code and send email
+            const response = await axios.post('/api/sendVerificationCode', { email, firstname, lastname });
             if (response.status === 200) {
-              setError('Account created successfully!');
-              setErrorColor('text-green-400'); // Set color to green-400
+                // Navigate to verification page
+                window.location.href = `/Verify?email=${email}`;
             } else {
-              setError('Account creation failed. Please try again.');
-              setErrorColor('text-red-500'); // Set color to red-500
+                setError('Failed to send verification email. Please try again.');
+                setErrorColor('text-red-500');
             }
-
-            window.location.href = '/Login'; // Navigate to login page after registration
         } catch (err) {
-            if (err.code === 'auth/email-already-in-use') {
-                setError('This email is already associated with another account');
-                setErrorColor('text-red-500'); // Set color to red-500
-            } else if (err.message) { // Check if there's a specific error message
-                setError(err.message);
-                setErrorColor('text-red-500'); // Set color to red-500
-            } else {
-                setError('Error creating account'); // Fallback error message
-                setErrorColor('text-red-500'); // Set color to red-500
-            }
+            setError('Error creating account');
+            setErrorColor('text-red-500');
         }
     };
 
@@ -186,9 +169,7 @@ export default function Register() {
                   <button
                     type="submit"
                     className="flex w-[205px] justify-center rounded-md bg-[#683F24] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
-                    style={{
-                      transition: 'background-color 0.3s ease-in-out',
-                    }}
+                    style={{ transition: 'background-color 0.3s ease-in-out' }}
                   >
                     Create Account
                   </button>
