@@ -35,7 +35,7 @@ export default function PricingSection() {
   };
 
   return (
-    <div className="bg-gray-900 py-24 sm:py-32">
+    <div className="bg-[#140D0C] py-24 sm:py-32">
       {showPopup && <Popup setShowPopup={setShowPopup} />} {/* Conditionally render the Popup */}
       <div className="mx-auto max-w-8xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl sm:text-center">
@@ -51,7 +51,7 @@ export default function PricingSection() {
                 Our Free Tier offers limited access to our resource library, job listings, and events calendar. <br/>
               </p>
               <div className="mt-10 flex items-center gap-x-4">
-                <h4 className="flex-none text-sm font-semibold leading-6 text-indigo-600">What's included</h4>
+                <h4 className="flex-none text-sm font-semibold leading-6 text-[#724428]">What's included</h4>
                 <div className="h-px flex-auto bg-gray-300" />
               </div>
               <ul
@@ -60,7 +60,7 @@ export default function PricingSection() {
               >
                 {freeFeatures.map((feature) => (
                   <li key={feature} className="flex gap-x-3">
-                    <CheckIcon aria-hidden="true" className="h-6 w-5 flex-none text-indigo-600" />
+                    <CheckIcon aria-hidden="true" className="h-6 w-5 flex-none text-[#683F24]" />
                     {feature}
                   </li>
                 ))}
@@ -75,8 +75,9 @@ export default function PricingSection() {
                     <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                   </p>
 
-                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    <div className="mt-10 block w-full rounded-md bg-[#683F24] px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
                       onClick={handleButtonClick}
+                      style={{transition: 'background-color 0.3s ease-in-out'}}
                     >
                       Create Account
                     </div>
@@ -96,7 +97,7 @@ export default function PricingSection() {
                 Our Premium Tier offers unlimited access to our resources, job listings, and events calendar. <br/> 
               </p>
               <div className="mt-10 flex items-center gap-x-4">
-                <h4 className="flex-none text-sm font-semibold leading-6 text-indigo-600">What's included</h4>
+                <h4 className="flex-none text-sm font-semibold leading-6 text-[#724428]">What's included</h4>
                 <div className="h-px flex-auto bg-gray-300" />
               </div>
               <ul
@@ -105,7 +106,7 @@ export default function PricingSection() {
               >
                 {premiumFeatures.map((feature) => (
                   <li key={feature} className="flex gap-x-3">
-                    <CheckIcon aria-hidden="true" className="h-6 w-5 flex-none text-indigo-600" />
+                    <CheckIcon aria-hidden="true" className="h-6 w-5 flex-none text-[#683F24]" />
                     {feature}
                   </li>
                 ))}
@@ -117,10 +118,10 @@ export default function PricingSection() {
                   <Switch
                     checked={!isMonthly}
                     onChange={() => setIsMonthly(!isMonthly)}
-                    onColor="#818cf8"
-                    offColor="#60a5fa"
-                    offHandleColor="#1d4ed8"
-                    onHandleColor="#4338ca"
+                    onColor="#BF957C"
+                    offColor="#B57A56"
+                    offHandleColor="#683F24"
+                    onHandleColor="#84593E"
                     handleDiameter={28}
                     uncheckedIcon={false}
                     checkedIcon={false}
@@ -140,8 +141,9 @@ export default function PricingSection() {
                     </span>
                     <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                   </p>
-                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    <div className="mt-10 block w-full rounded-md bg-[#683F24] px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
                       onClick={handleButtonClick}
+                      style={{transition: 'background-color 0.3s ease-in-out'}}
                     >
                       Coming Soon
                     </div>
@@ -163,7 +165,7 @@ export default function PricingSection() {
                 Pay once, and own unlimited access to our features forever. <br/>
               </p> 
               <div className="mt-10 flex items-center gap-x-4">
-                <h4 className="flex-none text-sm font-semibold leading-6 text-indigo-600">What's included</h4>
+                <h4 className="flex-none text-sm font-semibold leading-6 text-[#724428]">What's included</h4>
                 <div className="h-px flex-auto bg-gray-300" />
               </div>
               <ul
@@ -172,7 +174,7 @@ export default function PricingSection() {
               >
                 {premiumFeatures.map((feature) => (
                   <li key={feature} className="flex gap-x-3">
-                    <CheckIcon aria-hidden="true" className="h-6 w-5 flex-none text-indigo-600" />
+                    <CheckIcon aria-hidden="true" className="h-6 w-5 flex-none text-[#683F24]" />
                     {feature}
                   </li>
                 ))}
@@ -187,8 +189,9 @@ export default function PricingSection() {
                     <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600">USD</span>
                   </p>
 
-                    <div className="mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    <div className="mt-10 block w-full rounded-md bg-[#683F24] px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
                       onClick={handleButtonClick}
+                      style={{transition: 'background-color 0.3s ease-in-out'}}
                     >
                       Coming Soon
                     </div>

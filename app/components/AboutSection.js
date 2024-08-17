@@ -1,6 +1,6 @@
 export default function AboutSection() {
   return (
-    <div className="bg-gray-900 py-24 sm:py-32">
+    <div className="bg-[#140D0C] py-24 sm:py-32">
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <svg
           aria-hidden="true"
@@ -31,8 +31,8 @@ export default function AboutSection() {
         <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
           <div className="lg:pr-4">
             <div className="lg:max-w-lg">
-              <h1 className=" text-3xl font-bold tracking-tight text-white sm:text-4xl">About Us</h1>
-              <p className="mt-6 text-xl leading-8 text-gray-300">
+              <h1 className=" text-3xl font-bold tracking-tight text-[#F2F4E6] sm:text-4xl">About Us</h1>
+              <p className="mt-6 text-lg leading-8 text-gray-300">
               Navigating the tech industry can be challenging, especially for undergraduates and 
             recent graduates looking to break into the field. At Tech Catalyst, we understand 
             that the traditional college curriculum alone often falls short of equipping aspiring tech 
@@ -52,7 +52,7 @@ export default function AboutSection() {
         <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
           <div className="lg:pr-4">
             <div className="max-w-xl text-base leading-7 text-gray-300 lg:max-w-lg">
-              <h2 className=" text-2xl font-bold tracking-tight text-white">Our Solution</h2>
+              <h2 className=" text-2xl font-bold tracking-tight text-[#F2F4E6]">Our Solution</h2>
               <p className="mt-6">
               That's why we've created an all-in-one platform designed specifically for those 
             embarking on their journey into the tech world. Whether you're an aspiring software 
