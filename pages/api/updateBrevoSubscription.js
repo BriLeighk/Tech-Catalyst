@@ -13,6 +13,9 @@ export default async function handler(req, res) {
     try {
       console.log(`Updating subscription for email: ${email}, isSubscribed: ${isSubscribed}`);
       
+      const newsletterId = parseInt(process.env.BREVO_NEWSLETTER_ID);
+      console.log(`BREVO_NEWSLETTER_ID: ${newsletterId}`);
+
       let existingContact;
       try {
         existingContact = await apiInstance.getContactInfo(email);
@@ -29,14 +32,23 @@ export default async function handler(req, res) {
       if (existingContact) {
         if (isSubscribed) {
           // Add to the newsletter list
-          await apiInstance.updateContact(email, {
-            listIds: [...new Set([...existingContact.listIds, parseInt(process.env.BREVO_NEWSLETTER_ID)])]
-          });
+          const updatedListIds = [...new Set([...existingContact.listIds, newsletterId])];
+          console.log(`Adding to list IDs: ${updatedListIds}`);
+          await apiInstance.updateContact(email, { listIds: updatedListIds });
         } else {
           // Remove from the newsletter list
-          await apiInstance.updateContact(email, {
-            listIds: existingContact.listIds.filter(id => id !== parseInt(process.env.BREVO_NEWSLETTER_ID))
-          });
+          console.log(`Removing from list ID: ${newsletterId}`);
+          const removePayload = { emails: [email] };
+          await apiInstance.removeContactFromList(newsletterId, removePayload);
+          
+          // Verify the update
+          const updatedContact = await apiInstance.getContactInfo(email);
+          console.log(`Updated contact after removal: ${JSON.stringify(updatedContact)}`);
+          if (!updatedContact.listIds.includes(newsletterId)) {
+            console.log(`Successfully removed from list ID: ${newsletterId}`);
+          } else {
+            console.error(`Failed to remove from list ID: ${newsletterId}`);
+          }
         }
         res.status(200).json({ message: 'Subscription updated successfully' });
       } else {
@@ -44,7 +56,7 @@ export default async function handler(req, res) {
         if (isSubscribed) {
           let createContact = new SibApiV3Sdk.CreateContact();
           createContact.email = email;
-          createContact.listIds = [parseInt(process.env.BREVO_NEWSLETTER_ID)];
+          createContact.listIds = [newsletterId];
 
           await apiInstance.createContact(createContact);
           res.status(200).json({ message: 'Contact created and subscription updated successfully' });
