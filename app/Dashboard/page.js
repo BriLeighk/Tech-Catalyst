@@ -37,6 +37,7 @@ export default function Dashboard() {
   const [showError, setShowError] = useState(false); // State for error messages
   const [errorMessage, setErrorMessage] = useState(''); // State for error message text
   const [isSubscribed, setIsSubscribed] = useState(false); // State for subscription status
+  const [showSuccess, setShowSuccess] = useState(false); // State for success message
 
   useEffect(() => {
     const fetchUserData = async (user) => {
@@ -229,6 +230,8 @@ export default function Dashboard() {
       });
       if (response.status === 200) {
         console.log('Subscription updated successfully.');
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000); // Hide success message after 3 seconds
       } else {
         throw new Error(response.data.message || 'Error updating subscription');
       }
@@ -612,6 +615,11 @@ export default function Dashboard() {
       {showError && (
         <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md shadow-md transition-opacity duration-300" style={{ opacity: showError ? 1 : 0 }}>
           {errorMessage}
+        </div>
+      )}
+      {showSuccess && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
+          Email preferences updated successfully
         </div>
       )}
     </>

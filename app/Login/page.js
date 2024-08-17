@@ -9,6 +9,8 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showError, setShowError] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
 
 
     const handleLogin = async (e) => {
@@ -19,11 +21,17 @@ export default function Login() {
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
           // User is logged in, start session and redirect to dashboard
           sessionStorage.setItem('user', JSON.stringify(userCredential.user));
-          window.location.href = '/Dashboard';
-      } catch (err) {
+          setShowSuccess(true);
+          setTimeout(() => {
+            setShowSuccess(false);
+            window.location.href = '/Dashboard';
+          }, 3000); // Show success message for 3 seconds before redirecting
+        } catch (err) {
           setError('Incorrect email or password'); // Handle errors
-      }
-    };
+          setShowError(true);
+          setTimeout(() => setShowError(false), 3000); // Hide error message after 3 seconds
+        }
+      };
 
     return (
       <>
@@ -60,17 +68,11 @@ export default function Login() {
               MozBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)',
               border: '2px solid white',
             }}>
-            {error && <p className="text-red-800 text-right mt-0 pt-0">{error}</p>}
-
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
               Log  In
             </h2>
             
-            <div className="mt-20 sm:mx-auto sm:w-full sm:max-w-sm" 
-            style={{
-                position: 'fixed', 
-                transform: `translate(10%, ${error ? '-6.5%' : '0%'})`
-              }}>
+            <div className="mt-20 sm:mx-auto sm:w-full sm:max-w-sm" >
               <form onSubmit={handleLogin} className="space-y-6">
                 
                 <div>
@@ -160,6 +162,17 @@ export default function Login() {
             />
           </div>
         </div>
+        {showSuccess && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
+          Login successful! Redirecting to dashboard...
+        </div>
+      )}
+
+      {showError && (
+        <div className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
+          {error}
+        </div>
+      )}
       </>
     )
   }
