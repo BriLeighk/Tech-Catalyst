@@ -1,9 +1,11 @@
 'use client'
 import { useState } from 'react';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import Header from '../components/Header'
-import { signInWithEmailAndPassword } from 'firebase/auth';
-
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import axios from 'axios';
+import { FcGoogle } from 'react-icons/fc';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -32,6 +34,45 @@ export default function Login() {
           setTimeout(() => setShowError(false), 3000); // Hide error message after 3 seconds
         }
       };
+
+    const handleGoogleSignIn = async () => {
+      const provider = new GoogleAuthProvider();
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        // Modify the photo URL to request a higher resolution image
+        const highResPhotoURL = user.photoURL.replace('s96-c', 's400-c');
+
+        // Store user information in Firestore
+        const userDoc = doc(db, 'users', user.uid);
+        await setDoc(userDoc, {
+          firstname: user.displayName.split(' ')[0],
+          lastname: user.displayName.split(' ').slice(1).join(' '),
+          email: user.email,
+          imageUrl: highResPhotoURL,
+          bio: '',
+        });
+
+        // Add user to Brevo list
+        await axios.post('/api/updateBrevoSubscription', {
+          email: user.email,
+          isSubscribed: true,
+        });
+
+        // Redirect to dashboard
+        sessionStorage.setItem('user', JSON.stringify(user));
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+          window.location.href = '/Dashboard';
+        }, 3000); // Show success message for 3 seconds before redirecting
+      } catch (error) {
+        setError('Error signing in with Google: ' + error.message);
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000); // Hide error message after 3 seconds
+      }
+    };
 
     return (
       <>
@@ -71,8 +112,21 @@ export default function Login() {
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
               Log  In
             </h2>
+
+            <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+                  <button
+                    onClick={handleGoogleSignIn}
+                    className="flex w-full h-[36px] justify-center items-center rounded-md bg-gray-100 px-3 py-1.5 text-sm font-semibold leading-6 text-[#140D0C] shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#724428] border-[2px] border-[#D6D6D6] hover:border-[2px] hover:border-[#724428]"
+                    style={{ transition: 'border-color 0.3s ease-in-out' }}
+                  >
+                    <FcGoogle className="h-4 w-4 mr-2" />
+                    Sign in with Google
+                  </button>
+            </div>
+            
             
             <div className="mt-20 sm:mx-auto sm:w-full sm:max-w-sm" >
+              
               <form onSubmit={handleLogin} className="space-y-6">
                 
                 <div>
@@ -121,6 +175,8 @@ export default function Login() {
                     
                   </div>
                 </div>
+                
+                
   
                 <div className=""
                 style={{
@@ -129,9 +185,10 @@ export default function Login() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '15px',
-                  marginTop: '168px', // ensures buttons are in same place as register form
+                  marginTop: '108px', // ensures buttons are in same place as register form
                 }}
                 >
+                  
                   <button
                     type="submit"
                     className="flex w-[100px] justify-center rounded-md bg-[#683F24] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
@@ -147,6 +204,7 @@ export default function Login() {
                   </a>
                 </div>
               </form>
+              
             </div>
           </div>
           <div

@@ -47,12 +47,13 @@ export default function Dashboard() {
   
         if (userSnapshot.exists()) {
           const userData = userSnapshot.data();
+          const highResPhotoURL = userData.imageUrl.replace('s96-c', 's400-c');
           setUser({
             ...user,
             firstname: userData.firstname || '',
             lastname: userData.lastname || '',
             email: userData.email || '',
-            imageUrl: userData.imageUrl || '/placeholder.png',
+            imageUrl: highResPhotoURL || '/placeholder.png',
             bio: userData.bio || '',
             password: '*'.repeat(8) // Fixed-length masked password
           });
@@ -378,7 +379,7 @@ export default function Dashboard() {
             <div className="border-t border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  <img alt="" src={'/placeholder.png'} className="h-10 w-10 rounded-full" />
+                  <img alt="" src={initialUser.imageUrl} className="h-10 w-10 rounded-full" />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">{initialUser.name}</div>
@@ -496,7 +497,7 @@ export default function Dashboard() {
                             value={bio}
                             onChange={(e) => {
                               handleBioChange(e);
-                              
+                              e.target.style.height = 'auto';
                               e.target.style.height = `${e.target.scrollHeight}px`; // Set the height to the scroll height
                             }}
                             className="bg-[#231715] border border-gray-400 rounded text-left text-sm text-white w-full pl-1"
@@ -583,7 +584,7 @@ export default function Dashboard() {
                         type="checkbox"
                         checked={isSubscribed}
                         onChange={handleSubscriptionChange}
-                        className="form-checkbox h-5 w-5 text-[#683F24] border-gray-300 rounded focus:ring-[#683F24]"
+                        className="form-checkbox h-5 w-5 text-[#683F24] border-gray-300 rounded focus:ring-[#683F24] bg-[#724428]"
                       />
                     </div>
                     <div className="flex justify-end mt-4">
