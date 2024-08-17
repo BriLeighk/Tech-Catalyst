@@ -1,6 +1,6 @@
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { checkUserLoggedIn } from '../utils/auth'; // Import the utility function
 
 // Navigation bar
@@ -12,36 +12,54 @@ const navigation = [
 
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false) // State to track login status
+
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            const loggedIn = await checkUserLoggedIn();
+            setIsLoggedIn(loggedIn);
+        };
+        checkLoginStatus();
+    }, []);
 
     const easeInOutCubic = (t) => {
         return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     };
 
     const handleScroll = (id) => {
-        const element = document.getElementById(id);
-        if (element) {
-            const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
-            const startPosition = window.pageYOffset;
-            const distance = targetPosition - startPosition;
-            const duration = 1500; // Duration in milliseconds
-            let start = null;
+        const scrollToSection = () => {
+            const element = document.getElementById(id);
+            if (element) {
+                const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                const startPosition = window.pageYOffset;
+                const distance = targetPosition - startPosition;
+                const duration = 1500; // Duration in milliseconds
+                let start = null;
 
-            window.requestAnimationFrame(function step(timestamp) {
-                if (!start) start = timestamp;
-                const progress = timestamp - start;
-                const percent = Math.min(progress / duration, 1);
-                const easedPercent = easeInOutCubic(percent);
-                window.scrollTo(0, startPosition + distance * easedPercent);
-                if (progress < duration) {
-                    window.requestAnimationFrame(step);
-                }
-            });
+                window.requestAnimationFrame(function step(timestamp) {
+                    if (!start) start = timestamp;
+                    const progress = timestamp - start;
+                    const percent = Math.min(progress / duration, 1);
+                    const easedPercent = easeInOutCubic(percent);
+                    window.scrollTo(0, startPosition + distance * easedPercent);
+                    if (progress < duration) {
+                        window.requestAnimationFrame(step);
+                    }
+                });
+            }
+        };
+
+        if (window.location.pathname !== '/') {
+            window.location.href = `/#${id}`;
+            window.addEventListener('load', scrollToSection);
+        } else {
+            scrollToSection();
         }
     };
 
     const handleLoginClick = async () => {
-        const isLoggedIn = await checkUserLoggedIn();
-        if (isLoggedIn) {
+        const loggedIn = await checkUserLoggedIn();
+        if (loggedIn) {
             window.location.href = '/Dashboard';
         } else {
             window.location.href = '/Login';
@@ -88,17 +106,16 @@ export default function Header() {
                         onClick={handleLoginClick}
                         className="text-sm font-semibold leading-6 text-white"
                     >
-                        Log in <span aria-hidden="true">&rarr;</span>
+                        {isLoggedIn ? 'Dashboard' : 'Log in'} <span aria-hidden="true">&rarr;</span>
                     </button>
                 </div>
             </nav>
             <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
                 <div className="fixed inset-0 z-50" />
-                <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+                <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-[#140D0C] px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                     <div className="flex items-center justify-between">
                         <a href="/" className="-m-1.5 p-1.5">
                             <span className="sr-only">The Tech Catalyst</span>
-  
                         </a>
                         <button
                             type="button"
@@ -119,7 +136,7 @@ export default function Header() {
                                             handleScroll(item.href);
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800 cursor-pointer"
+                                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-[#1E1412] cursor-pointer"
                                     >
                                         {item.name}
                                     </button>
@@ -128,9 +145,9 @@ export default function Header() {
                             <div className="py-6">
                                 <button
                                     onClick={handleLoginClick}
-                                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-300 hover:bg-gray-800"
+                                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-300 hover:bg-[#1E1412]"
                                 >
-                                    Log in
+                                    {isLoggedIn ? 'Dashboard' : 'Log in'}
                                 </button>
                             </div>
                         </div>
