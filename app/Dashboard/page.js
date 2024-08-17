@@ -1,9 +1,9 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon, PencilIcon } from '@heroicons/react/24/outline'
+import { BellIcon, Bars3Icon, XMarkIcon, PencilSquareIcon, ArrowUpOnSquareIcon, CloudUploadIcon } from '@heroicons/react/24/outline'
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { auth, db, storage } from '../firebase'; // Ensure this import is correct
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -22,6 +22,11 @@ export default function Dashboard() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [isPasswordEditing, setIsPasswordEditing] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async (user) => {
@@ -109,6 +114,24 @@ export default function Dashboard() {
       } catch (error) {
         console.error('Error updating Brevo contact:', error);
       }
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+
+    try {
+      const user = auth.currentUser;
+      const credential = EmailAuthProvider.credential(user.email, oldPassword);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPassword);
+      setPasswordError('Password updated successfully');
+      setIsPasswordEditing(false);
+    } catch (error) {
+      setPasswordError('Error updating password: ' + error.message);
     }
   };
 
@@ -304,7 +327,7 @@ export default function Dashboard() {
                 <div className="relative">
                   <img alt="" src={user.imageUrl} className="h-32 w-32 rounded-full shadow-lg" />
                   <label htmlFor="file-upload" className="absolute bottom-0 right-0 cursor-pointer">
-                    <PencilIcon className="h-6 w-6 text-white" />
+                    <ArrowUpOnSquareIcon className="h-6 w-6 text-white" />
                   </label>
                   <input
                     id="file-upload"
@@ -336,13 +359,50 @@ export default function Dashboard() {
                     <>
                       <span>{user.firstname} {user.lastname}</span>
                       <button onClick={() => setIsEditing(true)} className="ml-2">
-                        <PencilIcon className="h-6 w-6 text-white" />
+                        <PencilSquareIcon className="h-4 w-4 text-white" />
                       </button>
                     </>
                   )}
                 </div>
                 <div className="text-gray-400">{user.email}</div>
-                <div className="text-gray-400">{'*'.repeat(8)}</div>
+                <div className="text-gray-400 flex items-center">
+                  {'*'.repeat(8)}
+                  <button onClick={() => setIsPasswordEditing(true)} className="ml-2">
+                    <PencilSquareIcon className="h-4 w-4 text-white" />
+                  </button>
+                </div>
+
+                {/* Password change fields */}
+                {isPasswordEditing && (
+                  <div className="flex flex-col space-y-2">
+                    <input
+                      type="password"
+                      placeholder="Old Password"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      className="bg-transparent border-b border-white text-left"
+                    />
+                    <input
+                      type="password"
+                      placeholder="New Password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="bg-transparent border-b border-white text-left"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Confirm New Password"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      className="bg-transparent border-b border-white text-left"
+                    />
+                    <div className="flex space-x-2">
+                      <button onClick={handlePasswordChange} className="text-white text-sm px-2 py-1 border border-white rounded">Change Password</button>
+                      <button onClick={() => setIsPasswordEditing(false)} className="text-white text-sm px-2 py-1 border border-white rounded">Cancel</button>
+                    </div>
+                    {passwordError && <div className="text-red-500">{passwordError}</div>}
+                  </div>
+                )}
               </div>
             )}
           </div>
