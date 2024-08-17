@@ -1,12 +1,14 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { doc, getDoc } from 'firebase/firestore';
+import { Bars3Icon, BellIcon, XMarkIcon, PencilIcon } from '@heroicons/react/24/outline'
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth, db } from '../firebase'; // Import initialized auth and db
+import { auth, db, storage } from '../firebase'; // Ensure this import is correct
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const navigation = [
+  { name: 'Settings', href: '#' },
     // add more tabs here
 ]
 
@@ -16,6 +18,10 @@ function classNames(...classes) {
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async (user) => {
@@ -27,12 +33,14 @@ export default function Dashboard() {
           const userData = userSnapshot.data();
           setUser({
             ...user,
-            firstname: userData.firstname,
-            lastname: userData.lastname,
-            email: userData.email,
+            firstname: userData.firstname || '',
+            lastname: userData.lastname || '',
+            email: userData.email || '',
             imageUrl: userData.imageUrl || '/placeholder.png',
             password: '*'.repeat(8) // Fixed-length masked password
           });
+          setFirstName(userData.firstname || '');
+          setLastName(userData.lastname || '');
         }
       }
     };
@@ -54,8 +62,57 @@ export default function Dashboard() {
     }
   };
 
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file && user) {
+      const storageRef = ref(storage, `profileImages/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      const imageUrl = await getDownloadURL(storageRef);
+      await updateDoc(doc(db, 'users', user.uid), { imageUrl });
+      setUser((prevUser) => ({ ...prevUser, imageUrl }));
+    }
+  };
+
+  const handleFirstNameChange = (event) => {
+    setFirstName(event.target.value);
+  };
+
+  const handleLastNameChange = (event) => {
+    setLastName(event.target.value);
+  };
+
+  const handleSave = async () => {
+    if (user) {
+      await updateDoc(doc(db, 'users', user.uid), { firstname: firstName, lastname: lastName });
+      setUser((prevUser) => ({ ...prevUser, firstname: firstName, lastname: lastName }));
+      setIsEditing(false);
+
+      // Call the API route to update Brevo contact information
+      try {
+        const response = await fetch('/api/updateBrevoContact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: user.email,
+            firstName,
+            lastName,
+          }),
+        });
+
+        if (response.ok) {
+          console.log('Brevo contact updated successfully.');
+        } else {
+          console.error('Error updating Brevo contact:', await response.json());
+        }
+      } catch (error) {
+        console.error('Error updating Brevo contact:', error);
+      }
+    }
+  };
+
   const userNavigation = [
-    { name: 'Settings', href: '#' },
     { name: 'Sign out', href: '#', onClick: handleSignOut },
   ]
 
@@ -141,7 +198,7 @@ export default function Dashboard() {
                       <MenuButton className="relative flex max-w-xs items-center rounded-full bg-[#140D0C] text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
-                        <img alt="" src={initialUser.imageUrl} className="h-16 w-16 rounded-full" />
+                        <img alt="" src={initialUser.imageUrl} className="h-10 w-10 rounded-full" />
                       </MenuButton>
                     </div>
                     <MenuItems
@@ -188,7 +245,7 @@ export default function Dashboard() {
                   href={item.href}
                   aria-current={item.current ? 'page' : undefined}
                   className={classNames(
-                    item.current ? 'bg-[#140D0C] text-white' : 'text-gray-300 hover:bg-[#b79994] hover:text-white',
+                    item.current ? 'bg-[#140D0C] text-white' : 'text-gray-300 hover:bg-[#1E1412] hover:text-white',
                     'block rounded-md px-3 py-2 text-base font-medium',
                   )}
                 >
@@ -199,7 +256,7 @@ export default function Dashboard() {
             <div className="border-t border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  <img alt="" src={'/placeholder.png'} className="h-14 w-14 rounded-full" />
+                  <img alt="" src={'/placeholder.png'} className="h-10 w-10 rounded-full" />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">{initialUser.name}</div>
@@ -242,17 +299,53 @@ export default function Dashboard() {
         <main>
           <div className="b mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             {/* Your content */}
-            
-            
-          </div>
-          {user && (
+            {user && (
               <div className="flex flex-col items-center space-y-4">
-                <img alt="" src={user.imageUrl} className="h-24 w-24 rounded-full" />
-                <div className="text-white text-xl font-bold">{user.firstname} {user.lastname}</div>
+                <div className="relative">
+                  <img alt="" src={user.imageUrl} className="h-32 w-32 rounded-full shadow-lg" />
+                  <label htmlFor="file-upload" className="absolute bottom-0 right-0 cursor-pointer">
+                    <PencilIcon className="h-6 w-6 text-white" />
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                </div>
+                <div className="text-white text-xl font-bold flex items-center">
+                  {isEditing ? (
+                    <>
+                      <input
+                        type="text"
+                        value={firstName}
+                        onChange={handleFirstNameChange}
+                        size={firstName.length || 1}
+                        className="bg-transparent border-b border-white text-left"
+                      />
+                      <input
+                        type="text"
+                        value={lastName}
+                        onChange={handleLastNameChange}
+                        size={lastName.length || 1}
+                        className="bg-transparent border-b border-white text-left"
+                      />
+                      <button onClick={handleSave} className="ml-2 text-white text-sm px-2 py-1 border border-white rounded">Save</button>
+                    </>
+                  ) : (
+                    <>
+                      <span>{user.firstname} {user.lastname}</span>
+                      <button onClick={() => setIsEditing(true)} className="ml-2">
+                        <PencilIcon className="h-6 w-6 text-white" />
+                      </button>
+                    </>
+                  )}
+                </div>
                 <div className="text-gray-400">{user.email}</div>
                 <div className="text-gray-400">{'*'.repeat(8)}</div>
               </div>
             )}
+          </div>
         </main>
       </div>
     </>

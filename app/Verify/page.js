@@ -13,10 +13,8 @@ export default function Verify() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const emailParam = urlParams.get('email');
     const codeParam = urlParams.get('code');
-    if (emailParam && codeParam) {
-      setEmail(emailParam);
+    if (codeParam) {
       setCode(codeParam);
     }
   }, []);
@@ -27,14 +25,20 @@ export default function Verify() {
     setSuccess('');
 
     try {
-      const docRef = doc(db, 'verifications', email);
+      console.log('Verification Code:', code); // Log verification code
+      if (!code) {
+        throw new Error('Verification code is not defined');
+      }
+      const docRef = doc(db, 'verifications', code); // Correct document reference
+      console.log('Document Reference:', docRef.path); // Log document reference path
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        const { verificationCode, timestamp, firstname, lastname, password } = docSnap.data(); // Retrieve password
+        const { email, verificationCode, timestamp, firstname, lastname, password } = docSnap.data(); // Retrieve email and other details
+        console.log('Retrieved data:', { email, verificationCode, timestamp, firstname, lastname, password });
         const now = new Date();
-        const codeTimestamp = timestamp.toDate();
-        const timeDifference = now - codeTimestamp;
+        const codeTimestamp = timestamp.toDate(); // Convert timestamp to Date object
+        const timeDifference = now - codeTimestamp; // Calculate time difference
 
         // Check if the code is older than 24 hours (86400000 milliseconds)
         if (timeDifference > 86400000) {
@@ -43,7 +47,7 @@ export default function Verify() {
           return;
         }
 
-        if (verificationCode === code) {
+        if (verificationCode === code) { // Compare verification codes as strings
           // Create user in Firebase Auth
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
@@ -55,22 +59,13 @@ export default function Verify() {
             email
           });
 
-          // Add user to Brevo contact list
+          // Add user to Brevo contact list and send welcome email
           try {
             await axios.post('/api/addRegisterContact', { email, firstname, lastname });
-
-            // Introduce a 10-second delay before sending the welcome email
-            setTimeout(async () => {
-              try {
-                await axios.post('/api/sendWelcomeEmail', { email, firstname, lastname });
-              } catch (err) {
-                console.error('Error sending welcome email:', err);
-                setError('Error sending welcome email');
-              }
-            }, 10000); // 10-second delay
+            await axios.post('/api/sendWelcomeEmail', { email, firstname, lastname });
           } catch (err) {
-            console.error('Error adding contact to Brevo:', err);
-            setError('Error adding contact to Brevo');
+            console.error('Error adding contact to Brevo or sending welcome email:', err);
+            setError('Error adding contact to Brevo or sending welcome email');
             return;
           }
 

@@ -11,11 +11,11 @@ export default async function handler(req, res) {
     let apiKey = defaultClient.authentications['api-key'];
     apiKey.apiKey = process.env.BREVO_API_KEY;
 
-    let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi(); // Ensure apiInstance is defined
     let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
     // Generate the verification link
-    const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/Verify?email=${encodeURIComponent(email)}&code=${verificationCode}`;
+    const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/Verify?code=${verificationCode}`;
 
     sendSmtpEmail.to = [{ email }];
     sendSmtpEmail.templateId = parseInt(process.env.BREVO_VERIFICATION_TEMPLATE_ID);
@@ -25,12 +25,14 @@ export default async function handler(req, res) {
       await apiInstance.sendTransacEmail(sendSmtpEmail);
 
       // Store verification code, user details, and password temporarily in Firestore
-      await setDoc(doc(db, 'verifications', email), {
+      const docRef = doc(db, 'verifications', verificationCode);
+      console.log('Document Reference:', docRef.path); // Log document reference path
+      await setDoc(docRef, {
         email,
         firstname,
         lastname,
         password, // Store password
-        verificationCode,
+        verificationCode, // Store verification code
         timestamp: new Date()
       });
 
