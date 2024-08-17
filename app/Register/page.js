@@ -18,7 +18,24 @@ export default function Register() {
         e.preventDefault();
         setError('');
 
+        // Client-side validation for password length
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters long.');
+            setErrorColor('text-red-500');
+            setTimeout(() => setError(''), 3000); // Clear error after 3 seconds
+            return;
+        }
+
         try {
+            // Check if email already exists in the database
+            const emailCheckResponse = await axios.post('/api/checkEmailExists', { email });
+            if (emailCheckResponse.data.exists) {
+                setError('An account with this email already exists.');
+                setErrorColor('text-red-500');
+                setTimeout(() => setError(''), 3000); // Clear error after 3 seconds
+                return;
+            }
+
             // Store the password in session storage
             sessionStorage.setItem('password', password);
 
@@ -30,10 +47,12 @@ export default function Register() {
             } else {
                 setError('Failed to send verification email. Please try again.');
                 setErrorColor('text-red-500');
+                setTimeout(() => setError(''), 3000); // Clear error after 3 seconds
             }
         } catch (err) {
             setError('Error creating account');
             setErrorColor('text-red-500');
+            setTimeout(() => setError(''), 3000); // Clear error after 3 seconds
         }
     };
 
@@ -72,15 +91,10 @@ export default function Register() {
             MozBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)',
             border: '2px solid white'
           }}>
-            {error && <p className={`${errorColor} text-right mt-0 pt-0`}>{error}</p>}
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
               Create Account
             </h2>
-            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm" 
-              style={{
-                position: 'fixed', 
-                transform: `translate(10%, ${error ? '-12%' : '0%'})`
-              }}>
+            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm" >
               <form onSubmit={handleSubmit} className="space-y-6">
 
                 <div>
@@ -202,6 +216,11 @@ export default function Register() {
               className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#5A3A2F] to-[#2B1D1A] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
             />
           </div>
+          {error && (
+            <div className={`fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out ${error ? 'opacity-100' : 'opacity-0'}`}>
+              {error}
+            </div>
+          )}
         </div>
       </>
     )

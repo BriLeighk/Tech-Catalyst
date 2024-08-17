@@ -6,14 +6,21 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { auth, db, storage } from '../firebase'; // Ensure this import is correct
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import axios from 'axios';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
+  const [user, setUser] = useState({
+    firstname: '',
+    lastname: '',
+    email: '',
+    imageUrl: '/placeholder.png',
+    bio: '',
+    password: '*'.repeat(8) // Fixed-length masked password
+  });
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [bio, setBio] = useState('');
@@ -36,7 +43,7 @@ export default function Dashboard() {
       if (user) {
         const userDoc = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userDoc);
-
+  
         if (userSnapshot.exists()) {
           const userData = userSnapshot.data();
           setUser({
@@ -51,26 +58,18 @@ export default function Dashboard() {
           setFirstName(userData.firstname || '');
           setLastName(userData.lastname || '');
           setBio(userData.bio || '');
-
+  
           // Fetch subscription status from Brevo
-          const response = await fetch('/api/checkBrevoSubscription', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email: userData.email }),
-          });
-
-          const data = await response.json();
-          setIsSubscribed(data.isSubscribed);
+          const response = await axios.post('/api/checkBrevoSubscription', { email: userData.email });
+          setIsSubscribed(response.data.isSubscribed);
         }
       }
     };
-
+  
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       fetchUserData(user); // Fetch user data from Firestore
     });
-
+  
     return () => unsubscribe(); // Cleanup subscription on unmount
   }, []);
 
@@ -218,24 +217,20 @@ export default function Dashboard() {
     imageUrl: user.imageUrl
   } : { name: '', email: '', imageUrl: '/placeholder.png' };
 
-  const handleSubscriptionChange = async () => {
-    try {
-      const response = await fetch('/api/updateBrevoSubscription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: user.email,
-          isSubscribed: !isSubscribed,
-        }),
-      });
+  const handleSubscriptionChange = () => {
+    setIsSubscribed(!isSubscribed);
+  };
 
-      if (response.ok) {
-        setIsSubscribed(!isSubscribed);
+  const handleSaveSubscription = async () => {
+    try {
+      const response = await axios.post('/api/updateBrevoSubscription', {
+        email: user.email,
+        isSubscribed,
+      });
+      if (response.status === 200) {
+        console.log('Subscription updated successfully.');
       } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error updating subscription');
+        throw new Error(response.data.message || 'Error updating subscription');
       }
     } catch (error) {
       console.error('Error updating subscription:', error);
@@ -576,21 +571,21 @@ export default function Dashboard() {
                         <button onClick={handlePasswordChange} className="text-white text-sm px-4 py-2 border border-gray-400 hover:border-white rounded">Change Password</button>
                       </div>
 
-                    {/*  Update Emailing preferences */}
-                      <div className="text-white text-xl font-bold mb-0 mt-8">Email Preferences</div>
-                      <p className="text-gray-400 text-xs mb-4">Update your email preferences below to receive updates and early access to our features from our newsletter.</p>
-                      <div className="flex items-center">
-                        <label className="text-white text-sm mr-2">Subscribe to Newsletter</label>
-                        <input
-                          type="checkbox"
-                          checked={isSubscribed}
-                          onChange={() => setIsSubscribed(!isSubscribed)}
-                          className="form-checkbox h-5 w-5 text-[#683F24] border-gray-300 rounded focus:ring-[#683F24]"
-                        />
-                      </div>
-                      <div className="flex justify-end mt-4">
-                        <button onClick={handleSubscriptionChange} className="text-white text-sm px-4 py-2 border border-gray-400 hover:border-white rounded">Save Changes</button>
-                      </div>
+                    {/* Update Emailing preferences */}
+                    <div className="text-white text-xl font-bold mb-0 mt-8">Email Preferences</div>
+                    <p className="text-gray-400 text-xs mb-4">Update your email preferences below to receive updates and early access to our features from our newsletter.</p>
+                    <div className="flex items-center">
+                      <label className="text-white text-sm mr-2">Subscribe to Newsletter</label>
+                      <input
+                        type="checkbox"
+                        checked={isSubscribed}
+                        onChange={handleSubscriptionChange}
+                        className="form-checkbox h-5 w-5 text-[#683F24] border-gray-300 rounded focus:ring-[#683F24]"
+                      />
+                    </div>
+                    <div className="flex justify-end mt-4">
+                      <button onClick={handleSaveSubscription} className="text-white text-sm px-4 py-2 border border-gray-400 hover:border-white rounded">Save Changes</button>
+                    </div>
                     </div>
                   )}
                 </div>
