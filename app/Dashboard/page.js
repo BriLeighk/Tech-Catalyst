@@ -29,7 +29,7 @@ export default function Dashboard() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [setIsPasswordEditing] = useState(false);
+  const [isPasswordEditing, setIsPasswordEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('profile'); // New state for active tab
   const [showProfileConfirmation, setShowProfileConfirmation] = useState(false); // State for profile confirmation
   const [showNameConfirmation, setShowNameConfirmation] = useState(false); // State for name confirmation in settings
@@ -223,7 +223,9 @@ export default function Dashboard() {
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmNewPassword) {
-      setPasswordError('New passwords do not match');
+      setErrorMessage('New passwords do not match');
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
       return;
     }
 
@@ -232,14 +234,23 @@ export default function Dashboard() {
       const credential = EmailAuthProvider.credential(user.email, oldPassword);
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
-      setPasswordError('Password updated successfully');
+      Confirmation(true);
+      setTimeout(() => setShowPasswordConfirmation(false), 3000);
       setIsPasswordEditing(false);
 
       // Show password confirmation message
       setShowPasswordConfirmation(true);
       setTimeout(() => setShowPasswordConfirmation(false), 3000);
     } catch (error) {
-      setPasswordError('Error updating password: ' + error.message);
+      if (error.code === 'auth/wrong-password') {
+        setErrorMessage('The old password is incorrect.');
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000);
+      } else {
+        setErrorMessage('Error updating password: ');
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000);
+      }
       setErrorMessage('Error updating password: ' + error.message);
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
@@ -760,6 +771,7 @@ export default function Dashboard() {
                       </div>
                       
                       <div className="text-[#C69635] text-xl font-bold mb-0 mt-8">Password Settings</div>
+                      <div className="text-[#C99F4A] text-xs mb-2"> <a href="/ForgotPassword" className="text-[#C99F4A] hover:text-[#C69635]">Forgot password?</a> </div>
                       <p className="text-gray-400 text-xs mb-4">To change your password, you must enter your current password and a new password. Choose a strong password for your account.</p>
                       <div>
                         <label className="text-white text-sm">Current Password</label>
@@ -791,7 +803,7 @@ export default function Dashboard() {
                           style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                         />
                       </div>
-                      {passwordError && <div className="text-red-500">{passwordError}</div>}
+                     
                       <div className="flex justify-end mt-4">
                         <button onClick={handlePasswordChange} className="text-white text-sm px-4 py-2 border border-gray-400 hover:border-[#C69635] rounded">Change Password</button>
                       </div>
