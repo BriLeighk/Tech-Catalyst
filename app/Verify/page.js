@@ -150,7 +150,7 @@ export default function Verify() {
                   onChange={(e) => handleChange(e, index)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   ref={(el) => (inputRefs.current[index] = el)}
-                  className={`block w-14 h-14 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#b79994] sm:text-xl sm:leading-6 text-center `}
+                  className={`block w-14 h-14 bg-[#231715] rounded-md border-0 py-1.5 text-gray-100 shadow-sm border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none text-center text-2xl`}
                 />
               ))}
             </div>
@@ -159,8 +159,8 @@ export default function Verify() {
           <div>
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-[#683F24] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
-            >
+              className="text-white text-sm px-3 py-1 border border-white hover:border-[#C69635] rounded w-full" 
+              >
               Verify
             </button>
           </div>

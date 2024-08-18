@@ -551,7 +551,7 @@ export default function Dashboard() {
                     <img
                       alt="First User Badge"
                       src="./firstUserBadge.png"
-                      className="absolute -top-[32px] right-[34px] h-14 w-14 shadow-lg cursor-pointer"
+                      className="absolute -top-[32px] right-[34px] h-14 w-14 cursor-pointer"
                       onMouseEnter={() => {
                         setIsBadgeModalOpen(true);
                         setIsImageHovered(true);

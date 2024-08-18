@@ -187,7 +187,7 @@ export default function Login() {
                       Password
                     </label>
                     <div className="text-sm">
-                      <a href="#" className="font-semibold text-[#C69635] hover:text-[#683F24]" style={{transition: 'color 0.3s ease-in-out'}}>
+                      <a href="/ForgotPassword" className="font-semibold text-[#C69635] hover:text-[#683F24]" style={{transition: 'color 0.3s ease-in-out'}}>
                         Forgot password?
                       </a>
                     </div>
@@ -207,7 +207,7 @@ export default function Login() {
                     
                   </div>
                 </div>
-                
+              
                 
   
                 <div className=""
