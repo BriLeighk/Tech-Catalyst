@@ -51,8 +51,8 @@ export default function NewsletterSection() {
               />
               <button
                 type="submit"
-                className="flex-none rounded-md bg-[#683F24] px-3.5 py-2.5 text-sm font-semibold text-[#E2D4B3] shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B79994]"
-                style={{transition: 'background-color 0.3s ease-in-out'}}
+                className="flex-none rounded-md px-3.5 py-2.5 text-sm font-semibold text-[#F2F4E6] shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                style={{ transition: 'background-color 0.3s ease-in-out' }}
               >
                 Subscribe
               </button>

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react';
 import { db, auth } from '../firebase';
-import { doc, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, deleteDoc, setDoc, collection, getDocs } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import axios from 'axios';
 
@@ -80,11 +80,17 @@ export default function Verify() {
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
 
+          // Get the current number of users
+          const usersCollection = collection(db, 'users');
+          const usersSnapshot = await getDocs(usersCollection);
+          const userNumber = usersSnapshot.size; // Assign the next available user number
+
           // Store user information in Firestore
           await setDoc(doc(db, 'users', user.uid), {
             firstname,
             lastname,
-            email
+            email,
+            userNumber // Add userNumber to the user record
           });
 
           // Add user to Brevo contact list and send welcome email

@@ -56,7 +56,7 @@ export default function FeatureSection() {
     <div className="bg-[#140D0C] py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-base font-semibold leading-7 text-[#724428]">Learn Faster</h2>
+          <h2 className="text-base font-semibold leading-7 text-[#C69635]">Learn Faster</h2>
           <h3 className="mt-2 text-3xl font-bold tracking-tight text-[#F2F4E6] sm:text-4xl">
             Your Gateway to Big Tech
           </h3>
@@ -72,8 +72,8 @@ export default function FeatureSection() {
             {features.map((feature) => (
               <div key={feature.name} className="relative pl-16">
                 <dt className="text-base font-semibold leading-7 text-[#F2F4E6]">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-[#683F24]">
-                    <feature.icon aria-hidden="true" className="h-7 w-7 text-[#E2D4B3]" />
+                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1E1412]">
+                    <feature.icon aria-hidden="true" className="h-7 w-7 text-[#C69635]" />
                   </div>
                   {feature.name}
                 </dt>

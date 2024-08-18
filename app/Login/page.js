@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { auth, db } from '../firebase';
 import Header from '../components/Header'
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
 import axios from 'axios';
 import { FcGoogle } from 'react-icons/fc';
 
@@ -41,18 +41,49 @@ export default function Login() {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
 
-        // Modify the photo URL to request a higher resolution image
-        const highResPhotoURL = user.photoURL.replace('s96-c', 's400-c');
-
-        // Store user information in Firestore
+        // Check if the user already exists in Firestore
         const userDoc = doc(db, 'users', user.uid);
-        await setDoc(userDoc, {
-          firstname: user.displayName.split(' ')[0],
-          lastname: user.displayName.split(' ').slice(1).join(' '),
-          email: user.email,
-          imageUrl: highResPhotoURL,
-          bio: '',
-        });
+        const userSnapshot = await getDoc(userDoc);
+
+        if (!userSnapshot.exists()) {
+          // Get the current number of users
+          const usersCollection = collection(db, 'users');
+          const usersSnapshot = await getDocs(usersCollection);
+          const userNumber = usersSnapshot.size; // Assign the next available user number
+
+          // Store user data in Firestore
+          await setDoc(userDoc, {
+            firstname: user.displayName.split(' ')[0],
+            lastname: user.displayName.split(' ')[1] || '',
+            email: user.email,
+            userNumber, // Store the user number
+            imageUrl: user.photoURL || '/placeholder.png', // Default image URL
+            bio: '',
+            projects: [],
+          });
+        } else {
+          // Modify the photo URL to request a higher resolution image
+          const highResPhotoURL = user.photoURL ? user.photoURL.replace('s96-c', 's400-c') : '/placeholder.png';
+
+          // Check if userNumber exists in the existing user data
+          let userNumber = userSnapshot.data().userNumber;
+          if (!userNumber) {
+            // Get the current number of users
+            const usersCollection = collection(db, 'users');
+            const usersSnapshot = await getDocs(usersCollection);
+            userNumber = usersSnapshot.size; // Assign the next available user number
+          }
+
+          // Update user information in Firestore
+          await setDoc(userDoc, {
+            firstname: user.displayName.split(' ')[0],
+            lastname: user.displayName.split(' ').slice(1).join(' '),
+            email: user.email,
+            userNumber, // Ensure userNumber is stored
+            imageUrl: highResPhotoURL,
+            bio: '',
+          }, { merge: true });
+        }
 
         // Add user to Brevo list
         await axios.post('/api/updateBrevoSubscription', {

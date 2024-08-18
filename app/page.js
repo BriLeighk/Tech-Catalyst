@@ -72,9 +72,9 @@ export default function Home() {
             <div className="mt-10 flex items-center justify-center gap-x-6">
             <button
               onClick={handleRegisterClick}
-              className="mt-10 block w-[120px] rounded-md px-3 py-2 text-center text-sm font-semibold bg-[#683F24] shadow-sm hover:bg-[#442718] text-[#E2D4B3] hover:text-[#140D0C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
-              style={{color: '#DBCBA4', transition: 'background-color 0.3s ease-in-out' }}
-            >
+              className="flex-none rounded-md px-3.5 py-2.5 text-sm font-semibold text-[#F2F4E6] shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                style={{ transition: 'background-color 0.3s ease-in-out' }}
+              >
                 Get Started
               </button>
             </div>
