@@ -28,8 +28,7 @@ export default function Dashboard() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [isPasswordEditing, setIsPasswordEditing] = useState(false);
+  const [setIsPasswordEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('profile'); // New state for active tab
   const [showProfileConfirmation, setShowProfileConfirmation] = useState(false); // State for profile confirmation
   const [showNameConfirmation, setShowNameConfirmation] = useState(false); // State for name confirmation in settings
@@ -43,7 +42,6 @@ export default function Dashboard() {
   const [projectDescription, setProjectDescription] = useState('');
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false); // New state for modal visibility
   const [isImageHovered, setIsImageHovered] = useState(false); // New state for image hover
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State for delete confirmation
 
   const handleAddProject = () => {
     setProjects([...projects, { title: projectTitle, description: projectDescription }]);
@@ -177,7 +175,7 @@ export default function Dashboard() {
         }
       } catch (error) {
         console.error('Error updating Brevo contact:', error);
-        setErrorMessage('Error updating profile: ' + error.message);
+        setErrorMessage('Error updating profile ');
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);
       }
@@ -209,7 +207,7 @@ export default function Dashboard() {
         }
       } catch (error) {
         console.error('Error updating name:', error);
-        setErrorMessage('Error updating name: ' + error.message);
+        setErrorMessage('Error updating name ');
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);
       }
@@ -223,7 +221,7 @@ export default function Dashboard() {
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmNewPassword) {
-      setErrorMessage('New passwords do not match');
+      setErrorMessage('New passwords do not match. Please try again');
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
       return;
@@ -231,27 +229,27 @@ export default function Dashboard() {
 
     try {
       const user = auth.currentUser;
+      if (user.providerData[0].providerId === 'google.com') {
+        setErrorMessage('Please send your reset request to Google.');
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000);
+        return;
+      }
+
       const credential = EmailAuthProvider.credential(user.email, oldPassword);
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
-      Confirmation(true);
-      setTimeout(() => setShowPasswordConfirmation(false), 3000);
-      setIsPasswordEditing(false);
 
       // Show password confirmation message
       setShowPasswordConfirmation(true);
       setTimeout(() => setShowPasswordConfirmation(false), 3000);
+      setIsPasswordEditing(false);
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
-        setErrorMessage('The old password is incorrect.');
-        setShowError(true);
-        setTimeout(() => setShowError(false), 3000);
+        setErrorMessage('Current password is incorrect. Please try again');
       } else {
-        setErrorMessage('Error updating password: ');
-        setShowError(true);
-        setTimeout(() => setShowError(false), 3000);
+        setErrorMessage('Error resetting password. Please try again later');
       }
-      setErrorMessage('Error updating password: ' + error.message);
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
     }
@@ -315,7 +313,7 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.error('Error updating subscription:', error);
-      setErrorMessage('Error updating subscription: ' + error.message);
+      setErrorMessage('Error updating subscription ');
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
     }
@@ -361,7 +359,7 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.error('Error deleting account:', error);
-      setErrorMessage('Error deleting account: ' + error.message);
+      setErrorMessage('Error deleting account ');
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
     }
@@ -772,7 +770,9 @@ export default function Dashboard() {
                       
                       <div className="text-[#C69635] text-xl font-bold mb-0 mt-8">Password Settings</div>
                       <div className="text-[#C99F4A] text-xs mb-2"> <a href="/ForgotPassword" className="text-[#C99F4A] hover:text-[#C69635]">Forgot password?</a> </div>
-                      <p className="text-gray-400 text-xs mb-4">To change your password, you must enter your current password and a new password. Choose a strong password for your account.</p>
+                      <p className="text-gray-400 text-xs mb-4">To change your password, you must enter your current password and a new password.
+                        If you registered through Google, you must send your request to Google's password reset page.
+                      </p>
                       <div>
                         <label className="text-white text-sm">Current Password</label>
                         <input
