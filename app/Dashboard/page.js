@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { BellIcon, Bars3Icon, XMarkIcon, PencilSquareIcon, ArrowUpOnSquareIcon, CloudUploadIcon } from '@heroicons/react/24/outline'
+import { BellIcon, Bars3Icon, XMarkIcon, PencilSquareIcon, ArrowUpOnSquareIcon, CloudUploadIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { auth, db, storage } from '../firebase'; // Ensure this import is correct
@@ -38,6 +38,20 @@ export default function Dashboard() {
   const [errorMessage, setErrorMessage] = useState(''); // State for error message text
   const [isSubscribed, setIsSubscribed] = useState(false); // State for subscription status
   const [showSuccess, setShowSuccess] = useState(false); // State for success message
+  const [projects, setProjects] = useState([]);
+  const [projectTitle, setProjectTitle] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
+
+  const handleAddProject = () => {
+    setProjects([...projects, { title: projectTitle, description: projectDescription }]);
+    setProjectTitle('');
+    setProjectDescription('');
+  };
+
+  const handleDeleteProject = (index) => {
+    const updatedProjects = projects.filter((_, i) => i !== index);
+    setProjects(updatedProjects);
+  };
 
   useEffect(() => {
     const fetchUserData = async (user) => {
@@ -60,6 +74,7 @@ export default function Dashboard() {
           setFirstName(userData.firstname || '');
           setLastName(userData.lastname || '');
           setBio(userData.bio || '');
+          setProjects(userData.projects || []);
   
           // Fetch subscription status from Brevo
           const response = await axios.post('/api/checkBrevoSubscription', { email: userData.email });
@@ -111,8 +126,8 @@ export default function Dashboard() {
   const handleSave = async () => {
     if (user) {
       try {
-        await updateDoc(doc(db, 'users', user.uid), { firstname: firstName, lastname: lastName, bio });
-        setUser((prevUser) => ({ ...prevUser, firstname: firstName, lastname: lastName, bio }));
+        await updateDoc(doc(db, 'users', user.uid), { firstname: firstName, lastname: lastName, bio, projects });
+        setUser((prevUser) => ({ ...prevUser, firstname: firstName, lastname: lastName, bio, projects }));
         setIsEditing(false);
 
         // Show profile confirmation message
@@ -325,17 +340,21 @@ export default function Dashboard() {
                     </div>
                     <MenuItems
                       transition
-                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                      style={{ backgroundColor: '#FFFFFF' }} // Reverted to original background color
                     >
                       {userNavigation.map((item) => (
                         <MenuItem key={item.name}>
-                          <a
-                            href={item.href}
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-[#b79994]"
-                            onClick={item.onClick}
-                          >
-                            {item.name}
-                          </a>
+                          {({ active }) => (
+                            <a
+                              href={item.href}
+                              className={`block px-4 py-2 text-sm text-gray-700 ${active ? 'bg-[#D3D3D1]' : ''}`}
+                              onClick={item.onClick}
+                              style={{ transition: 'background-color 0.3s ease-in-out' }} // Added transition
+                            >
+                              {item.name}
+                            </a>
+                          )}
                         </MenuItem>
                       ))}
                     </MenuItems>
@@ -344,7 +363,7 @@ export default function Dashboard() {
               </div>
               <div className="-mr-2 flex md:hidden">
                 {/* Mobile menu button */}
-                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-[#1E1412] p-2 text-[#F2F4E6] hover:bg-[#442718] hover:text-[#1E1412] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-[#140D0C] p-2 text-[#F2F4E6] hover:bg-[#1E1412] hover:text-[#F2F4E6] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 style={{
                   transition: 'background-color 0.3s ease-in-out',
                 }}
@@ -460,7 +479,7 @@ export default function Dashboard() {
                     onChange={handleImageUpload}
                   />
                 </div>
-                <div className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-full max-w-md relative" style={{ border: '2px solid #2D1E1B' }}>
+                <div className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-full max-w-[700px] relative" style={{ border: '2px solid #2D1E1B' }}>
                   {activeTab === 'profile' && (
                     <>
                       <button onClick={() => setIsEditing(true)} className="absolute top-2 right-2">
@@ -508,9 +527,90 @@ export default function Dashboard() {
                           <span>{user.bio}</span>
                         )}
                       </div>
+                      <div className="text-white text-xl font-bold mb-2 mt-8">Projects</div>
+                      {isEditing && (
+                        <>
+                          <p className="text-gray-400 text-xs mb-4">Add your projects below. You can add multiple projects by clicking the plus button.</p>
+                          <div className="mb-4">
+                            <label className="text-white text-sm">Project Title</label>
+                            <input
+                              type="text"
+                              value={projectTitle}
+                              onChange={(e) => setProjectTitle(e.target.value)}
+                              className="bg-[#231715] border border-gray-400 rounded text-left text-white w-full pl-1 mb-2 text-sm"
+                              style={{ border: '2px solid #33211E', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
+                            />
+                            <label className="text-white text-sm">Project Description</label>
+                            <textarea
+                              value={projectDescription}
+                              onChange={(e) => {
+                              setProjectDescription(e.target.value);
+                              e.target.style.height = 'auto';
+                              e.target.style.height = `${e.target.scrollHeight}px`; // Set the height to the scroll height
+                            }}
+                            className="bg-[#231715] border border-gray-400 rounded text-left text-sm text-white w-full pl-1"
+                            style={{ minHeight: '1.5rem', maxHeight: '10rem', overflow: 'hidden', paddingLeft: '4px', border: '2px solid #33211E', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
+                            maxLength={200}
+                          />
+                            <div className="flex justify-flex-end mt-2 mb-8">
+                              <button 
+                                onClick={handleAddProject} 
+                                className="text-white text-sm px-3 py-1 border border-white rounded" 
+                              >
+                                Add Project
+                              </button>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      {projects.map((project, index) => (
+                        <div key={index} className="mb-4 flex justify-evenly items-center">
+                          <div className="flex items-start">
+                            <span className="text-white text-xl mr-2">•</span>
+                            <div>
+                              {isEditing ? (
+                                <>
+                                  <input
+                                    type="text"
+                                    value={project.title}
+                                    onChange={(e) => {
+                                      const updatedProjects = [...projects];
+                                      updatedProjects[index].title = e.target.value;
+                                      setProjects(updatedProjects);
+                                    }}
+                                    className="bg-[#231715] border border-gray-400 rounded text-left text-white w-full pl-1 mb-2 text-sm"
+                                    style={{ border: '2px solid #33211E', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
+                                  />
+                                  <textarea
+                                    value={project.description}
+                                    onChange={(e) => {
+                                      const updatedProjects = [...projects];
+                                      updatedProjects[index].description = e.target.value;
+                                      setProjects(updatedProjects);
+                                    }}
+                                    className="bg-[#231715] border border-gray-400 rounded text-left text-sm text-white w-full pl-1"
+                                    style={{ minHeight: '1.5rem', maxHeight: '10rem', overflow: 'hidden', paddingLeft: '4px', border: '2px solid #33211E', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
+                                    maxLength={200}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <div className="text-white text-sm font-bold">{project.title}</div>
+                                  <div className="text-white text-sm">{project.description}</div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          {isEditing && (
+                            <button onClick={() => handleDeleteProject(index)} className="text-white text-sm px-2 py-1 pb-2" style={{ alignSelf: 'flex-end'}}>
+                            <TrashIcon className="h-5 w-5" />
+                          </button>
+                          )}
+                        </div>
+                      ))}
                       {isEditing && (
                         <div className="flex justify-end mt-4">
-                          <button onClick={handleSave} className="text-white text-sm px-4 py-2 border border-white rounded">Save</button>
+                          <button onClick={handleSave} className="text-white text-sm px-4 py-2 mt-4 border border-white rounded">Save</button>
                         </div>
                       )}
                     </>
