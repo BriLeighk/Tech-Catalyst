@@ -10,6 +10,7 @@ export default function Verify() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showErrorPopup, setShowErrorPopup] = useState(false); // State for error popup
   const inputRefs = useRef([]);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export default function Verify() {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setShowErrorPopup(false); // Hide error popup initially
 
     const verificationCode = code.join('');
     try {
@@ -72,6 +74,7 @@ export default function Verify() {
         if (timeDifference > 86400000) {
           await deleteDoc(docRef);
           setError('Verification code has expired. Please register again.');
+          setShowErrorPopup(true); // Show error popup
           return;
         }
 
@@ -100,6 +103,7 @@ export default function Verify() {
           } catch (err) {
             console.error('Error adding contact to Brevo or sending welcome email:', err);
             setError('Error adding contact to Brevo or sending welcome email');
+            setShowErrorPopup(true); // Show error popup
             return;
           }
 
@@ -112,13 +116,16 @@ export default function Verify() {
           }, 2000);
         } else {
           setError('Invalid verification code');
+          setShowErrorPopup(true); // Show error popup
         }
       } else {
         setError('Verification code not found');
+        setShowErrorPopup(true); // Show error popup
       }
     } catch (err) {
       console.error('Error verifying account:', err);
       setError('Error verifying account');
+      setShowErrorPopup(true); // Show error popup
     }
   };
 
@@ -148,7 +155,6 @@ export default function Verify() {
               ))}
             </div>
           </div>
-          {error && <p className="text-red-500">{error}</p>}
           {success && <p className="text-green-500">{success}</p>}
           <div>
             <button
@@ -160,6 +166,11 @@ export default function Verify() {
           </div>
         </form>
       </div>
+      {showErrorPopup && (
+        <div className="fixed bottom-4 right-4 bg-[#C69635] text-[#1E1412] p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

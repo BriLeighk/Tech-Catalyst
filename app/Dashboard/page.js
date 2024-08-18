@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { BellIcon, Bars3Icon, XMarkIcon, PencilSquareIcon, ArrowUpOnSquareIcon, CloudUploadIcon, TrashIcon, TrophyIcon } from '@heroicons/react/24/outline'
-import { doc, getDoc, updateDoc, query, collection, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, query, collection, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { auth, db, storage } from '../firebase'; // Ensure this import is correct
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -43,6 +43,7 @@ export default function Dashboard() {
   const [projectDescription, setProjectDescription] = useState('');
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false); // New state for modal visibility
   const [isImageHovered, setIsImageHovered] = useState(false); // New state for image hover
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State for delete confirmation
 
   const handleAddProject = () => {
     setProjects([...projects, { title: projectTitle, description: projectDescription }]);
@@ -325,6 +326,36 @@ export default function Dashboard() {
     return number + "th";
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        // Remove user from Firebase Authentication
+        await user.delete();
+  
+        // Remove user data from Firestore
+        const userQuery = query(collection(db, 'users'), where('email', '==', user.email));
+        const querySnapshot = await getDocs(userQuery);
+        if (!querySnapshot.empty) {
+          const userDoc = querySnapshot.docs[0];
+          await deleteDoc(userDoc.ref);
+        }
+  
+        // Remove user contact from Brevo
+        await axios.post('/api/deleteBrevoContact', { email: user.email });
+  
+        // Sign out the user and navigate to login page
+        await signOut(auth);
+        window.location.href = '/Login';
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      setErrorMessage('Error deleting account: ' + error.message);
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
+    }
+  };
+
   return (
     <>
       <div className="relative isolate bg-[#140D0C] min-h-[800px] overflow-hidden" style={{margin: '0',padding: '0'}}>
@@ -510,7 +541,12 @@ export default function Dashboard() {
             {user && (
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
-                  <img alt="" src={user.imageUrl} className="h-32 w-32 rounded-full shadow-lg" style={{ border: '2px solid #2D1E1B' }}/>
+                <img 
+                    alt="" 
+                    src={user.imageUrl} 
+                    className="h-32 w-32 rounded-full shadow-lg" 
+                    style={{ border: `1px solid ${user.userNumber && user.userNumber <= 100 ? '#C69635' : '#2D1E1B'}` }}
+                  />
                   {user.userNumber && user.userNumber <= 100 && (
                     <img
                       alt="First User Badge"
@@ -777,6 +813,7 @@ export default function Dashboard() {
                     <div className="flex justify-end mt-4">
                       <button onClick={handleSaveSubscription} className="text-white text-sm px-4 py-2 border border-gray-400 hover:border-[#C69635] rounded">Save Changes</button>
                     </div>
+
                     </div>
                   )}
                 </div>
@@ -785,6 +822,8 @@ export default function Dashboard() {
           </div>
         </main>
       </div>
+        
+
       {showProfileConfirmation && (
         <div className="fixed bottom-4 right-4 bg-[#C69635] text-[#1E1412] px-4 py-2 rounded-md shadow-md transition-opacity duration-300" style={{ opacity: showProfileConfirmation ? 1 : 0 }}>
           Profile updated successfully
@@ -824,7 +863,7 @@ export default function Dashboard() {
         >
           <img src="./firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4" />
           <h2 className="text-[#DDBA6C] text-xl font-bold mb-2">First User Badge</h2>
-          <p className="text-[#DDBA6C] text-sm"> Earned as The Tech Catalysts' {getOrdinalSuffix(user.userNumber)} member.</p>
+          <p className="text-[#DDBA6C] text-sm">{user && `Earned as The Tech Catalysts' ${getOrdinalSuffix(user.userNumber)} member.`}</p>
           <p className="text-[#C69635] text-xs flex row text-left mt-8">
             <TrophyIcon className="h-5 w-5 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
         </div>

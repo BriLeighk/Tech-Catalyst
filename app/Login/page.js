@@ -57,32 +57,32 @@ export default function Login() {
             lastname: user.displayName.split(' ')[1] || '',
             email: user.email,
             userNumber, // Store the user number
-            imageUrl: user.photoURL || '/placeholder.png', // Default image URL
             bio: '',
             projects: [],
           });
         } else {
-          // Modify the photo URL to request a higher resolution image
-          const highResPhotoURL = user.photoURL ? user.photoURL.replace('s96-c', 's400-c') : '/placeholder.png';
+          // Get existing user data
+          const existingData = userSnapshot.data();
 
-          // Check if userNumber exists in the existing user data
-          let userNumber = userSnapshot.data().userNumber;
-          if (!userNumber) {
-            // Get the current number of users
-            const usersCollection = collection(db, 'users');
-            const usersSnapshot = await getDocs(usersCollection);
-            userNumber = usersSnapshot.size; // Assign the next available user number
+          // Prepare updated data
+          const updateData = {
+            email: user.email,
+            userNumber: existingData.userNumber || usersSnapshot.size, // Ensure userNumber is stored
+          };
+
+          // Update name and bio only if they are null in the database
+          if (!existingData.firstname) {
+            updateData.firstname = user.displayName.split(' ')[0];
+          }
+          if (!existingData.lastname) {
+            updateData.lastname = user.displayName.split(' ').slice(1).join(' ');
+          }
+          if (!existingData.bio) {
+            updateData.bio = '';
           }
 
           // Update user information in Firestore
-          await setDoc(userDoc, {
-            firstname: user.displayName.split(' ')[0],
-            lastname: user.displayName.split(' ').slice(1).join(' '),
-            email: user.email,
-            userNumber, // Ensure userNumber is stored
-            imageUrl: highResPhotoURL,
-            bio: '',
-          }, { merge: true });
+          await setDoc(userDoc, updateData, { merge: true });
         }
 
         // Add user to Brevo list
@@ -125,7 +125,7 @@ export default function Login() {
             <img
               alt=""
               src="" /* TODO: Add Logo */
-              className="mx-auto h-10 w-auto"
+              className="mx-auto h-24 w-auto"
             />
           </div>
           <div 
@@ -138,7 +138,8 @@ export default function Login() {
               boxShadow: '0px 0px 10px 5px rgba(20,13,1,1)', 
               WebkitBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)', 
               MozBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)',
-              border: '2px solid white',
+              border: '2px solid #1E1412',
+              backgroundColor: '#1E1412',
             }}>
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
               Log  In
@@ -147,10 +148,10 @@ export default function Login() {
             <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
                   <button
                     onClick={handleGoogleSignIn}
-                    className="flex w-full h-[36px] justify-center items-center rounded-md bg-gray-100 px-3 py-1.5 text-sm font-semibold leading-6 text-[#140D0C] shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#724428] border-[2px] border-[#D6D6D6] hover:border-[2px] hover:border-[#724428]"
+                    className="flex w-full h-[36px] justify-center items-center rounded-md border-[1px] border-gray-300 hover:border-[#C69635] px-3 py-1.5 text-sm font-semibold leading-6 text-[#F2F4E6] shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#724428]"
                     style={{ transition: 'border-color 0.3s ease-in-out' }}
                   >
-                    <FcGoogle className="h-4 w-4 mr-2" />
+                    <FcGoogle className="h-4 w-4 mr-2 shadow-lg" />
                     Sign in with Google
                   </button>
             </div>
@@ -173,8 +174,8 @@ export default function Login() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       autoComplete="email"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#] sm:text-sm sm:leading-6"
-                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px' }}
+                      className="block w-full bg-[#1E1412] rounded-md border-0 py-1.5 text-gray-300 shadow-sm border-[1px] focus:border-[#C69635] focus:outline-none"
+                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                     />
                   </div>
                 </div>
@@ -186,7 +187,7 @@ export default function Login() {
                       Password
                     </label>
                     <div className="text-sm">
-                      <a href="#" className="font-semibold text-[#683F24] hover:text-[#442718]" style={{transition: 'color 0.3s ease-in-out'}}>
+                      <a href="#" className="font-semibold text-[#C69635] hover:text-[#683F24]" style={{transition: 'color 0.3s ease-in-out'}}>
                         Forgot password?
                       </a>
                     </div>
@@ -200,8 +201,8 @@ export default function Login() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       autoComplete="current-password"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:[#b79994] sm:text-sm sm:leading-6"
-                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px' }}
+                      className="block w-full bg-[#1E1412] rounded-md border-0 py-1.5 text-gray-300 shadow-sm border-[1px] focus:border-[#C69635] focus:outline-none"
+                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                     />
                     
                   </div>
@@ -222,14 +223,14 @@ export default function Login() {
                   
                   <button
                     type="submit"
-                    className="flex w-[100px] justify-center rounded-md bg-[#683F24] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
-                    style={{transition: 'background-color 0.3s ease-in-out'}}
+                    className="flex w-[100px] justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                    style={{transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)'}}
                   >
                     Login
                   </button>
                   <a href="/Register"
-                    className="flex w-full justify-center rounded-md bg-[#683F24] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
-                    style={{transition: 'background-color 0.3s ease-in-out'}}
+                    className="flex w-full justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                    style={{transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)'}}
                   >
                     Don't have an account? Register here
                   </a>
@@ -252,7 +253,7 @@ export default function Login() {
           </div>
         </div>
         {showSuccess && (
-        <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
+        <div className="fixed bottom-4 right-4 bg-[#C69635] text-[#1E1412] p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
           Login successful! Redirecting to dashboard...
         </div>
       )}
