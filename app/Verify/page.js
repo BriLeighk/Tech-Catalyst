@@ -86,7 +86,7 @@ export default function Verify() {
           // Get the current number of users
           const usersCollection = collection(db, 'users');
           const usersSnapshot = await getDocs(usersCollection);
-          const userNumber = usersSnapshot.size; // Assign the next available user number
+          const userNumber = usersSnapshot.size + 1; // Assign the next available user number starting from 1
 
           // Store user information in Firestore
           await setDoc(doc(db, 'users', user.uid), {

@@ -28,7 +28,7 @@ export default function Dashboard() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [setIsPasswordEditing] = useState(false);
+  const [isPasswordEditing, setIsPasswordEditing] = useState(false); // Corrected state initialization
   const [activeTab, setActiveTab] = useState('profile'); // New state for active tab
   const [showProfileConfirmation, setShowProfileConfirmation] = useState(false); // State for profile confirmation
   const [showNameConfirmation, setShowNameConfirmation] = useState(false); // State for name confirmation in settings
@@ -168,14 +168,15 @@ export default function Dashboard() {
             console.log('Brevo contact updated successfully.');
           } else {
             const errorData = await response.json();
+            console.error('Error updating Brevo contact:', errorData);
             throw new Error(errorData.message || 'Error updating Brevo contact');
           }
         } else {
           throw new Error('User data not found in Firestore');
         }
       } catch (error) {
-        console.error('Error updating Brevo contact:', error);
-        setErrorMessage('Error updating profile ');
+        console.error('Error updating profile:', error);
+        setErrorMessage('Error updating profile: ' + error.message);
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);
       }
@@ -226,20 +227,24 @@ export default function Dashboard() {
       setTimeout(() => setShowError(false), 3000);
       return;
     }
-
+  
     try {
       const user = auth.currentUser;
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+  
       if (user.providerData[0].providerId === 'google.com') {
         setErrorMessage('Please send your reset request to Google.');
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);
         return;
       }
-
+  
       const credential = EmailAuthProvider.credential(user.email, oldPassword);
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
-
+  
       // Show password confirmation message
       setShowPasswordConfirmation(true);
       setTimeout(() => setShowPasswordConfirmation(false), 3000);
@@ -247,9 +252,12 @@ export default function Dashboard() {
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
         setErrorMessage('Current password is incorrect. Please try again');
+      } else if (error.code === 'auth/invalid-credential') {
+        setErrorMessage('Invalid credentials. Please try again');
       } else {
         setErrorMessage('Error resetting password. Please try again later');
       }
+      console.error('Error resetting password:', error); // Log the exact error
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
     }

@@ -14,14 +14,7 @@ export default function NewsletterSection() {
     try {
       const response = await axios.post('/api/addContact', { email });
       if (response.status === 200) {
-        // Send the newsletter email using template #2
-        try {
-          await axios.post('/api/sendNewsletterEmail', { email });
-          setMessage('Successfully subscribed!');
-        } catch (error) {
-          console.error('Error sending newsletter email:', error);
-          setMessage('Successfully subscribed, but failed to send email.');
-        }
+        setMessage(response.data.message); // Use the message from the API response
       } else {
         setMessage('Subscription failed. Please try again.');
       }

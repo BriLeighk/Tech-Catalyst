@@ -49,7 +49,7 @@ export default function Login() {
           // Get the current number of users
           const usersCollection = collection(db, 'users');
           const usersSnapshot = await getDocs(usersCollection);
-          const userNumber = usersSnapshot.size; // Assign the next available user number
+          const userNumber = usersSnapshot.size + 1; // Assign the next available user number starting from 1
 
           // Store user data in Firestore
           await setDoc(userDoc, {
@@ -67,7 +67,7 @@ export default function Login() {
           // Prepare updated data
           const updateData = {
             email: user.email,
-            userNumber: existingData.userNumber || usersSnapshot.size, // Ensure userNumber is stored
+            userNumber: existingData.userNumber || usersSnapshot.size + 1, // Ensure userNumber is stored
           };
 
           // Update name and bio only if they are null in the database
