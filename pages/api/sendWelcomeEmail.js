@@ -13,7 +13,11 @@ export default async function handler(req, res) {
 
     sendSmtpEmail.to = [{ email }];
     sendSmtpEmail.templateId = 3; // Template ID for the welcome email
-    sendSmtpEmail.params = { FIRSTNAME: firstname, LASTNAME: lastname };
+    sendSmtpEmail.params = { 
+      FIRSTNAME: firstname, // Ensure firstname is passed
+      LASTNAME: lastname, // Ensure lastname is passed
+      EMAIL: email // Ensure email is passed
+    };
 
     try {
       await apiInstance.sendTransacEmail(sendSmtpEmail);

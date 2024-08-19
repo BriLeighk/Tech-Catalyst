@@ -234,7 +234,17 @@ export default function Dashboard() {
         throw new Error('User not authenticated');
       }
   
-      if (user.providerData[0].providerId === 'google.com') {
+      // Check if the user has a password credential stored
+      const userQuery = query(collection(db, 'users'), where('email', '==', user.email));
+      const querySnapshot = await getDocs(userQuery);
+      if (querySnapshot.empty) {
+        throw new Error('User data not found in Firestore');
+      }
+
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
+
+      if (user.providerData.some(provider => provider.providerId === 'google.com') && !user.providerData.some(provider => provider.providerId === 'password')) {
         setErrorMessage('Please send your reset request to Google.');
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);
@@ -244,6 +254,9 @@ export default function Dashboard() {
       const credential = EmailAuthProvider.credential(user.email, oldPassword);
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
+  
+      // Update the password in Firestore
+      await updateDoc(userDoc.ref, { password: newPassword });
   
       // Show password confirmation message
       setShowPasswordConfirmation(true);

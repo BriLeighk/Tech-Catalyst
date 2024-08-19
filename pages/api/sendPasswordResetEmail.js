@@ -42,7 +42,10 @@ export default async function handler(req, res) {
 
         sendSmtpEmail.to = [{ email }];
         sendSmtpEmail.templateId = 5; // Brevo template ID for password reset
-        sendSmtpEmail.params = { resetLink: customResetLink };
+        sendSmtpEmail.params = { 
+          resetLink: customResetLink,
+          EMAIL: email // Ensure email is passed
+        };
 
         await apiInstance.sendTransacEmail(sendSmtpEmail);
         res.status(200).json({ message: 'Password reset email sent successfully' });

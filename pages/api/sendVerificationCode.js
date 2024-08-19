@@ -19,7 +19,12 @@ export default async function handler(req, res) {
 
     sendSmtpEmail.to = [{ email }];
     sendSmtpEmail.templateId = parseInt(process.env.BREVO_VERIFICATION_TEMPLATE_ID);
-    sendSmtpEmail.params = { VERIFICATION_CODE: verificationCode, VERIFICATION_LINK: verificationLink };
+    sendSmtpEmail.params = { 
+      VERIFICATION_CODE: verificationCode, 
+      VERIFICATION_LINK: verificationLink,
+      FIRSTNAME: firstname, // Ensure firstname is passed
+      LASTNAME: lastname // Ensure lastname is passed
+    };
 
     try {
       await apiInstance.sendTransacEmail(sendSmtpEmail);

@@ -13,6 +13,9 @@ export default async function handler(req, res) {
 
     sendSmtpEmail.to = [{ email }];
     sendSmtpEmail.templateId = 2; // Template ID for the newsletter email
+    sendSmtpEmail.params = { 
+      EMAIL: email // Ensure email is passed
+    };
 
     try {
       await apiInstance.sendTransacEmail(sendSmtpEmail);
