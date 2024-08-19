@@ -1,10 +1,12 @@
 import admin from 'firebase-admin';
-import serviceAccount from '../config/serviceAccountKey.json'; // Update this path to the location of your JSON file
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    // No need to specify databaseURL for Firestore
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    }),
   });
 }
 
