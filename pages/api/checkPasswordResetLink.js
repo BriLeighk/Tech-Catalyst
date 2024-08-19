@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     try {
         console.log('Checking link validity for oobCode:', oobCode);
 
-        const customResetLink = `http://localhost:3000/ChangePassword?oobCode=${oobCode}`;
+        const customResetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/ChangePassword?oobCode=${oobCode}`;
         const snapshot = await firestore.collection('passwordResetRequests')
             .where('resetLink', '==', customResetLink)
             .where('valid', '==', true)
