@@ -386,6 +386,19 @@ export default function Dashboard() {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isBadgeModalOpen && !event.target.closest('.badge-modal')) {
+        setIsBadgeModalOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isBadgeModalOpen]);
+
   return (
     <>
       <div className="relative isolate bg-[#140D0C] min-h-[800px] overflow-hidden" style={{margin: '0',padding: '0'}}>
