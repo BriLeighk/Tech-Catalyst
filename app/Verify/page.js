@@ -1,76 +1,109 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { db, auth } from '../firebase';
-import { doc, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, deleteDoc, setDoc, collection, getDocs } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import axios from 'axios';
 
 export default function Verify() {
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(Array(6).fill(''));
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showErrorPopup, setShowErrorPopup] = useState(false); // State for error popup
+  const inputRefs = useRef([]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const emailParam = urlParams.get('email');
     const codeParam = urlParams.get('code');
-    if (emailParam && codeParam) {
-      setEmail(emailParam);
-      setCode(codeParam);
+    if (codeParam) {
+      setCode(codeParam.split(''));
     }
   }, []);
+
+  const handleChange = (e, index) => {
+    const newCode = [...code];
+    const value = e.target.value;
+
+    if (/^\d$/.test(value)) {
+      newCode[index] = value;
+      setCode(newCode);
+
+      // Auto-advance to the next input field
+      if (index < 5) {
+        inputRefs.current[index + 1].focus();
+      }
+    } else if (value === '') {
+      newCode[index] = '';
+      setCode(newCode);
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === 'Backspace' && code[index] === '') {
+      if (index > 0) {
+        inputRefs.current[index - 1].focus();
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setShowErrorPopup(false); // Hide error popup initially
 
+    const verificationCode = code.join('');
     try {
-      const docRef = doc(db, 'verifications', email);
+      console.log('Verification Code:', verificationCode); // Log verification code
+      if (!verificationCode) {
+        throw new Error('Verification code is not defined');
+      }
+      const docRef = doc(db, 'verifications', verificationCode); // Correct document reference
+      console.log('Document Reference:', docRef.path); // Log document reference path
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        const { verificationCode, timestamp, firstname, lastname, password } = docSnap.data(); // Retrieve password
+        const { email, verificationCode, timestamp, firstname, lastname, password } = docSnap.data(); // Retrieve email and other details
+        console.log('Retrieved data:', { email, verificationCode, timestamp, firstname, lastname, password });
         const now = new Date();
-        const codeTimestamp = timestamp.toDate();
-        const timeDifference = now - codeTimestamp;
+        const codeTimestamp = timestamp.toDate(); // Convert timestamp to Date object
+        const timeDifference = now - codeTimestamp; // Calculate time difference
 
         // Check if the code is older than 24 hours (86400000 milliseconds)
         if (timeDifference > 86400000) {
           await deleteDoc(docRef);
           setError('Verification code has expired. Please register again.');
+          setShowErrorPopup(true); // Show error popup
           return;
         }
 
-        if (verificationCode === code) {
+        if (verificationCode === verificationCode) { // Compare verification codes as strings
           // Create user in Firebase Auth
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
+
+          // Get the current number of users
+          const usersCollection = collection(db, 'users');
+          const usersSnapshot = await getDocs(usersCollection);
+          const userNumber = usersSnapshot.size + 1; // Assign the next available user number starting from 1
 
           // Store user information in Firestore
           await setDoc(doc(db, 'users', user.uid), {
             firstname,
             lastname,
-            email
+            email,
+            userNumber // Add userNumber to the user record
           });
 
-          // Add user to Brevo contact list
+          // Add user to Brevo contact list and send welcome email
           try {
             await axios.post('/api/addRegisterContact', { email, firstname, lastname });
-
-            // Introduce a 10-second delay before sending the welcome email
-            setTimeout(async () => {
-              try {
-                await axios.post('/api/sendWelcomeEmail', { email, firstname, lastname });
-              } catch (err) {
-                console.error('Error sending welcome email:', err);
-                setError('Error sending welcome email');
-              }
-            }, 10000); // 10-second delay
+            await axios.post('/api/sendWelcomeEmail', { email, firstname, lastname });
           } catch (err) {
-            console.error('Error adding contact to Brevo:', err);
-            setError('Error adding contact to Brevo');
+            console.error('Error adding contact to Brevo or sending welcome email:', err);
+            setError('Error adding contact to Brevo or sending welcome email');
+            setShowErrorPopup(true); // Show error popup
             return;
           }
 
@@ -83,13 +116,16 @@ export default function Verify() {
           }, 2000);
         } else {
           setError('Invalid verification code');
+          setShowErrorPopup(true); // Show error popup
         }
       } else {
         setError('Verification code not found');
+        setShowErrorPopup(true); // Show error popup
       }
     } catch (err) {
       console.error('Error verifying account:', err);
       setError('Error verifying account');
+      setShowErrorPopup(true); // Show error popup
     }
   };
 
@@ -104,30 +140,37 @@ export default function Verify() {
             <label htmlFor="code" className="block text-sm font-medium leading-6 text-gray-300">
               Verification Code
             </label>
-            <div className="mt-2">
-              <input
-                id="code"
-                name="code"
-                type="text"
-                required
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#b79994] sm:text-sm sm:leading-6"
-              />
+            <div className="mt-2 flex justify-center space-x-2">
+              {code.map((digit, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  maxLength="1"
+                  value={digit}
+                  onChange={(e) => handleChange(e, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  className={`block w-14 h-14 bg-[#231715] rounded-md border-0 py-1.5 text-gray-100 shadow-sm border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none text-center text-2xl`}
+                />
+              ))}
             </div>
           </div>
-          {error && <p className="text-red-500">{error}</p>}
           {success && <p className="text-green-500">{success}</p>}
           <div>
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-[#683F24] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
-            >
+              className="text-white text-sm px-3 py-1 border border-white hover:border-[#C69635] rounded w-full" 
+              >
               Verify
             </button>
           </div>
         </form>
       </div>
+      {showErrorPopup && (
+        <div className="fixed bottom-4 right-4 bg-[#C69635] text-[#1E1412] p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

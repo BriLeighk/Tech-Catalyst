@@ -76,7 +76,7 @@ export default function Header() {
                         <img
                             alt="The Tech Catalyst Logo"
                             src="/logo.png" /*TODO: Add logo*/
-                            className="h-20 w-auto"
+                            className="h-28 w-auto"
                         />
                     </a>
                 </div>

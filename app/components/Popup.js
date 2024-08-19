@@ -45,7 +45,7 @@ export default function Popup({ setShowPopup }) {
                 </div>
               </div>
             </div>
-            <div className="bg-[#140D0C] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <div className="bg-[#1E1412] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
                 type="button"
                 onClick={handleLogoutAndRegister}

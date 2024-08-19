@@ -1,14 +1,18 @@
 'use client'
 import { useState } from 'react';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import Header from '../components/Header'
-import { signInWithEmailAndPassword } from 'firebase/auth';
-
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
+import axios from 'axios';
+import { FcGoogle } from 'react-icons/fc';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [showError, setShowError] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
 
 
     const handleLogin = async (e) => {
@@ -19,9 +23,85 @@ export default function Login() {
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
           // User is logged in, start session and redirect to dashboard
           sessionStorage.setItem('user', JSON.stringify(userCredential.user));
-          window.location.href = '/Dashboard';
-      } catch (err) {
+          setShowSuccess(true);
+          setTimeout(() => {
+            setShowSuccess(false);
+            window.location.href = '/Dashboard';
+          }, 3000); // Show success message for 3 seconds before redirecting
+        } catch (err) {
           setError('Incorrect email or password'); // Handle errors
+          setShowError(true);
+          setTimeout(() => setShowError(false), 3000); // Hide error message after 3 seconds
+        }
+      };
+
+    const handleGoogleSignIn = async () => {
+      const provider = new GoogleAuthProvider();
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        // Check if the user already exists in Firestore
+        const userDoc = doc(db, 'users', user.uid);
+        const userSnapshot = await getDoc(userDoc);
+
+        if (!userSnapshot.exists()) {
+          // Get the current number of users
+          const usersCollection = collection(db, 'users');
+          const usersSnapshot = await getDocs(usersCollection);
+          const userNumber = usersSnapshot.size + 1; // Assign the next available user number starting from 1
+
+          // Store user data in Firestore
+          await setDoc(userDoc, {
+            firstname: user.displayName.split(' ')[0],
+            lastname: user.displayName.split(' ')[1] || '',
+            email: user.email,
+            userNumber, // Store the user number
+            bio: '',
+            projects: [],
+          });
+        } else {
+          // Get existing user data
+          const existingData = userSnapshot.data();
+
+          // Prepare updated data
+          const updateData = {
+            email: user.email,
+            userNumber: existingData.userNumber || usersSnapshot.size + 1, // Ensure userNumber is stored
+          };
+
+          // Update name and bio only if they are null in the database
+          if (!existingData.firstname) {
+            updateData.firstname = user.displayName.split(' ')[0];
+          }
+          if (!existingData.lastname) {
+            updateData.lastname = user.displayName.split(' ').slice(1).join(' ');
+          }
+          if (!existingData.bio) {
+            updateData.bio = '';
+          }
+
+          // Update user information in Firestore
+          await setDoc(userDoc, updateData, { merge: true });
+        }
+
+        // Add user to Brevo list
+        await axios.post('/api/updateBrevoSubscription', {
+          email: user.email,
+          isSubscribed: true,
+        });
+
+        // Redirect to dashboard
+        sessionStorage.setItem('user', JSON.stringify(user));
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+          window.location.href = '/Dashboard';
+        }, 3000); // Show success message for 3 seconds before redirecting
+      } catch (error) {
+        setError('Error signing in with Google: ' + error.message);
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000); // Hide error message after 3 seconds
       }
     };
 
@@ -45,7 +125,7 @@ export default function Login() {
             <img
               alt=""
               src="" /* TODO: Add Logo */
-              className="mx-auto h-10 w-auto"
+              className="mx-auto h-24 w-auto"
             />
           </div>
           <div 
@@ -58,19 +138,27 @@ export default function Login() {
               boxShadow: '0px 0px 10px 5px rgba(20,13,1,1)', 
               WebkitBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)', 
               MozBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)',
-              border: '2px solid white',
+              border: '2px solid #1E1412',
+              backgroundColor: '#1E1412',
             }}>
-            {error && <p className="text-red-800 text-right mt-0 pt-0">{error}</p>}
-
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
               Log  In
             </h2>
+
+            <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+                  <button
+                    onClick={handleGoogleSignIn}
+                    className="flex w-full h-[36px] justify-center items-center rounded-md border-[1px] border-gray-300 hover:border-[#C69635] px-3 py-1.5 text-sm font-semibold leading-6 text-[#F2F4E6] shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#724428]"
+                    style={{ transition: 'border-color 0.3s ease-in-out' }}
+                  >
+                    <FcGoogle className="h-4 w-4 mr-2 shadow-lg" />
+                    Sign in with Google
+                  </button>
+            </div>
             
-            <div className="mt-20 sm:mx-auto sm:w-full sm:max-w-sm" 
-            style={{
-                position: 'fixed', 
-                transform: `translate(10%, ${error ? '-6.5%' : '0%'})`
-              }}>
+            
+            <div className="mt-20 sm:mx-auto sm:w-full sm:max-w-sm" >
+              
               <form onSubmit={handleLogin} className="space-y-6">
                 
                 <div>
@@ -86,8 +174,8 @@ export default function Login() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       autoComplete="email"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#] sm:text-sm sm:leading-6"
-                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px' }}
+                      className="block w-full bg-[#1E1412] rounded-md border-0 py-1.5 text-gray-300 shadow-sm border-[1px] focus:border-[#C69635] focus:outline-none"
+                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                     />
                   </div>
                 </div>
@@ -99,7 +187,7 @@ export default function Login() {
                       Password
                     </label>
                     <div className="text-sm">
-                      <a href="#" className="font-semibold text-[#683F24] hover:text-[#442718]" style={{transition: 'color 0.3s ease-in-out'}}>
+                      <a href="/ForgotPassword" className="font-semibold text-[#C69635] hover:text-[#683F24]" style={{transition: 'color 0.3s ease-in-out'}}>
                         Forgot password?
                       </a>
                     </div>
@@ -113,12 +201,14 @@ export default function Login() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       autoComplete="current-password"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:[#b79994] sm:text-sm sm:leading-6"
-                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px' }}
+                      className="block w-full bg-[#1E1412] rounded-md border-0 py-1.5 text-gray-300 shadow-sm border-[1px] focus:border-[#C69635] focus:outline-none"
+                      style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                     />
                     
                   </div>
                 </div>
+              
+                
   
                 <div className=""
                 style={{
@@ -127,24 +217,26 @@ export default function Login() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '15px',
-                  marginTop: '168px', // ensures buttons are in same place as register form
+                  marginTop: '108px', // ensures buttons are in same place as register form
                 }}
                 >
+                  
                   <button
                     type="submit"
-                    className="flex w-[100px] justify-center rounded-md bg-[#683F24] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
-                    style={{transition: 'background-color 0.3s ease-in-out'}}
+                    className="flex w-[100px] justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                    style={{transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)'}}
                   >
                     Login
                   </button>
                   <a href="/Register"
-                    className="flex w-full justify-center rounded-md bg-[#683F24] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#442718] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b79994]"
-                    style={{transition: 'background-color 0.3s ease-in-out'}}
+                    className="flex w-full justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                    style={{transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)'}}
                   >
                     Don't have an account? Register here
                   </a>
                 </div>
               </form>
+              
             </div>
           </div>
           <div
@@ -160,6 +252,17 @@ export default function Login() {
             />
           </div>
         </div>
+        {showSuccess && (
+        <div className="fixed bottom-4 right-4 bg-[#C69635] text-[#1E1412] p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
+          Login successful! Redirecting to dashboard...
+        </div>
+      )}
+
+      {showError && (
+        <div className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
+          {error}
+        </div>
+      )}
       </>
     )
   }
