@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         // Modify the reset link to point to your custom ChangePassword page
         const url = new URL(resetLink);
         const oobCode = url.searchParams.get('oobCode');
-        const customResetLink = `http://localhost:3000/ChangePassword?oobCode=${oobCode}`;
+        const customResetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/ChangePassword?oobCode=${oobCode}`;
 
         // Store the reset request in Firestore
         const resetRequest = {
