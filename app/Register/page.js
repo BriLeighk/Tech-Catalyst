@@ -80,24 +80,13 @@ export default function Register() {
             />
           </div>
           <div 
-          style={{
-            width: '500px', 
-            height: '564px',
-            margin: '0px auto 0 auto', 
-            padding: '20px', 
-            borderRadius: '10px',
-            boxShadow: '0px 0px 10px 5px rgba(20,13,1,1)', 
-            WebkitBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)', 
-            MozBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)',
-            border: '2px solid #1E1412',
-            backgroundColor: '#1E1412'
-          }}>
+            className="w-full max-w-md mx-auto p-6 sm:p-8 bg-[#1E1412] rounded-lg shadow-lg"
+          >
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
               Create Account
             </h2>
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm" >
               <form onSubmit={handleSubmit} className="space-y-6">
-
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-300">
                     First Name
@@ -116,7 +105,6 @@ export default function Register() {
                     />
                   </div>
                 </div>
-
                 <div>
                   <label htmlFor="lastName" className="block text-sm font-medium leading-6 text-gray-300">
                     Last Name
@@ -135,7 +123,6 @@ export default function Register() {
                     />
                   </div>
                 </div>
-
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-300">
                     Email address
@@ -154,7 +141,6 @@ export default function Register() {
                     />
                   </div>
                 </div>
-  
                 <div>
                   <div className="flex items-center justify-between">
                     <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-300">
@@ -175,26 +161,16 @@ export default function Register() {
                     />
                   </div>
                 </div>
-  
-                <div className=""
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '15px',
-                }}
-                >
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
                   <button
                     type="submit"
-                    className="flex w-[205px] justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                    className="w-full sm:w-auto flex justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
                     style={{ transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                   >
                     Create Account
                   </button>
-
                   <a href="/Login"
-                    className="flex w-full justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                    className="w-full sm:w-auto flex justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
                     style={{
                       transition: 'background-color 0.3s ease-in-out',
                       boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)'

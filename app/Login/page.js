@@ -129,20 +129,10 @@ export default function Login() {
             />
           </div>
           <div 
-            style={{
-              width: '500px', 
-              height: '564px',
-              margin: '0px auto 0 auto', 
-              padding: '20px', 
-              borderRadius: '10px',
-              boxShadow: '0px 0px 10px 5px rgba(20,13,1,1)', 
-              WebkitBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)', 
-              MozBoxShadow: '0px 0px 10px 5px rgba(20,13,1,1)',
-              border: '2px solid #1E1412',
-              backgroundColor: '#1E1412',
-            }}>
+            className="w-full max-w-md mx-auto p-6 sm:p-8 bg-[#1E1412] rounded-lg shadow-lg"
+          >
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white" style={{paddingTop: '0', textShadow: '2px 2px 4px rgba(0, 0, 0, 1)'}}>
-              Log  In
+              Log In
             </h2>
 
             <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -156,11 +146,8 @@ export default function Login() {
                   </button>
             </div>
             
-            
             <div className="mt-20 sm:mx-auto sm:w-full sm:max-w-sm" >
-              
               <form onSubmit={handleLogin} className="space-y-6">
-                
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-300">
                     Email address
@@ -179,8 +166,6 @@ export default function Login() {
                     />
                   </div>
                 </div>
-                
-  
                 <div>
                   <div className="flex items-center justify-between">
                     <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-300">
@@ -204,39 +189,24 @@ export default function Login() {
                       className="block w-full bg-[#1E1412] rounded-md border-0 py-1.5 text-gray-300 shadow-sm border-[1px] focus:border-[#C69635] focus:outline-none"
                       style={{ fontSize: '1rem', fontWeight: 'bold', paddingLeft: '10px', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                     />
-                    
                   </div>
                 </div>
-              
-                
-  
-                <div className=""
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '15px',
-                  marginTop: '108px', // ensures buttons are in same place as register form
-                }}
-                >
-                  
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
                   <button
                     type="submit"
-                    className="flex w-[100px] justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                    className="w-full sm:w-auto flex justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
                     style={{transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)'}}
                   >
                     Login
                   </button>
                   <a href="/Register"
-                    className="flex w-full justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
+                    className="w-full sm:w-auto flex justify-center rounded-md bg-[#1E1412] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded"
                     style={{transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)'}}
                   >
                     Don't have an account? Register here
                   </a>
                 </div>
               </form>
-              
             </div>
           </div>
           <div
