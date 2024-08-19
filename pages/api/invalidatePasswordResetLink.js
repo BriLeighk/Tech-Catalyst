@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
     try {
         const snapshot = await firestore.collection('passwordResetRequests')
-            .where('resetLink', '==', `http://localhost:3000/ChangePassword?oobCode=${oobCode}`)
+            .where('resetLink', '==', `${process.env.NEXT_PUBLIC_BASE_URL}/ChangePassword?oobCode=${oobCode}`)
             .get();
 
         if (!snapshot.empty) {
