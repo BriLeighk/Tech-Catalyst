@@ -1,9 +1,13 @@
 import { useEffect, useRef } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 export default function AboutSection() {
   const videoRef = useRef(null);
 
+
   useEffect(() => {
+    AOS.init({ duration: 1000, once: false });
     if (videoRef.current) {
       videoRef.current.playbackRate = 2; // Set the playback rate
     }
@@ -30,13 +34,14 @@ export default function AboutSection() {
           <div className="flex items-center justify-center w-full h-full">
             <video 
               ref={videoRef}
-              className="w-full max-w-[19rem] rounded-xl shadow-xl sm:max-w-[40rem] border-2 border-[#C69635] shadow-lg mr-4"
+              className="w-full max-w-[30rem] rounded-xl shadow-xl sm:max-w-[40rem] border-2 border-[#C69635] shadow-lg mr-[20px]"
               src="/about-video.mp4" 
               autoPlay 
               loop 
               muted 
               playsInline
               style={{ transform: 'scale(1)' }}
+              data-aos="fade-up"
             >
               Your browser does not support the video tag.
             </video>
