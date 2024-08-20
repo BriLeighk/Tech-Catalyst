@@ -116,13 +116,13 @@ export default function ProfilePage() {
                 )}
               </div>
               <div className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-full max-w-[700px] relative" style={{ border: '2px solid #2D1E1B' }}>
-              <div className=" text-[#C69635] text-sm font-bold px-2 py-1 mb-2">
-                {user.email === 'kirchgessner@wisc.edu' ? 'Founder' : user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' ? 'Co-Founder' : ''}
-              </div>
+              
                 <div className="text-[#C69635] text-[22px] flex items-center mb-2 font-bold justify-center">
                   <span>{user.firstname} {user.lastname}</span>
                 </div>
-                
+                <div className=" text-[#C69635] text-sm font-bold px-2 py-1 mb-0 text-center">
+                {user.email === 'kirchgessner@wisc.edu' ? 'Founder' : user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' ? 'Co-Founder' : ''}
+              </div>
                 <div className="text-[#C69635] text-xl font-bold mb-2 pt-8">Bio</div>
                 <div className="text-white text-sm flex items-center text-center mb-4">
                   <div className="display-container" dangerouslySetInnerHTML={{ __html: user.bio }} />
