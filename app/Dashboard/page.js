@@ -298,7 +298,9 @@ export default function Dashboard() {
   };
 
   const handleUploadButtonClick = () => {
-    document.getElementById('file-upload').click();
+    if (typeof document !== 'undefined') {
+      document.getElementById('file-upload').click();
+    }
   };
   
   const navigation = [
