@@ -392,16 +392,18 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isBadgeModalOpen && !event.target.closest('.badge-modal')) {
-        setIsBadgeModalOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (typeof document !== 'undefined') {
+      const handleClickOutside = (event) => {
+        if (isBadgeModalOpen && !event.target.closest('.badge-modal')) {
+          setIsBadgeModalOpen(false);
+        }
+      };
+  
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
   }, [isBadgeModalOpen]);
 
   return (
