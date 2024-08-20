@@ -6,8 +6,11 @@ import { checkUserLoggedIn } from '../utils/auth'; // Import the utility functio
 // Navigation bar
 const navigation = [
     { name: 'About Us', href: 'about' }, // Link to About section
+    { name: 'Features', href: 'features' }, // Link to Features section
     { name: 'Pricing', href: 'pricing' }, // Link to Pricing section
+    { name: 'Team', href: 'team' }, // Link to Team section
     { name: 'Contact', href: 'newsletter' }, // Link to Newsletter section
+    
 ]
 
 export default function Header() {

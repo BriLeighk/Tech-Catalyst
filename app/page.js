@@ -1,23 +1,24 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import Features from './components/FeatureSection.js'
 import Pricing from './components/PricingSection.js'
 import Newsletter from './components/NewsletterSection.js'
 import About from './components/AboutSection.js'
 import Header from './components/Header.js'
+import Team from './components/TeamSection.js'
 import { checkUserLoggedIn } from './utils/auth' // Import the utility function
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
+
 export default function Home() {
+  const [userEmail, setUserEmail] = useState("");
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
     AOS.init({ duration: 3000, once: true });
     console.log('AOS initialized');
   }, []);
-
-  const [email, setEmail] = useState("");
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -47,14 +48,20 @@ export default function Home() {
     return null; // Render nothing on the server
   }
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const email = urlParams.get('email');
+
+  if (window.location.pathname.includes('profile')) {
+    return <ProfilePage email={email} />;
+  }
+
   return (
     <div className="" style={{backgroundColor: '#140D0C'}}> 
       {/* Header Component */}
       <Header/>
 
-      <div className="relative isolate px-6 pt-0 lg:px-8"
-      data-aos="fade-up"
-      data-aos-anchor-placement="center-center"
+      <div className="relative isolate px-6 pt-12 lg:px-8"
+      
       >
         <div
           aria-hidden="true"
@@ -68,11 +75,12 @@ export default function Home() {
             className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#302a18] to-[#5A3A2F] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
           />
         </div>
-        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56" 
-          
+        <div className="mx-auto max-w-2xl py-32 sm:py-32 lg:py-50" 
+          data-aos="fade-up"
+          data-aos-anchor-placement="center-center"
           >
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mt-10" style={{ color: '#F2F4E6' }}>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl pt-20" style={{ color: '#F2F4E6' }}>
               The Tech Catalyst
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300">
@@ -83,7 +91,7 @@ export default function Home() {
             <div className="mt-10 flex items-center justify-center gap-x-6">
             <button
               onClick={handleRegisterClick}
-              className="flex-none rounded-md px-3.5 py-2.5 text-sm font-semibold text-[#F2F4E6] shadow-sm border border-[#C69635] hover:border-gray-400 rounded"
+              className="flex-none rounded-md px-3.5 py-2.5 text-sm mb-0 font-semibold text-[#F2F4E6] shadow-sm border border-[#C69635] hover:border-gray-400 rounded"
                 style={{ transition: 'background-color 0.3s ease-in-out' }}
               >
                 Get Started
@@ -100,6 +108,9 @@ export default function Home() {
       </div>
       <div id="pricing">
         <Pricing />
+      </div>
+      <div id="team">
+        <Team />
       </div>
       <div id="newsletter">
         <Newsletter />
