@@ -413,6 +413,27 @@ export default function Dashboard() {
     }
   }, [isBadgeModalOpen]);
 
+
+  const handleDragStart = (index) => (event) => {
+    event.dataTransfer.setData('text/plain', index);
+  };
+
+  const handleDrop = (index) => (event) => {
+    event.preventDefault();
+    const draggedIndex = event.dataTransfer.getData('text/plain');
+    if (draggedIndex !== index) {
+      const updatedProjects = [...projects];
+      const [draggedProject] = updatedProjects.splice(draggedIndex, 1);
+      updatedProjects.splice(index, 0, draggedProject);
+      setProjects(updatedProjects);
+    }
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+  
+
   return (
     <>
       <div className="relative isolate bg-[#140D0C] min-h-[800px] overflow-hidden" style={{margin: '0',padding: '0'}}>
@@ -748,8 +769,33 @@ export default function Dashboard() {
                           </div>
                         </>
                       )}
-                      {projects.map((project, index) => (
-                        <div key={index} className="mb-6 flex justify-evenly items-center">
+                                            {projects.map((project, index) => (
+                        <div
+                          key={index}
+                          className="mb-6 flex justify-evenly items-center"
+                          draggable={isEditing}
+                          onDragStart={handleDragStart(index)}
+                          onDrop={handleDrop(index)}
+                          onDragOver={handleDragOver}
+                        >
+                          {isEditing && (
+                            <div className="cursor-move mr-2">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-white"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 10h16M4 14h16"
+                                />
+                              </svg>
+                            </div>
+                          )}
                           <div className="flex items-start w-[80%]">
                             <span className="text-white text-xl mr-2">•</span>
                             <div>
@@ -766,7 +812,7 @@ export default function Dashboard() {
                                     className="bg-[#1E1412] border border-gray-400 rounded text-left w-[72vw] max-w-[580px] text-[#C99F4A] font-bold pl-1 mb-2 text-sm border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none"
                                     style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }} // Added width: 100%
                                   />
-                                   <ReactQuill
+                                  <ReactQuill
                                     value={project.description}
                                     onChange={(value) => {
                                       const updatedProjects = [...projects];
@@ -788,8 +834,8 @@ export default function Dashboard() {
                           </div>
                           {isEditing && (
                             <button onClick={() => handleDeleteProject(index)} className="text-white hover:text-[#C69635] text-sm px-2 py-1 pb-2 transform translate-x-8" style={{ alignSelf: 'flex-end'}}>
-                            <TrashIcon className="h-5 w-5" />
-                          </button>
+                              <TrashIcon className="h-5 w-5" />
+                            </button>
                           )}
                         </div>
                       ))}
