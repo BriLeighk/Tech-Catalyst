@@ -413,25 +413,70 @@ export default function Dashboard() {
     }
   }, [isBadgeModalOpen]);
 
+  // states to track dragging movement of users cursor
+  const [draggingIndex, setDraggingIndex] = useState(null);
+  const [draggingStyle, setDraggingStyle] = useState({});
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); //ensure project remains relative to cursor 
+
 
   const handleDragStart = (index) => (event) => {
-    event.dataTransfer.setData('text/plain', index);
+    const rect = event.target.getBoundingClientRect();
+    setDragOffset({
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    });
+    setDraggingIndex(index);
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/html', event.target);
+    event.dataTransfer.setDragImage(new Image(), 0, 0); // Hide the default drag image
+  };
+
+  const handleDrag = (event) => {
+    if (draggingIndex !== null) {
+      setDraggingStyle({
+        position: 'fixed', // Changed to absolute for correct positioning
+        top: event.clientY - dragOffset.y, // Adjusted to align cursor tip with origin
+        left: event.clientX - dragOffset.x, // Adjusted to align cursor tip with origin
+        pointerEvents: 'none',
+        zIndex: 1000,
+      });
+    }
   };
 
   const handleDrop = (index) => (event) => {
     event.preventDefault();
-    const draggedIndex = event.dataTransfer.getData('text/plain');
+    const draggedIndex = draggingIndex;
     if (draggedIndex !== index) {
       const updatedProjects = [...projects];
       const [draggedProject] = updatedProjects.splice(draggedIndex, 1);
       updatedProjects.splice(index, 0, draggedProject);
       setProjects(updatedProjects);
     }
+    handleDragEnd();
+  };
+
+  const handleDragEnd = () => {
+    setDraggingIndex(null);
+    setDraggingStyle({});
   };
 
   const handleDragOver = (event) => {
     event.preventDefault();
   };
+
+  useEffect(() => {
+    if (draggingIndex !== null) {
+      document.addEventListener('dragover', handleDrag);
+      document.addEventListener('dragend', handleDragEnd);
+    } else {
+      document.removeEventListener('dragover', handleDrag);
+      document.removeEventListener('dragend', handleDragEnd);
+    }
+    return () => {
+      document.removeEventListener('dragover', handleDrag);
+      document.removeEventListener('dragend', handleDragEnd);
+    };
+  }, [draggingIndex]);
   
 
   return (
@@ -769,7 +814,7 @@ export default function Dashboard() {
                           </div>
                         </>
                       )}
-                                            {projects.map((project, index) => (
+                      {projects.map((project, index) => (
                         <div
                           key={index}
                           className="mb-6 flex justify-evenly items-center"
@@ -777,6 +822,7 @@ export default function Dashboard() {
                           onDragStart={handleDragStart(index)}
                           onDrop={handleDrop(index)}
                           onDragOver={handleDragOver}
+                          style={draggingIndex === index ? draggingStyle : {}}
                         >
                           {isEditing && (
                             <div className="cursor-move mr-2">
@@ -797,7 +843,6 @@ export default function Dashboard() {
                             </div>
                           )}
                           <div className="flex items-start w-[80%]">
-                            <span className="text-white text-xl mr-2">•</span>
                             <div>
                               {isEditing ? (
                                 <>
