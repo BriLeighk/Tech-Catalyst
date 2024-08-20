@@ -7,9 +7,11 @@ import { onAuthStateChanged, signOut, reauthenticateWithCredential, EmailAuthPro
 import { auth, db, storage } from '../firebase'; // Ensure this import is correct
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import axios from 'axios';
-import ReactQuill from 'react-quill';
+import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
 import './customQuill.css';
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -45,6 +47,11 @@ export default function Dashboard() {
   const [projectDescription, setProjectDescription] = useState('');
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false); // New state for modal visibility
   const [isImageHovered, setIsImageHovered] = useState(false); // New state for image hover
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleAddProject = () => {
     setProjects([...projects, { title: projectTitle, description: projectDescription }]);
@@ -298,7 +305,9 @@ export default function Dashboard() {
   };
 
   const handleUploadButtonClick = () => {
-    document.getElementById('file-upload').click();
+    if (typeof document !== 'undefined') {
+      document.getElementById('file-upload').click();
+    }
   };
   
   const navigation = [
@@ -390,16 +399,18 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isBadgeModalOpen && !event.target.closest('.badge-modal')) {
-        setIsBadgeModalOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (typeof document !== 'undefined') {
+      const handleClickOutside = (event) => {
+        if (isBadgeModalOpen && !event.target.closest('.badge-modal')) {
+          setIsBadgeModalOpen(false);
+        }
+      };
+  
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
   }, [isBadgeModalOpen]);
 
   return (
@@ -900,12 +911,12 @@ export default function Dashboard() {
           Password updated successfully
         </div>
       )}
-      {showError && (
+      {showError && isClient && (
         <div className="fixed bottom-4 right-4 bg-[#C69635] text-[#1E1412] font-bold px-4 py-2 rounded-md shadow-md transition-opacity duration-300" style={{ opacity: showError ? 1 : 0 }}>
           {errorMessage}
         </div>
       )}
-      {showSuccess && (
+      {showSuccess && isClient && (
         <div className="fixed bottom-4 right-4 bg-[#C69635] text-[#1E1412] font-bold p-4 rounded shadow-lg transition-opacity duration-300 ease-in-out">
           Email preferences updated successfully
         </div>
