@@ -7,6 +7,9 @@ import { onAuthStateChanged, signOut, reauthenticateWithCredential, EmailAuthPro
 import { auth, db, storage } from '../firebase'; // Ensure this import is correct
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import axios from 'axios';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import './customQuill.css';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -131,8 +134,8 @@ export default function Dashboard() {
     setLastName(event.target.value);
   };
 
-  const handleBioChange = (event) => {
-    setBio(event.target.value);
+  const handleBioChange = (value) => {
+    setBio(value);
   };
 
   const handleSave = async () => {
@@ -642,8 +645,8 @@ export default function Dashboard() {
                       <button onClick={() => setIsEditing(true)} className="absolute top-2 right-2">
                         <PencilSquareIcon className="h-6 w-6 text-white hover:text-[#C69635]" />
                       </button>
-                      {isEditing && <div className="text-[#C69635] text-xl font-bold mb-2">Name</div>}
-                      <div className={`text-[#C69635] text-xl flex items-center mb-2 ${!isEditing ? 'font-bold' : ''}`}>
+                      {isEditing && <div className="text-[#C69635] text-[22px] text-left font-bold mb-2">Name</div>}
+                      <div className={` text-[#C69635] text-[22px] flex items-center mb-2 ${!isEditing ? 'font-bold justify-center' : ''}`}>
                         {isEditing ? (
                           <>
                             <input
@@ -668,25 +671,23 @@ export default function Dashboard() {
                         )}
                       </div>
                       {/* Put something here */}
-                      {isEditing && <div className="text-white text-xl font-bold mb-2">Bio</div>}
-                      <div className={`text-white text-sm flex items-center mb-4`}>
+                      {isEditing && <div className="text-[#C69635] text-xl font-bold mb-2 pt-8">Bio</div>}
+                      <div className={`text-white text-sm flex items-center text-center mb-4`}>
                         {isEditing ? (
-                          <textarea
+                          <ReactQuill
                             value={bio}
-                            onChange={(e) => {
-                              handleBioChange(e);
-                              e.target.style.height = 'auto';
-                              e.target.style.height = `${e.target.scrollHeight}px`; // Set the height to the scroll height
+                            onChange={(value) => {
+                              handleBioChange(value);
                             }}
-                            className="bg-[#231715] border border-gray-400 rounded text-left text-sm text-white w-full pl-1 border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none"
-                            style={{ minHeight: '1.5rem', maxHeight: '10rem', overflow: 'hidden', paddingLeft: '4px', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
-                            maxLength={200}
+                            className="custom-quill text-left text-sm text-white w-full pl-1"
+                            style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
+                            maxLength={user.email === 'kirchgessner@wisc.edu' ? undefined : 400}
                           />
                         ) : (
-                          <span>{user.bio}</span>
+                          <div className="display-container" dangerouslySetInnerHTML={{ __html: user.bio }} />
                         )}
                       </div>
-                      <div className="text-[#C69635] text-xl font-bold mb-2 mt-8">Projects</div>
+                      <div className="text-[#C69635] text-[22px] font-bold mb-2 mt-8">Projects</div>
                       {isEditing && (
                         <>
                           <p className="text-gray-400 text-xs mb-4">Add your projects below. You can add multiple projects by clicking the plus button.</p>
@@ -696,20 +697,19 @@ export default function Dashboard() {
                               type="text"
                               value={projectTitle}
                               onChange={(e) => setProjectTitle(e.target.value)}
-                              className="bg-[#231715] border border-gray-400 rounded text-left text-white w-full pl-1 mb-2 text-sm border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none"
+                              className="bg-[#1E1412] border border-gray-400 rounded text-left text-[#C99F4A] w-full pl-1 mb-2 text-sm border-[#33211E] font-bold border-[2px] focus:border-[#C69635] focus:outline-none"
                               style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                             />
                             <label className="text-white text-sm">Project Description</label>
-                            <textarea
+                            <ReactQuill
                               value={projectDescription}
-                              onChange={(e) => {
-                              setProjectDescription(e.target.value);
-                              e.target.style.height = 'auto';
-                              e.target.style.height = `${e.target.scrollHeight}px`; // Set the height to the scroll height
+                              onChange={(value) => {
+                              setProjectDescription(value);
+                              
                             }}
-                            className="bg-[#231715] border border-gray-400 rounded text-left text-sm text-white w-full pl-1 border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none"
-                            style={{ minHeight: '1.5rem', maxHeight: '10rem', overflow: 'hidden', paddingLeft: '4px', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
-                            maxLength={250}
+                            className="custom-quill text-left text-sm w-full pl-1"
+                            style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
+                            maxLength={user.email === 'kirchgessner@wisc.edu' ? undefined : 1000}
                           />
                             <div className="flex justify-flex-end mt-2 mb-8">
                               <button 
@@ -737,25 +737,25 @@ export default function Dashboard() {
                                       updatedProjects[index].title = e.target.value;
                                       setProjects(updatedProjects);
                                     }}
-                                    className="bg-[#231715] border border-gray-400 rounded text-left w-[72vw] max-w-[580px] text-white pl-1 mb-2 text-sm border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none"
+                                    className="bg-[#1E1412] border border-gray-400 rounded text-left w-[72vw] max-w-[580px] text-[#C99F4A] font-bold pl-1 mb-2 text-sm border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none"
                                     style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }} // Added width: 100%
                                   />
-                                  <textarea
+                                   <ReactQuill
                                     value={project.description}
-                                    onChange={(e) => {
+                                    onChange={(value) => {
                                       const updatedProjects = [...projects];
-                                      updatedProjects[index].description = e.target.value;
+                                      updatedProjects[index].description = value;
                                       setProjects(updatedProjects);
                                     }}
-                                    className="bg-[#231715] border border-gray-400 rounded text-left text-sm text-white w-[72vw] max-w-[580px] pl-1 border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none"
-                                    style={{ minHeight: '1.5rem', maxHeight: '10rem', overflow: 'hidden', paddingLeft: '4px', boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
-                                    maxLength={200}
+                                    className="custom-quill bg-[#231715] text-left text-sm w-[72vw] max-w-[580px] pl-1"
+                                    style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
+                                    maxLength={user.email === 'kirchgessner@wisc.edu' ? undefined : 1000}
                                   />
                                 </>
                               ) : (
                                 <>
-                                  <div className="text-white text-sm font-bold">{project.title}</div>
-                                  <div className="text-white text-sm">{project.description}</div>
+                                  <div className="text-[#C99F4A] text-[16px] font-bold">{project.title}</div>
+                                  <div className="display-container text-white text-sm" dangerouslySetInnerHTML={{ __html: project.description.replace(/<ul>/g, '<ul class="list-disc list-inside ml-4">').replace(/<ol>/g, '<ol class="list-decimal list-inside ml-4">') }} />
                                 </>
                               )}
                             </div>
@@ -907,7 +907,7 @@ export default function Dashboard() {
             }
           }}
         >
-          <img src="./firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4" />
+          <img src="./firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4"/>
           <h2 className="text-[#DDBA6C] text-xl font-bold mb-2">First User Badge</h2>
           <p className="text-[#DDBA6C] text-sm">{user && `Earned as The Tech Catalysts' ${getOrdinalSuffix(user.userNumber)} member.`}</p>
           <p className="text-[#C69635] text-xs flex row text-left mt-8">

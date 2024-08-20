@@ -7,8 +7,14 @@ import Newsletter from './components/NewsletterSection.js'
 import About from './components/AboutSection.js'
 import Header from './components/Header.js'
 import { checkUserLoggedIn } from './utils/auth' // Import the utility function
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 export default function Home() {
+  useEffect(() => {
+    AOS.init({ duration: 3000, once: true });
+    console.log('AOS initialized');
+  }, []);
 
   const [email, setEmail] = useState("");
   const [isClient, setIsClient] = useState(false);
@@ -46,7 +52,10 @@ export default function Home() {
       {/* Header Component */}
       <Header/>
 
-      <div className="relative isolate px-6 pt-14 lg:px-8">
+      <div className="relative isolate px-6 pt-0 lg:px-8"
+      data-aos="fade-up"
+      data-aos-anchor-placement="center-center"
+      >
         <div
           aria-hidden="true"
           className="absolute inset-x-0 top-0 -z-10 transform-gpu overflow-hidden blur-3xl sm:top-0"
@@ -59,9 +68,11 @@ export default function Home() {
             className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#302a18] to-[#5A3A2F] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
           />
         </div>
-        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56" 
+          
+          >
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl" style={{ color: '#F2F4E6' }}>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mt-10" style={{ color: '#F2F4E6' }}>
               The Tech Catalyst
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300">
