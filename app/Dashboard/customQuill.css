@@ -1,0 +1,67 @@
+/* customQuill.css */
+.ql-container {
+    background-color: #1E1412; /* Background color */
+    color: white; /* Text color */
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1); /* Box shadow */
+    border-radius: 5px;
+}
+
+
+.ql-toolbar {
+    background-color: #2B1C1A; /* Toolbar background color */
+    color: black; /* Text color */
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1); /* Box shadow */
+    font-weight: bold;
+    border: 2px solid #C69635; /* Toolbar border color */
+}
+
+.ql-editor {
+    min-height: 4rem; /* Minimum height */
+    max-height: 15rem; /* Maximum height */
+    overflow: auto; /* Scrollable content */
+    padding-left: 4px; /* Padding */
+}
+
+.ql-editor p {
+    margin: 0; /* Remove default paragraph margin */
+}
+
+.ql-editor strong {
+    color: #DDBA6C; /* Bold text color */
+}
+
+/* Ensure bold text retains color after saving */
+.ql-container strong {
+    color: #DDBA6C; /* Bold text color */
+}
+
+/* Ensure bold text retains color in the displayed content */
+.display-container strong {
+    color: #DDBA6C; /* Bold text color */
+}
+
+/* Add margin to list items to prevent hanging */
+.display-container ul,
+.display-container ol {
+    margin-left: 1.5rem; /* Adjust as needed */
+    padding-left: 1.5rem; /* Ensure proper indentation */
+}
+
+.display-container li {
+    margin-bottom: 0.5rem; /* Add space between list items */
+}
+
+/* Ensure proper indentation for nested lists */
+.display-container ul ul,
+.display-container ol ol {
+    margin-left: 1.5rem; /* Adjust as needed */
+    padding-left: 1.5rem; /* Ensure proper indentation */
+}
+
+/* Ensure consistency between editor and display container */
+.ql-editor ul,
+.ql-editor ol,
+.display-container ul,
+.display-container ol {
+    list-style-position: outside; /* Ensure list items are properly aligned */
+}

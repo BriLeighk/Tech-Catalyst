@@ -4,6 +4,9 @@ import Switch from 'react-switch';
 import Link from 'next/link';
 import { checkUserLoggedIn } from '../utils/auth'; // Import the auth function
 import Popup from './Popup'; // Import the Popup component
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { useEffect } from 'react';
 
 const freeFeatures = [
   'Access to community-uploaded resources',
@@ -22,6 +25,11 @@ const premiumFeatures = [
 ]
 
 export default function PricingSection() {
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: false });
+    console.log('AOS initialized');
+  }, []);
+
   const [isMonthly, setIsMonthly] = useState(true);
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
 
@@ -39,12 +47,13 @@ export default function PricingSection() {
       {showPopup && <Popup setShowPopup={setShowPopup} />} {/* Conditionally render the Popup */}
       <div className="mx-auto max-w-8xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl sm:text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Free vs Premium Features</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-center text-white sm:text-4xl mb-8 sm:mb-16">Free vs Premium Features</h2>
         </div>
 
         <div className="flex flex-col lg:flex-row lg:space-x-6" style={{ marginTop: '20px' }}>
+          
           {/* Free Tier */}
-          <div className="mt-16 rounded-3xl ring-1 ring-[#C69635] lg:mt-0 lg:flex-1 lg:max-w-none" style={{ width: '100%' }}>
+          <div className="mt-16 rounded-3xl ring-1 ring-[#C69635] lg:mt-0 lg:flex-1 lg:max-w-none"  style={{ width: '100%' }} data-aos="fade-up">
             <div className="p-8 sm:p-10 lg:flex-auto">
               <h3 className="text-2xl font-bold tracking-tight text-white text-center">Free Tier</h3>
               <p className="mt-6 text-base leading-7 text-gray-300 text-center">
@@ -90,7 +99,7 @@ export default function PricingSection() {
           </div>
 
           {/* Premium Yearly Tier - Monthly or Yearly (discount on year) */}
-          <div className="mt-16 rounded-3xl ring-1 ring-[#C69635] lg:mt-0 lg:flex-1 lg:max-w-none" style={{ width: '100%' }}>
+          <div className="mt-16 rounded-3xl ring-1 ring-[#C69635] lg:mt-0 lg:flex-1 lg:max-w-none" style={{ width: '100%' }} data-aos="fade-up">
             <div className="p-8 sm:p-10 lg:flex-auto">
               <h3 className="text-2xl font-bold tracking-tight text-white text-center">Premium</h3>
               <p className="mt-6 text-base leading-7 text-gray-300 text-center">
@@ -158,7 +167,7 @@ export default function PricingSection() {
           </div>
 
           {/* Lifetime membership */}
-          <div className="mt-16 rounded-3xl ring-1 ring-[#C69635] lg:mt-0 lg:flex-1 lg:max-w-none" style={{ width: '100%' }}>
+          <div className="mt-16 rounded-3xl ring-1 ring-[#C69635] lg:mt-0 lg:flex-1 lg:max-w-none" style={{ width: '100%' }} data-aos="fade-up">
             <div className="p-8 sm:p-10 lg:flex-auto">
               <h3 className="text-2xl font-bold tracking-tight text-white text-center">Lifetime membership</h3>
               <p className="mt-6 text-base leading-7 text-gray-300 text-center">

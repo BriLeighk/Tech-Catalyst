@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import { UserCircleIcon, BookOpenIcon, CalendarDaysIcon, BriefcaseIcon, ChatBubbleBottomCenterTextIcon, UserGroupIcon, ArrowUpOnSquareIcon, TrophyIcon } from '@heroicons/react/24/outline'
 
 const features = [
@@ -52,6 +55,11 @@ const features = [
 ]
 
 export default function FeatureSection() {
+  useEffect(() => {
+    AOS.init({ duration: 1000, once: false });
+    console.log('AOS initialized');
+  }, []);
+
   return (
     <div className="bg-[#140D0C] py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -69,8 +77,8 @@ export default function FeatureSection() {
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
           <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-            {features.map((feature) => (
-              <div key={feature.name} className="relative pl-16">
+            {features.map((feature, index) => (
+              <div key={feature.name} className={`relative pl-16`}  data-aos={index % 2 === 0 ? 'fade-right' : 'fade-left'}>
                 <dt className="text-base font-semibold leading-7 text-[#F2F4E6]">
                   <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1E1412]">
                     <feature.icon aria-hidden="true" className="h-7 w-7 text-[#C69635]" />
@@ -85,4 +93,5 @@ export default function FeatureSection() {
       </div>
     </div>
   )
+  
 }
