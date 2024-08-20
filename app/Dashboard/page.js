@@ -640,6 +640,9 @@ export default function Dashboard() {
                   />
                 </div>
                 <div className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-full max-w-[700px] relative" style={{ border: '2px solid #2D1E1B' }}>
+                  <div className=" text-[#C69635] text-sm font-bold px-2 py-1 mb-2">
+                  {user.email === 'kirchgessner@wisc.edu' ? 'Founder' : user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' ? 'Co-Founder' : ''}
+                </div>
                   {activeTab === 'profile' && (
                     <>
                       <button onClick={() => setIsEditing(true)} className="absolute top-2 right-2">
@@ -687,6 +690,18 @@ export default function Dashboard() {
                           <div className="display-container" dangerouslySetInnerHTML={{ __html: user.bio }} />
                         )}
                       </div>
+                      {user.email === 'kirchgessner@wisc.edu' && (
+                        <>
+                          <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Lead Developer</div>
+                        </>
+                      )}
+                      {user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' && (
+                        <>
+                          <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Developer</div>
+                        </>
+                      )}
+
+
                       <div className="text-[#C69635] text-[22px] font-bold mb-2 mt-8">Projects</div>
                       {isEditing && (
                         <>
