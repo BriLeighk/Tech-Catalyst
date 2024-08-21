@@ -575,7 +575,7 @@ export default function Dashboard() {
                       <MenuButton className="relative flex max-w-xs items-center rounded-full bg-[#140D0C] text-sm focus:outline-none focus:ring-2 focus:ring-[#C69635] focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
-                        <img alt="" src={initialUser.imageUrl} className="h-10 w-10 rounded-full" />
+                        <img alt="" src={initialUser.imageUrl} className="h-10 w-10 rounded-full object-cover" />
                       </MenuButton>
                     </div>
                     <MenuItems
@@ -638,7 +638,7 @@ export default function Dashboard() {
             <div className="border-t border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  <img alt="" src={initialUser.imageUrl} className="h-10 w-10 rounded-full" />
+                  <img alt="" src={initialUser.imageUrl} className="h-10 w-10 rounded-full object-cover" />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">{initialUser.name}</div>
@@ -699,7 +699,7 @@ export default function Dashboard() {
                 <img 
                     alt="" 
                     src={user.imageUrl} 
-                    className="h-32 w-32 rounded-full shadow-lg" 
+                    className="h-32 w-32 rounded-full shadow-lg object-cover" 
                     style={{ border: `1px solid ${user.userNumber && user.userNumber <= 100 ? '#C69635' : '#2D1E1B'}` }}
                   />
                   {user.userNumber && user.userNumber <= 100 && (
