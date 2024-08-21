@@ -84,7 +84,7 @@ export default function PricingSection() {
                     <span className="text-sm font-semibold leading-6 tracking-wide text-[#C69635]">USD</span>
                   </p>
 
-                    <div className="mt-10 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded" 
+                    <div className="mt-10 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded w-[164.64px] mx-auto" 
                     style={{transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)'}}
                       onClick={handleButtonClick}
                     >
@@ -150,7 +150,7 @@ export default function PricingSection() {
                     </span>
                     <span className="text-sm font-semibold leading-6 tracking-wide text-[#C69635]">USD</span>
                   </p>
-                  <div className="mt-10 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded" 
+                  <div className="mt-10 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded w-[164.64px] mx-auto" 
                     style={{transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)'}}
                     onClick={handleButtonClick}
                   >
@@ -197,7 +197,7 @@ export default function PricingSection() {
                     <span className="text-5xl font-bold tracking-tight text-[#C69635]">$249</span>
                     <span className="text-sm font-semibold leading-6 tracking-wide text-[#C69635]">USD</span>
                   </p>
-                  <div className="mt-10 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded" 
+                  <div className="mt-10 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold text-white shadow-sm border border-gray-400 hover:border-[#C69635] rounded w-[164.64px] mx-auto" 
                     style={{transition: 'background-color 0.3s ease-in-out', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)'}}
                     onClick={handleButtonClick}
                   >
