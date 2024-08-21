@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { UserCircleIcon, BookOpenIcon, CalendarDaysIcon, BriefcaseIcon, ChatBubbleBottomCenterTextIcon, UserGroupIcon, ArrowUpOnSquareIcon, TrophyIcon } from '@heroicons/react/24/outline'
+import { TbMessageChatbot } from "react-icons/tb";
+import { FaRegNoteSticky } from "react-icons/fa6";
 
 const features = [
   {
@@ -51,6 +53,20 @@ const features = [
     description:
       'Upload new resources to help others learn faster, and earn milestone-based reward badges for contributing to the library.',
     icon: ArrowUpOnSquareIcon,
+  },
+
+  {
+    name: 'Flashcards',
+    description:
+      'Create comprehensive flashcards to help you memorize concepts and topics by adding your notes and letting our AI do the rest.',
+      icon: (props) => <FaRegNoteSticky {...props} className="h-6 w-6 text-[#C69635]" />,
+  },
+
+  {
+    name: 'Tech Chatbot',
+    description:
+      'Ask any questions you have about the tech industry, and get personalized answers from our AI chatbot.',
+      icon: (props) => <TbMessageChatbot {...props} className="h-7 w-7 text-[#C69635] stroke-2" />,
   },
 ]
 
