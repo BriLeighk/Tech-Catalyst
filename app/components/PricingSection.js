@@ -13,7 +13,8 @@ const freeFeatures = [
   'Restricted access to job listings',
   'Ability to create and update basic profile features',
   'Limited visibility of events',
-  'Basic account badges for milestones'
+  'Basic account badges for milestones',
+  'limited flashcard and chatbot requests'
 ]
 
 const premiumFeatures = [
@@ -22,6 +23,7 @@ const premiumFeatures = [
   'Enhanced profile customization',
   'Exclusive badges for milestone completion',
   'Visibility of all tech event listings',
+  'unlimited flashcard and chatbot requests'
 ]
 
 export default function PricingSection() {

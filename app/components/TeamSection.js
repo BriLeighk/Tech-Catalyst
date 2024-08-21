@@ -9,7 +9,6 @@ export default function TeamSection() {
   const [user2, setUser2] = useState(null); // New state for the second user
   const [user3, setUser3] = useState(null); // New state for the third user
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
-  const [isImageHovered, setIsImageHovered] = useState(false);
   const [hoveredUser, setHoveredUser] = useState(null); // New state to track which user's badge is hovered
 
   useEffect(() => {
@@ -113,15 +112,29 @@ export default function TeamSection() {
                         className="absolute -top-[32px] right-[34px] h-14 w-14 cursor-pointer"
                         onMouseEnter={() => {
                           setIsBadgeModalOpen(true);
-                          setIsImageHovered(true);
                           setHoveredUser(user);
                         }}
-                        onMouseLeave={() => setIsImageHovered(false)}
+                        onMouseLeave={() => setIsBadgeModalOpen(false)}
                       />
+                    )}
+                    {isBadgeModalOpen && hoveredUser === user && (
+                      <div
+                        className="absolute bottom-full mb-6 left-1/2 transform -translate-x-1/2 bg-[#1E1412] p-2 rounded-lg shadow-lg shadow-black text-center w-[150px] border-[#C69635] border-[1px] before:content-[''] before:absolute before:top-full before:left-1/2 before:transform before:-translate-x-1/2 before:border-8 before:border-transparent before:border-t-[#C69635] after:content-[''] after:absolute after:top-full after:left-1/2 after:transform after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-[#1E1412] after:mt-[-1px]"
+                        onMouseEnter={() => setIsBadgeModalOpen(true)}
+                        onMouseLeave={() => {
+                            setIsBadgeModalOpen(false);
+                        }}
+                      >
+                        <img src="/firstUserBadge.png" alt="First User Badge" className="h-12 w-12 mx-auto mb-2"/>
+                        <h2 className="text-[#DDBA6C] text-sm font-bold mb-1">First User Badge</h2>
+                        <p className="text-[#DDBA6C] text-xs">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
+                        <p className="text-[#C69635] text-xs flex row text-left mt-2">
+                          <TrophyIcon className="h-3 w-3 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+                      </div>
                     )}
                   </div>
                   <div className="text-[#C69635] text-[22px] font-bold">{user.firstname} {user.lastname}</div>
-                  <div className="text-white text-sm" dangerouslySetInnerHTML={{ __html: user.bio }} />
+                  <div className="text-white text-sm text-center" dangerouslySetInnerHTML={{ __html: user.bio }} />
                   <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full">Lead Developer</div>
                 </div>
               </div>
@@ -150,15 +163,29 @@ export default function TeamSection() {
                         className="absolute -top-[32px] right-[34px] h-14 w-14 cursor-pointer"
                         onMouseEnter={() => {
                           setIsBadgeModalOpen(true);
-                          setIsImageHovered(true);
                           setHoveredUser(user2);
                         }}
-                        onMouseLeave={() => setIsImageHovered(false)}
+                        onMouseLeave={() => setIsBadgeModalOpen(false)}
                       />
+                    )}
+                    {isBadgeModalOpen && hoveredUser === user2 && (
+                      <div
+                        className="absolute bottom-full mb-6 left-1/2 transform -translate-x-1/2 bg-[#1E1412] p-2 rounded-lg shadow-lg shadow-black text-center w-[150px] border-[#C69635] border-[1px] before:content-[''] before:absolute before:top-full before:left-1/2 before:transform before:-translate-x-1/2 before:border-8 before:border-transparent before:border-t-[#C69635] after:content-[''] after:absolute after:top-full after:left-1/2 after:transform after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-[#1E1412] after:mt-[-1px]"
+                        onMouseEnter={() => setIsBadgeModalOpen(true)}
+                        onMouseLeave={() => {
+                            setIsBadgeModalOpen(false);
+                        }}
+                      >
+                        <img src="/firstUserBadge.png" alt="First User Badge" className="h-12 w-12 mx-auto mb-2"/>
+                        <h2 className="text-[#DDBA6C] text-sm font-bold mb-1">First User Badge</h2>
+                        <p className="text-[#DDBA6C] text-xs">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
+                        <p className="text-[#C69635] text-xs flex row text-left mt-2">
+                          <TrophyIcon className="h-3 w-3 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+                      </div>
                     )}
                   </div>
                   <div className="text-[#C69635] text-[22px] font-bold">{user2.firstname} {user2.lastname}</div>
-                  <div className="text-white text-sm" dangerouslySetInnerHTML={{ __html: user2.bio }} />
+                  <div className="text-white text-sm text-center" dangerouslySetInnerHTML={{ __html: user2.bio }} />
                   <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full">Developer</div>
                 </div>
               </div>
@@ -187,39 +214,34 @@ export default function TeamSection() {
                         className="absolute -top-[32px] right-[34px] h-14 w-14 cursor-pointer"
                         onMouseEnter={() => {
                           setIsBadgeModalOpen(true);
-                          setIsImageHovered(true);
                           setHoveredUser(user3);
                         }}
-                        onMouseLeave={() => setIsImageHovered(false)}
+                        onMouseLeave={() => setIsBadgeModalOpen(false)}
                       />
+                    )}
+                    {isBadgeModalOpen && hoveredUser === user3 && (
+                      <div
+                        className="absolute bottom-full mb-6 left-1/2 transform -translate-x-1/2 bg-[#1E1412] p-2 rounded-lg shadow-lg shadow-black text-center w-[150px] border-[#C69635] border-[1px] before:content-[''] before:absolute before:top-full before:left-1/2 before:transform before:-translate-x-1/2 before:border-8 before:border-transparent before:border-t-[#C69635] after:content-[''] after:absolute after:top-full after:left-1/2 after:transform after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-[#1E1412] after:mt-[-1px]"
+                        onMouseEnter={() => setIsBadgeModalOpen(true)}
+                        onMouseLeave={() => {
+                            setIsBadgeModalOpen(false);
+                        }}
+                      >
+                        <img src="/firstUserBadge.png" alt="First User Badge" className="h-12 w-12 mx-auto mb-2"/>
+                        <h2 className="text-[#DDBA6C] text-sm font-bold mb-1">First User Badge</h2>
+                        <p className="text-[#DDBA6C] text-xs">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
+                        <p className="text-[#C69635] text-xs flex row text-left mt-2">
+                          <TrophyIcon className="h-3 w-3 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+                      </div>
                     )}
                   </div>
                   <div className="text-[#C69635] text-[22px] font-bold">{user3.firstname} {user3.lastname}</div>
-                  <div className="text-white text-sm" dangerouslySetInnerHTML={{ __html: user3.bio }} />
+                  <div className="text-white text-sm text-center" dangerouslySetInnerHTML={{ __html: user3.bio }} />
                   <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full">Developer</div>
                 </div>
               </div>
             </Link>
           )}
-        </div>
-      </div>
-      <div
-        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${isBadgeModalOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-      >
-        <div
-          className="bg-[#1E1412] p-6 rounded-lg shadow-lg text-center h-[330px] w-[300px] border-[#C69635] border-[1px]"
-          onMouseEnter={() => setIsBadgeModalOpen(true)}
-          onMouseLeave={() => {
-            if (!isImageHovered) {
-              setIsBadgeModalOpen(false);
-            }
-          }}
-        >
-          <img src="/firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4"/>
-          <h2 className="text-[#DDBA6C] text-xl font-bold mb-2">First User Badge</h2>
-          <p className="text-[#DDBA6C] text-sm">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
-          <p className="text-[#C69635] text-xs flex row text-left mt-8">
-            <TrophyIcon className="h-5 w-5 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
         </div>
       </div>
     </div>

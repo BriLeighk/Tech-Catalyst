@@ -13,11 +13,9 @@ export default function ProfilePage() {
   const { email } = router.query; // Get the email from the route parameters
   const [user, setUser] = useState(null);
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
-  const [isImageHovered, setIsImageHovered] = useState(false);
   const [loading, setLoading] = useState(true); // Add loading state
   const [isClient, setIsClient] = useState(false); // Track if component is mounted on client
-  const [githubUrl, setGithubUrl] = useState('');
-  const [linkedinUrl, setLinkedinUrl] = useState('');
+  const [hoveredUser, setHoveredUser] = useState(null); // New state to track which user's badge is hovered
 
   useEffect(() => {
     setIsClient(true); // Set to true when component mounts on client
@@ -66,9 +64,8 @@ export default function ProfilePage() {
   if (!isClient) {
     return null; // Render nothing on the server
   }
-
+  
   return (
-
     <div className="relative isolate bg-[#140D0C] min-h-[800px] overflow-hidden" style={{ margin: '0', padding: '0' }}>
       <Header/>
       <div className="text-center mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 mt-28">
@@ -111,17 +108,29 @@ export default function ProfilePage() {
                     className="absolute -top-[32px] right-[34px] h-14 w-14 cursor-pointer"
                     onMouseEnter={() => {
                       setIsBadgeModalOpen(true);
-                      setIsImageHovered(true);
+                      setHoveredUser(user);
                     }}
-                    onMouseLeave={() => setIsImageHovered(false)}
+                    onMouseLeave={() => setIsBadgeModalOpen(false)}
                   />
                 )}
+                {isBadgeModalOpen && hoveredUser === user && (
+                    <div
+                    className="absolute top-8 right-full mr-4 transform -translate-y-1/2 bg-[#1E1412] p-2 rounded-lg shadow-lg shadow-black text-center w-[150px] border-[#C69635] border-[1px]"
+                    onMouseEnter={() => setIsBadgeModalOpen(true)}
+                    onMouseLeave={() => {
+                        setIsBadgeModalOpen(false);
+                    }}
+                    >
+                    <div className="absolute right-[-16px] top-1/3 transform -translate-y-1/2 w-0 h-0 border-8 border-transparent border-l-[#C69635] after:content-[''] after:absolute after:top-1/2 after:left-[-8px] after:transform after:-translate-y-1/2 after:border-8 after:border-transparent after:border-l-[#1E1412] after:ml-[-1px]"></div>
+                    <img src="/firstUserBadge.png" alt="First User Badge" className="h-12 w-12 mx-auto mb-2"/>
+                    <h2 className="text-[#DDBA6C] text-sm font-bold mb-1">First User Badge</h2>
+                    <p className="text-[#DDBA6C] text-xs">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
+                    <p className="text-[#C69635] text-xs flex row text-left mt-2">
+                      <TrophyIcon className="h-3 w-3 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+                    </div>
+                    )}
               </div>
-
-
-
               <div className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-full max-w-[700px] relative" style={{ border: '2px solid #2D1E1B' }}>
-              
                 {/* Github and LinkedIn */}
                 <div className="flex justify-left space-x-4 mt-2 mb-2">
                       {user.githubUrl && (
@@ -139,14 +148,12 @@ export default function ProfilePage() {
                         </a>
                       )}
                   </div>
-
                 <div className="text-[#C69635] text-[22px] flex items-center mb-2 font-bold justify-center">
                   <span>{user.firstname} {user.lastname}</span>
                 </div>
                 <div className=" text-[#C69635] text-sm font-bold px-2 py-1 mb-0 text-center">
                 {user.email === 'kirchgessner@wisc.edu' ? 'Founder' : user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' ? 'Co-Founder' : ''}
               </div>
-
                 <div className="text-white text-sm flex items-center text-center mb-4 mt-10">
                   <div className="display-container" dangerouslySetInnerHTML={{ __html: user.bio }} />
                 </div>
@@ -160,7 +167,6 @@ export default function ProfilePage() {
                     {user.email === 'bethelbezabeh@gmail.com' ? 'Developer' : 'Developer'}
                   </div>
                 )}
-                
                 <div className="text-[#C69635] text-[22px] font-bold mb-2 mt-8">Projects</div>
                 {user.projects && user.projects.map((project, index) => (
                   <div key={index} className="mb-6 flex justify-evenly items-center">
@@ -178,27 +184,6 @@ export default function ProfilePage() {
           )}
         </div>
       </main>
-      {isBadgeModalOpen && (
-  <div
-    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${isBadgeModalOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-  >
-        <div
-          className="bg-[#1E1412] p-6 rounded-lg shadow-lg text-center h-[330px] w-[250px] border-[#C69635] border-[1px]" // Adjusted width from 300px to 250px
-          onMouseEnter={() => setIsBadgeModalOpen(true)}
-          onMouseLeave={() => {
-            if (!isImageHovered) {
-              setIsBadgeModalOpen(false);
-            }
-          }}
-        >
-          <img src="/firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4"/>
-          <h2 className="text-[#DDBA6C] text-xl font-bold mb-2">First User Badge</h2>
-          <p className="text-[#DDBA6C] text-sm">{user && `Earned as The Tech Catalysts' ${getOrdinalSuffix(user.userNumber)} member.`}</p>
-          <p className="text-[#C69635] text-xs flex row text-left mt-8">
-            <TrophyIcon className="h-5 w-5 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
-        </div>
-      </div>
-      )}
     </div>
   );
 }
