@@ -129,7 +129,10 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
                       alt="" 
                       src={user.imageUrl || '/placeholder.png'} 
                       className="h-16 w-16 rounded-full shadow-lg shadow-[#140D0C]" 
-                      style={{ border: `2px solid ${user.userNumber && user.userNumber <= 100 ? '#C69635' : '#2D1E1B'}` }}
+                      style={{ 
+                        border: `2px solid ${user.userNumber && user.userNumber <= 100 ? '#C69635' : '#2D1E1B'}`,
+                        objectFit: 'cover' // Ensure images aren't distorted
+                      }}
                     />
                     {user.userNumber && user.userNumber <= 100 && (
                       <img
