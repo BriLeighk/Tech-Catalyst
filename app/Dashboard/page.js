@@ -48,6 +48,8 @@ export default function Dashboard() {
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false); // New state for modal visibility
   const [isImageHovered, setIsImageHovered] = useState(false); // New state for image hover
   const [isClient, setIsClient] = useState(false);
+  const [githubUrl, setGithubUrl] = useState('');
+  const [linkedinUrl, setLinkedinUrl] = useState('');
 
   useEffect(() => {
     setIsClient(true);
@@ -62,6 +64,14 @@ export default function Dashboard() {
   const handleDeleteProject = (index) => {
     const updatedProjects = projects.filter((_, i) => i !== index);
     setProjects(updatedProjects);
+  };
+
+  const handleGithubUrlChange = (event) => {
+    setGithubUrl(event.target.value);
+  };
+  
+  const handleLinkedinUrlChange = (event) => {
+    setLinkedinUrl(event.target.value);
   };
 
   useEffect(() => {
@@ -89,6 +99,8 @@ export default function Dashboard() {
           setLastName(userData.lastname || '');
           setBio(userData.bio || '');
           setProjects(userData.projects || []);
+          setGithubUrl(userData.githubUrl || ''); // Set GitHub URL
+          setLinkedinUrl(userData.linkedinUrl || ''); // Set LinkedIn URL
   
           // Fetch subscription status from Brevo
           const response = await axios.post('/api/checkBrevoSubscription', { email: userData.email });
@@ -147,14 +159,32 @@ export default function Dashboard() {
 
   const handleSave = async () => {
     if (user && user.email) { // Ensure user and user.email are defined
+
+      if (!isValidUrl(githubUrl, 'github') & !isValidUrl(linkedinUrl, 'linkedin') * githubUrl !== '' & linkedinUrl !== '') {
+        setErrorMessage('Please enter valid URLs for GitHub and LinkedIn.');
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000);
+        return;
+      } else if (!isValidUrl(linkedinUrl, 'linkedin') & linkedinUrl !== '') {
+        setErrorMessage('Please enter valid URL for LinkedIn.');
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000);
+        return;
+      } else if (!isValidUrl(githubUrl, 'github') & githubUrl !== '') {
+        setErrorMessage('Please enter valid URL for GitHub.');
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000);
+        return;
+      }
+
       try {
         const userQuery = query(collection(db, 'users'), where('email', '==', user.email));
         const querySnapshot = await getDocs(userQuery);
 
         if (!querySnapshot.empty) {
           const userDoc = querySnapshot.docs[0];
-          await updateDoc(userDoc.ref, { firstname: firstName, lastname: lastName, bio, projects });
-          setUser((prevUser) => ({ ...prevUser, firstname: firstName, lastname: lastName, bio, projects }));
+          await updateDoc(userDoc.ref, { firstname: firstName, lastname: lastName, bio, projects, githubUrl, linkedinUrl });
+          setUser((prevUser) => ({ ...prevUser, firstname: firstName, lastname: lastName, bio, projects, githubUrl, linkedinUrl }));
           setIsEditing(false);
 
           // Show profile confirmation message
@@ -368,35 +398,6 @@ export default function Dashboard() {
     return number + "th";
   };
 
-  const handleDeleteAccount = async () => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        // Remove user from Firebase Authentication
-        await user.delete();
-  
-        // Remove user data from Firestore
-        const userQuery = query(collection(db, 'users'), where('email', '==', user.email));
-        const querySnapshot = await getDocs(userQuery);
-        if (!querySnapshot.empty) {
-          const userDoc = querySnapshot.docs[0];
-          await deleteDoc(userDoc.ref);
-        }
-  
-        // Remove user contact from Brevo
-        await axios.post('/api/deleteBrevoContact', { email: user.email });
-  
-        // Sign out the user and navigate to login page
-        await signOut(auth);
-        window.location.href = '/Login';
-      }
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      setErrorMessage('Error deleting account ');
-      setShowError(true);
-      setTimeout(() => setShowError(false), 3000);
-    }
-  };
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -412,6 +413,90 @@ export default function Dashboard() {
       };
     }
   }, [isBadgeModalOpen]);
+
+  // states to track dragging movement of users cursor
+  const [draggingIndex, setDraggingIndex] = useState(null);
+  const [draggingStyle, setDraggingStyle] = useState({});
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); //ensure project remains relative to cursor 
+
+
+  const handleDragStart = (index) => (event) => {
+    const rect = event.target.getBoundingClientRect();
+    setDragOffset({
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    });
+    setDraggingIndex(index);
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/html', event.target);
+    event.dataTransfer.setDragImage(new Image(), 0, 0); // Hide the default drag image
+  };
+
+  const handleDrag = (event) => {
+    if (draggingIndex !== null) {
+      setDraggingStyle({
+        position: 'fixed', // Changed to absolute for correct positioning
+        top: event.clientY - dragOffset.y, // Adjusted to align cursor tip with origin
+        left: event.clientX - dragOffset.x, // Adjusted to align cursor tip with origin
+        pointerEvents: 'none',
+        zIndex: 1000,
+      });
+    }
+  };
+
+  const handleDrop = (index) => (event) => {
+    event.preventDefault();
+    const draggedIndex = draggingIndex;
+    if (draggedIndex !== index) {
+      const updatedProjects = [...projects];
+      const [draggedProject] = updatedProjects.splice(draggedIndex, 1);
+      updatedProjects.splice(index, 0, draggedProject);
+      setProjects(updatedProjects);
+    }
+    handleDragEnd();
+  };
+
+  const handleDragEnd = () => {
+    setDraggingIndex(null);
+    setDraggingStyle({});
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  useEffect(() => {
+    if (draggingIndex !== null) {
+      document.addEventListener('dragover', handleDrag);
+      document.addEventListener('dragend', handleDragEnd);
+    } else {
+      document.removeEventListener('dragover', handleDrag);
+      document.removeEventListener('dragend', handleDragEnd);
+    }
+    return () => {
+      document.removeEventListener('dragover', handleDrag);
+      document.removeEventListener('dragend', handleDragEnd);
+    };
+  }, [draggingIndex]);
+
+
+  // Check if GitHub and LinkedIn are valid URLs
+  const isValidUrl = (url, type) => {
+    try {
+      const parsedUrl = new URL(url);
+      if (type === 'github') {
+        return parsedUrl.hostname === 'github.com' && parsedUrl.pathname.split('/').length === 2;
+      } else if (type === 'linkedin') {
+        return parsedUrl.hostname === 'www.linkedin.com' && parsedUrl.pathname.startsWith('/in/');
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  
+  
 
   return (
     <>
@@ -649,10 +734,70 @@ export default function Dashboard() {
                     className="hidden"
                     onChange={handleImageUpload}
                   />
+                  
+                  
+
+
                 </div>
+                
+
                 <div className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-full max-w-[700px] relative" style={{ border: '2px solid #2D1E1B' }}>
-                  <div className=" text-[#C69635] text-sm font-bold px-2 py-1 mb-2">
-                  {user.email === 'kirchgessner@wisc.edu' ? 'Founder' : user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' ? 'Co-Founder' : ''}
+                  
+                  
+                  <div className=" text-[#C69635] text-sm font-bold px-2 py-1 mb-2 pl-0">
+                  {/* Github and LinkedIn */}
+
+                  <div className="flex flex-row gap-10">
+
+                    {isEditing && (
+                      <>
+                      <div className="flex flex-row gap-2">
+
+                        <div className="flex flex-col">
+                          <div className="text-[#C69635] text-xl font-bold mb-2">GitHub</div>
+                            <input
+                              type="text"
+                              value={githubUrl}
+                              onChange={handleGithubUrlChange}
+                              className="bg-[#231715] ml-0 h-[23.2px] border border-gray-400 rounded text-left text-sm text-white pl-1 border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none mb-4"
+                              style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <div className="text-[#C69635] text-xl font-bold mb-2">LinkedIn</div>
+                              <input
+                                type="text"
+                                value={linkedinUrl}
+                                onChange={handleLinkedinUrlChange}
+                                className="bg-[#231715] ml-0 h-[23.2px] border border-gray-400 rounded text-left text-sm text-white pl-1 border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none mb-4"
+                                style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
+                              />
+                        </div>
+
+                      </div>
+                      </>
+                    )}
+                  
+                    {/* Github and LinkedIn */}
+                    <div className={`flex justify-left space-x-4 mt-2 mb-2 ${isEditing ? 'pt-[27px]' : ''}`} >
+                      {githubUrl && (
+                        <a href={githubUrl} target="_blank" rel="noopener noreferrer">
+                          <svg className="h-6 w-6 text-[#C69635]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.11.82-.26.82-.577v-2.165c-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.757-1.333-1.757-1.09-.745.083-.73.083-.73 1.205.085 1.84 1.237 1.84 1.237 1.07 1.835 2.807 1.305 3.492.998.108-.775.42-1.305.763-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.467-2.38 1.235-3.22-.123-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.3 1.23.957-.266 1.98-.398 3-.403 1.02.005 2.043.137 3 .403 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.24 2.873.118 3.176.77.84 1.233 1.91 1.233 3.22 0 4.61-2.803 5.625-5.475 5.92.43.37.823 1.102.823 2.222v3.293c0 .32.218.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z" />
+                          </svg>
+                        </a>
+                      )}
+                      {linkedinUrl && (
+                        <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
+                          <svg className="h-6 w-6 text-[#C69635]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.5c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.5h-3v-5.5c0-1.38-1.12-2.5-2.5-2.5s-2.5 1.12-2.5 2.5v5.5h-3v-10h3v1.5c.88-1.32 2.34-2.5 4-2.5 2.76 0 5 2.24 5 5v6.5z" />
+                          </svg>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  
                 </div>
                   {activeTab === 'profile' && (
                     <>
@@ -660,6 +805,8 @@ export default function Dashboard() {
                         <PencilSquareIcon className="h-6 w-6 text-white hover:text-[#C69635]" />
                       </button>
                       {isEditing && <div className="text-[#C69635] text-[22px] text-left font-bold mb-2">Name</div>}
+
+
                       <div className={` text-[#C69635] text-[22px] flex items-center mb-2 ${!isEditing ? 'font-bold justify-center' : ''}`}>
                         {isEditing ? (
                           <>
@@ -684,9 +831,15 @@ export default function Dashboard() {
                           <span>{user.firstname} {user.lastname}</span>
                         )}
                       </div>
-                      {/* Put something here */}
-                      {isEditing && <div className="text-[#C69635] text-xl font-bold mb-2 pt-8">Bio</div>}
-                      <div className={`text-white text-sm flex items-center text-center mb-4`}>
+                      
+
+                      {!isEditing && (
+                        <div className="text-[#C69635] text-sm font-bold px-2 py-1 mb-0 text-center">
+                          {user.email === 'kirchgessner@wisc.edu' ? 'Founder' : user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' ? 'Co-Founder' : ''}
+                        </div>
+                      )}
+                      {isEditing && <div className="text-[#C69635] text-xl font-bold mb-2 pt-8 mt-0">Bio</div>}
+                      <div className={`text-white text-sm flex items-center text-center mb-4 mt-2`}>
                         {isEditing ? (
                           <ReactQuill
                             value={bio}
@@ -697,26 +850,37 @@ export default function Dashboard() {
                             style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                             maxLength={user.email === 'kirchgessner@wisc.edu' ? undefined : 400}
                           />
+                          
                         ) : (
                           <div className="display-container" dangerouslySetInnerHTML={{ __html: user.bio }} />
                         )}
                       </div>
-                      {user.email === 'kirchgessner@wisc.edu' && (
+                      {!isEditing ? (
                         <>
-                          <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Lead Developer</div>
+                        {user.email === 'kirchgessner@wisc.edu' && (
+                          <>
+                            <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Lead Developer</div>
+                          </>
+                        )}
+                        {user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' && (
+                          <>
+                            <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Developer</div>
+                          </>
+                        )}
+                        </>
+                      ) : (
+                        <>
                         </>
                       )}
-                      {user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' && (
-                        <>
-                          <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Developer</div>
-                        </>
-                      )}
+                      
 
 
-                      <div className="text-[#C69635] text-[22px] font-bold mb-2 mt-8">Projects</div>
+                      <div className="text-[#C69635] text-[22px] font-bold mb-0 mt-8">
+                        {isEditing ? 'Add Project' : 'Projects'}
+                      </div>
                       {isEditing && (
                         <>
-                          <p className="text-gray-400 text-xs mb-4">Add your projects below. You can add multiple projects by clicking the plus button.</p>
+                          <p className="text-gray-400 text-xs mb-4">Add your projects below, by filling out the form with a title and description, to showcase your work to others in the community. This will also help us match you with other tech enthusiasts who share similar or complementary skills.</p>
                           <div className="mb-4">
                             <label className="text-white text-sm">Project Title</label>
                             <input
@@ -737,10 +901,10 @@ export default function Dashboard() {
                             style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }}
                             maxLength={user.email === 'kirchgessner@wisc.edu' ? undefined : 1000}
                           />
-                            <div className="flex justify-flex-end mt-2 mb-8">
+                            <div className="flex justify-start mt-2 mb-8">
                               <button 
                                 onClick={handleAddProject} 
-                                className="text-white text-sm px-3 py-1 border border-white hover:border-[#C69635] rounded" 
+                                className="text-white text-sm px-3 py-1 border border-white hover:border-[#C69635] rounded mt-2 mb-8" 
                               >
                                 Add Project
                               </button>
@@ -748,10 +912,41 @@ export default function Dashboard() {
                           </div>
                         </>
                       )}
+                      {isEditing && (
+                        <div className="text-[#C69635] text-[22px] font-bold mb-4 mt-8">Your Projects</div>
+                      )}
+                      
                       {projects.map((project, index) => (
-                        <div key={index} className="mb-6 flex justify-evenly items-center">
+                        <div
+                          key={index}
+                          className="mb-6 flex justify-evenly items-center"
+                          draggable={isEditing}
+                          onDragStart={handleDragStart(index)}
+                          onDrop={handleDrop(index)}
+                          onDragOver={handleDragOver}
+                          style={draggingIndex === index ? draggingStyle : {}}
+                        >
+                          {isEditing && (
+                            
+                            <div className="cursor-move mr-2">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-white"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 10h16M4 14h16"
+                                />
+                              </svg>
+                            </div>
+                          )}
+                          
                           <div className="flex items-start w-[80%]">
-                            <span className="text-white text-xl mr-2">•</span>
                             <div>
                               {isEditing ? (
                                 <>
@@ -766,7 +961,7 @@ export default function Dashboard() {
                                     className="bg-[#1E1412] border border-gray-400 rounded text-left w-[72vw] max-w-[580px] text-[#C99F4A] font-bold pl-1 mb-2 text-sm border-[#33211E] border-[2px] focus:border-[#C69635] focus:outline-none"
                                     style={{ boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)' }} // Added width: 100%
                                   />
-                                   <ReactQuill
+                                  <ReactQuill
                                     value={project.description}
                                     onChange={(value) => {
                                       const updatedProjects = [...projects];
@@ -787,9 +982,9 @@ export default function Dashboard() {
                             </div>
                           </div>
                           {isEditing && (
-                            <button onClick={() => handleDeleteProject(index)} className="text-white hover:text-[#C69635] text-sm px-2 py-1 pb-2 transform translate-x-8" style={{ alignSelf: 'flex-end'}}>
-                            <TrashIcon className="h-5 w-5" />
-                          </button>
+                            <button onClick={() => handleDeleteProject(index)} className="text-white hover:text-[#C69635] text-sm px-2 py-1 pb-0 transform sm:translate-x-8 translate-x-6" style={{ alignSelf: 'flex-end'}}>
+                              <TrashIcon className="h-5 w-5" />
+                            </button>
                           )}
                         </div>
                       ))}
