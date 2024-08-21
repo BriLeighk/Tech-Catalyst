@@ -115,9 +115,9 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
         <div className="py-24 sm:py-32 flex items-center justify-center">
       <div className="mx-auto max-w-7xl px-4 sm:px-0 lg:px-8 ">
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-[#F2F4E6] sm:text-4xl">Other Users</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-[#F2F4E6] sm:text-2xl pt-10">Other Users</h1>
         </div>
-        <div className="mt-10 flex flex-wrap justify-center" style={{ gap: '0rem' }} data-aos="fade-up" data-aos-duration="1000">
+        <div className="mt-5 flex flex-wrap justify-center" style={{ gap: '0rem' }} data-aos="fade-up" data-aos-duration="1000">
           {currentUsers.map((user, index) => (
             <Link key={index} href={`/ProfilePage/${encodeURIComponent(user.email)}`} passHref>
               <div
