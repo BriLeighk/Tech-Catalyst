@@ -678,7 +678,7 @@ export default function Dashboard() {
         
 
         <main>
-        <div className={`flex ${activeTab === 'profile' ? 'flex-col md:flex-row' : ''}`}>
+        <div className={`flex ${activeTab === 'profile' ? 'flex-col md:flex-row' : 'flex justify-center'}`}>
 
         {activeTab === 'profile' && (
             <div className="w-full md:w-1/4 md:position-fixed justify-start order-last md:order-first">
