@@ -9,6 +9,8 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
   const [isImageHovered, setIsImageHovered] = useState(false);
   const [hoveredUser, setHoveredUser] = useState(null); // New state to track which user's badge is hovered
+  const [currentPage, setCurrentPage] = useState(1); // State to track the current page
+  const usersPerPage = 12; // Number of users to display per page
 
   useEffect(() => {
     const fetchUsersData = async () => {
@@ -18,7 +20,18 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
         const usersList = querySnapshot.docs.map(doc => doc.data());
         // Filter out the current user
         const filteredUsers = usersList.filter(user => user.email !== currentUserEmail);
-        setUsers(filteredUsers);
+        
+        // Sort users alphabetically by first name
+        filteredUsers.sort((a, b) => a.firstname.localeCompare(b.firstname));
+
+        // Separate co-founders
+        const founders = filteredUsers.filter(user => user.email === 'kirchgessner@wisc.edu');
+        const coFounders = filteredUsers.filter(user => ['bethelbezabeh@gmail.com', 'tridhatriv@gmail.com'].includes(user.email));
+        const otherUsers = filteredUsers.filter(user => !['kirchgessner@wisc.edu', 'bethelbezabeh@gmail.com', 'tridhatriv@gmail.com'].includes(user.email));
+
+        // Combine the lists
+        const sortedUsers = [...founders, ...coFounders, ...otherUsers];
+        setUsers(sortedUsers);
       } catch (error) {
         console.error('Error fetching users data:', error);
       }
@@ -42,6 +55,61 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
     return number + "th";
   };
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(users.length / usersPerPage);
+
+  const renderPagination = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 3;
+
+    if (totalPages <= maxPagesToShow + 2) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      for (let i = 1; i <= maxPagesToShow; i++) {
+        pageNumbers.push(i);
+      }
+      pageNumbers.push('...');
+      pageNumbers.push(totalPages);
+    }
+
+    return (
+      <div className="mt-4 flex justify-center">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="mx-1 px-3 py-1 rounded bg-[#1E1412] text-[#C69635] disabled:opacity-50"
+        >
+          &lt;
+        </button>
+        {pageNumbers.map((number, index) => (
+          <button
+            key={index}
+            onClick={() => number !== '...' && handlePageChange(number)}
+            className={`mx-1 px-3 py-1 rounded ${currentPage === number ? 'bg-[#C69635] text-[#1E1412]' : 'bg-[#1E1412] text-[#C69635]'}`}
+            disabled={number === '...'}
+          >
+            {number}
+          </button>
+        ))}
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="mx-1 px-3 py-1 rounded bg-[#1E1412] text-[#C69635] disabled:opacity-50"
+        >
+          &gt;
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="position-fixed">
         <div className="py-24 sm:py-32 flex items-center justify-center">
@@ -50,7 +118,7 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
           <h1 className="text-2xl font-bold tracking-tight text-[#F2F4E6] sm:text-4xl">Other Users</h1>
         </div>
         <div className="mt-10 flex flex-wrap justify-center" style={{ gap: '0rem' }} data-aos="fade-up" data-aos-duration="1000">
-          {users.map((user, index) => (
+          {currentUsers.map((user, index) => (
             <Link key={index} href={`/ProfilePage/${encodeURIComponent(user.email)}`} passHref>
               <div
                 className="bg-[#1E1412] p-2 rounded-lg shadow-lg w-[130px] h-[180px] relative flex flex-col justify-center transition-transform duration-300 hover:translate-y-[-10px] cursor-pointer transform scale-90"
@@ -94,6 +162,7 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
             </Link>
           ))}
         </div>
+        {renderPagination()}
       </div>
       {isBadgeModalOpen && (
         <div
