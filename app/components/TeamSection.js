@@ -103,7 +103,7 @@ export default function TeamSection() {
                     <img 
                       alt="" 
                       src={user.imageUrl || '/placeholder.png'} 
-                      className="h-32 w-32 rounded-full shadow-lg shadow-[#140D0C]" 
+                      className="h-32 w-32 rounded-full shadow-lg shadow-[#140D0C] object-cover" 
                       style={{ border: `2px solid ${user.userNumber && user.userNumber <= 100 ? '#C69635' : '#2D1E1B'}` }}
                     />
                     {user.userNumber && user.userNumber <= 100 && (
@@ -140,7 +140,7 @@ export default function TeamSection() {
                     <img 
                       alt="" 
                       src={user2.imageUrl || '/placeholder.png'} 
-                      className="h-32 w-32 rounded-full shadow-lg shadow-[#140D0C]" 
+                      className="h-32 w-32 rounded-full shadow-lg shadow-[#140D0C] object-cover" 
                       style={{ border: `2px solid ${user2.userNumber && user2.userNumber <= 100 ? '#C69635' : '#2D1E1B'}` }}
                     />
                     {user2.userNumber && user2.userNumber <= 100 && (
@@ -177,7 +177,7 @@ export default function TeamSection() {
                     <img 
                       alt="" 
                       src={user3.imageUrl || '/placeholder.png'} 
-                      className="h-32 w-32 rounded-full shadow-lg shadow-[#140D0C]" 
+                      className="h-32 w-32 rounded-full shadow-lg shadow-[#140D0C] object-cover" 
                       style={{ border: `2px solid ${user3.userNumber && user3.userNumber <= 100 ? '#C69635' : '#2D1E1B'}` }}
                     />
                     {user3.userNumber && user3.userNumber <= 100 && (

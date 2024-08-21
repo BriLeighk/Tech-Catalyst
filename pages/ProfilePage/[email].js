@@ -80,8 +80,8 @@ export default function ProfilePage() {
               <div className="relative">
                 <img 
                   alt="" 
-                  src="/loading.png" 
-                  className="h-32 w-32 rounded-full shadow-lg" 
+                  src="/placeholder.png" 
+                  className="h-32 w-32 rounded-full shadow-lg object-cover" 
                   style={{ border: '1px solid #2D1E1B' }}
                 />
               </div>
@@ -101,7 +101,7 @@ export default function ProfilePage() {
                 <img 
                   alt="" 
                   src={user.imageUrl || '/placeholder.png'} 
-                  className="h-32 w-32 rounded-full shadow-lg" 
+                  className="h-32 w-32 rounded-full shadow-lg object-cover" 
                   style={{ border: `1px solid ${user.userNumber && user.userNumber <= 100 ? '#C69635' : '#2D1E1B'}` }}
                 />
                 {user.userNumber && user.userNumber <= 100 && (
