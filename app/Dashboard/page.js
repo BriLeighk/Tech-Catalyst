@@ -47,10 +47,10 @@ export default function Dashboard() {
   const [projectTitle, setProjectTitle] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false); // New state for modal visibility
-  const [isImageHovered, setIsImageHovered] = useState(false); // New state for image hover
   const [isClient, setIsClient] = useState(false);
   const [githubUrl, setGithubUrl] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
+  const [hoveredUser, setHoveredUser] = useState(null); // New state to track which user's badge is hovered
 
   useEffect(() => {
     setIsClient(true);
@@ -161,18 +161,22 @@ export default function Dashboard() {
   const handleSave = async () => {
     if (user && user.email) { // Ensure user and user.email are defined
 
-      if (!isValidUrl(githubUrl, 'github') & !isValidUrl(linkedinUrl, 'linkedin') * githubUrl !== '' & linkedinUrl !== '') {
+      // Ensure GitHub and LinkedIn URLs are valid and have the correct prefix
+      const formattedGithubUrl = githubUrl && !githubUrl.startsWith('https://') ? `https://${githubUrl}` : githubUrl;
+      const formattedLinkedinUrl = linkedinUrl && !linkedinUrl.startsWith('https://') ? `https://${linkedinUrl}` : linkedinUrl;
+
+      if (!isValidUrl(formattedGithubUrl, 'github') & !isValidUrl(formattedLinkedinUrl, 'linkedin') * githubUrl !== '' & linkedinUrl !== '') {
         setErrorMessage('Please enter valid URLs for GitHub and LinkedIn.');
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);
         return;
-      } else if (!isValidUrl(linkedinUrl, 'linkedin') & linkedinUrl !== '') {
-        setErrorMessage('Please enter valid URL for LinkedIn.');
+      } else if (!isValidUrl(formattedGithubUrl, 'github') && githubUrl !== '') {
+        setErrorMessage('Please enter a valid URL for GitHub.');
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);
         return;
-      } else if (!isValidUrl(githubUrl, 'github') & githubUrl !== '') {
-        setErrorMessage('Please enter valid URL for GitHub.');
+      } else if (!isValidUrl(formattedLinkedinUrl, 'linkedin') && linkedinUrl !== '') {
+        setErrorMessage('Please enter a valid URL for LinkedIn.');
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);
         return;
@@ -184,8 +188,8 @@ export default function Dashboard() {
 
         if (!querySnapshot.empty) {
           const userDoc = querySnapshot.docs[0];
-          await updateDoc(userDoc.ref, { firstname: firstName, lastname: lastName, bio, projects, githubUrl, linkedinUrl });
-          setUser((prevUser) => ({ ...prevUser, firstname: firstName, lastname: lastName, bio, projects, githubUrl, linkedinUrl }));
+          await updateDoc(userDoc.ref, { firstname: firstName, lastname: lastName, bio, projects, githubUrl: formattedGithubUrl, linkedinUrl: formattedLinkedinUrl });
+          setUser((prevUser) => ({ ...prevUser, firstname: firstName, lastname: lastName, bio, projects, githubUrl: formattedGithubUrl, linkedinUrl: formattedLinkedinUrl }));
           setIsEditing(false);
 
           // Show profile confirmation message
@@ -399,21 +403,6 @@ export default function Dashboard() {
     return number + "th";
   };
 
-
-  useEffect(() => {
-    if (typeof document !== 'undefined') {
-      const handleClickOutside = (event) => {
-        if (isBadgeModalOpen && !event.target.closest('.badge-modal')) {
-          setIsBadgeModalOpen(false);
-        }
-      };
-  
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }
-  }, [isBadgeModalOpen]);
 
   // states to track dragging movement of users cursor
   const [draggingIndex, setDraggingIndex] = useState(null);
@@ -709,11 +698,27 @@ export default function Dashboard() {
                       className="absolute -top-[32px] right-[34px] h-14 w-14 cursor-pointer"
                       onMouseEnter={() => {
                         setIsBadgeModalOpen(true);
-                        setIsImageHovered(true);
+                        setHoveredUser(user);
                       }}
-                      onMouseLeave={() => setIsImageHovered(false)}
+                      onMouseLeave={() => setIsBadgeModalOpen(false)}
                     />
                   )}
+                  {isBadgeModalOpen && hoveredUser === user && (
+                    <div
+                    className="absolute top-8 right-full mr-4 transform -translate-y-1/2 bg-[#1E1412] p-2 rounded-lg shadow-lg shadow-black text-center w-[150px] border-[#C69635] border-[1px]"
+                    onMouseEnter={() => setIsBadgeModalOpen(true)}
+                    onMouseLeave={() => {
+                        setIsBadgeModalOpen(false);
+                    }}
+                    >
+                    <div className="absolute right-[-16px] top-1/3 transform -translate-y-1/2 w-0 h-0 border-8 border-transparent border-l-[#C69635] after:content-[''] after:absolute after:top-1/2 after:left-[-8px] after:transform after:-translate-y-1/2 after:border-8 after:border-transparent after:border-l-[#1E1412] after:ml-[-1px]"></div>
+                    <img src="/firstUserBadge.png" alt="First User Badge" className="h-12 w-12 mx-auto mb-2"/>
+                    <h2 className="text-[#DDBA6C] text-sm font-bold mb-1">First User Badge</h2>
+                    <p className="text-[#DDBA6C] text-xs">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
+                    <p className="text-[#C69635] text-xs flex row text-left mt-2">
+                      <TrophyIcon className="h-3 w-3 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+                    </div>
+                    )}
                   <Menu as="div" className="absolute bottom-0 right-0">
                     <MenuButton className="cursor-pointer">
                       <ArrowUpOnSquareIcon className="h-6 w-6 text-white" />
@@ -793,15 +798,15 @@ export default function Dashboard() {
                   
                     {/* Github and LinkedIn */}
                     <div className={`flex justify-left space-x-4 mt-2 mb-2 ${isEditing ? 'pt-[27px]' : ''}`} >
-                      {githubUrl && (
-                        <a href={githubUrl} target="_blank" rel="noopener noreferrer">
+                    {githubUrl && (
+                        <a href={githubUrl.startsWith('http') ? githubUrl : `https://${githubUrl}`} target="_blank" rel="noopener noreferrer">
                           <svg className="h-6 w-6 text-[#C69635]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.11.82-.26.82-.577v-2.165c-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.757-1.333-1.757-1.09-.745.083-.73.083-.73 1.205.085 1.84 1.237 1.84 1.237 1.07 1.835 2.807 1.305 3.492.998.108-.775.42-1.305.763-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.467-2.38 1.235-3.22-.123-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.3 1.23.957-.266 1.98-.398 3-.403 1.02.005 2.043.137 3 .403 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.24 2.873.118 3.176.77.84 1.233 1.91 1.233 3.22 0 4.61-2.803 5.625-5.475 5.92.43.37.823 1.102.823 2.222v3.293c0 .32.218.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z" />
                           </svg>
                         </a>
                       )}
                       {linkedinUrl && (
-                        <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={linkedinUrl.startsWith('http') ? linkedinUrl : `https://${linkedinUrl}`} target="_blank" rel="noopener noreferrer">
                           <svg className="h-6 w-6 text-[#C69635]" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.5c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.5h-3v-5.5c0-1.38-1.12-2.5-2.5-2.5s-2.5 1.12-2.5 2.5v5.5h-3v-10h3v1.5c.88-1.32 2.34-2.5 4-2.5 2.76 0 5 2.24 5 5v6.5z" />
                           </svg>
@@ -1132,25 +1137,6 @@ export default function Dashboard() {
           Email preferences updated successfully
         </div>
       )}
-      <div
-          className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${isBadgeModalOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-        >
-          <div
-            className="bg-[#1E1412] p-6 rounded-lg shadow-lg text-center h-[330px] w-[250px] border-[#C69635] border-[1px]" // Adjusted width from 300px to 250px
-            onMouseEnter={() => setIsBadgeModalOpen(true)}
-            onMouseLeave={() => {
-              if (!isImageHovered) {
-                setIsBadgeModalOpen(false);
-              }
-            }}
-          >
-            <img src="/firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4"/>
-            <h2 className="text-[#DDBA6C] text-xl font-bold mb-2">First User Badge</h2>
-            <p className="text-[#DDBA6C] text-sm">{user && `Earned as The Tech Catalysts' ${getOrdinalSuffix(user.userNumber)} member.`}</p>
-            <p className="text-[#C69635] text-xs flex row text-left mt-8">
-              <TrophyIcon className="h-5 w-5 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
-          </div>
-        </div>
     </>
   )
 }
