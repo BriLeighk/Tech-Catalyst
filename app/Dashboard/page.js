@@ -10,6 +10,7 @@ import axios from 'axios';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
 import './customQuill.css';
+import OtherUsers from '../components/OtherUsers';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -672,14 +673,26 @@ export default function Dashboard() {
           </DisclosurePanel>
         </Disclosure>
 
-        <header className=" text-center">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
-          </div>
-        </header>
+          
+
+        
+
         <main>
-          <div className="b mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            {/* Your content */}
+        <div className={`flex ${activeTab === 'profile' ? 'flex-col md:flex-row' : ''}`}>
+
+        {activeTab === 'profile' && (
+            <div className="w-full md:w-1/4 md:position-fixed justify-start order-last md:order-first">
+              <OtherUsers currentUserEmail={user?.email} />
+
+            </div>
+
+          )}
+
+            <div className="">
+              
+            <div className="b mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 mt-14">
+            
+            
             {user && (
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
@@ -1087,7 +1100,10 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+          </div>
+          </div>
         </main>
+
       </div>
         
 
@@ -1117,24 +1133,24 @@ export default function Dashboard() {
         </div>
       )}
       <div
-        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${isBadgeModalOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-      >
-        <div
-          className="bg-[#1E1412] p-6 rounded-lg shadow-lg text-center h-[330px] w-[300px] border-[#C69635] border-[1px]"
-          onMouseEnter={() => setIsBadgeModalOpen(true)}
-          onMouseLeave={() => {
-            if (!isImageHovered) {
-              setIsBadgeModalOpen(false);
-            }
-          }}
+          className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${isBadgeModalOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
         >
-          <img src="./firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4"/>
-          <h2 className="text-[#DDBA6C] text-xl font-bold mb-2">First User Badge</h2>
-          <p className="text-[#DDBA6C] text-sm">{user && `Earned as The Tech Catalysts' ${getOrdinalSuffix(user.userNumber)} member.`}</p>
-          <p className="text-[#C69635] text-xs flex row text-left mt-8">
-            <TrophyIcon className="h-5 w-5 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+          <div
+            className="bg-[#1E1412] p-6 rounded-lg shadow-lg text-center h-[330px] w-[250px] border-[#C69635] border-[1px]" // Adjusted width from 300px to 250px
+            onMouseEnter={() => setIsBadgeModalOpen(true)}
+            onMouseLeave={() => {
+              if (!isImageHovered) {
+                setIsBadgeModalOpen(false);
+              }
+            }}
+          >
+            <img src="/firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4"/>
+            <h2 className="text-[#DDBA6C] text-xl font-bold mb-2">First User Badge</h2>
+            <p className="text-[#DDBA6C] text-sm">{user && `Earned as The Tech Catalysts' ${getOrdinalSuffix(user.userNumber)} member.`}</p>
+            <p className="text-[#C69635] text-xs flex row text-left mt-8">
+              <TrophyIcon className="h-5 w-5 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+          </div>
         </div>
-      </div>
     </>
   )
 }

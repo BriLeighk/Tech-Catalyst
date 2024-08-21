@@ -179,25 +179,25 @@ export default function ProfilePage() {
         </div>
       </main>
       {isBadgeModalOpen && (
+  <div
+    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${isBadgeModalOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+  >
         <div
-          className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${isBadgeModalOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+          className="bg-[#1E1412] p-6 rounded-lg shadow-lg text-center h-[330px] w-[250px] border-[#C69635] border-[1px]" // Adjusted width from 300px to 250px
+          onMouseEnter={() => setIsBadgeModalOpen(true)}
+          onMouseLeave={() => {
+            if (!isImageHovered) {
+              setIsBadgeModalOpen(false);
+            }
+          }}
         >
-          <div
-            className="bg-[#1E1412] p-6 rounded-lg shadow-lg text-center h-[330px] w-[300px] border-[#C69635] border-[1px]"
-            onMouseEnter={() => setIsBadgeModalOpen(true)}
-            onMouseLeave={() => {
-              if (!isImageHovered) {
-                setIsBadgeModalOpen(false);
-              }
-            }}
-          >
-            <img src="/firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4"/>
-            <h2 className="text-[#DDBA6C] text-xl font-bold mb-2">First User Badge</h2>
-            <p className="text-[#DDBA6C] text-sm">{user && `Earned as The Tech Catalysts' ${getOrdinalSuffix(user.userNumber)} member.`}</p>
-            <p className="text-[#C69635] text-xs flex row text-left mt-8">
-              <TrophyIcon className="h-5 w-5 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
-          </div>
+          <img src="/firstUserBadge.png" alt="First User Badge" className="h-20 w-20 mx-auto mb-4"/>
+          <h2 className="text-[#DDBA6C] text-xl font-bold mb-2">First User Badge</h2>
+          <p className="text-[#DDBA6C] text-sm">{user && `Earned as The Tech Catalysts' ${getOrdinalSuffix(user.userNumber)} member.`}</p>
+          <p className="text-[#C69635] text-xs flex row text-left mt-8">
+            <TrophyIcon className="h-5 w-5 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
         </div>
+      </div>
       )}
     </div>
   );
