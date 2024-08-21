@@ -146,6 +146,7 @@ export default function ProfilePage() {
                 <div className=" text-[#C69635] text-sm font-bold px-2 py-1 mb-0 text-center">
                 {user.email === 'kirchgessner@wisc.edu' ? 'Founder' : user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' ? 'Co-Founder' : ''}
               </div>
+
                 <div className="text-white text-sm flex items-center text-center mb-4 mt-10">
                   <div className="display-container" dangerouslySetInnerHTML={{ __html: user.bio }} />
                 </div>
@@ -154,10 +155,10 @@ export default function ProfilePage() {
                     <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Lead Developer</div>
                   </>
                 )}
-                {user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' && (
-                  <>
-                    <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Developer</div>
-                  </>
+                {(user.email === 'bethelbezabeh@gmail.com' || user.email === 'tridhatriv@gmail.com') && (
+                  <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">
+                    {user.email === 'bethelbezabeh@gmail.com' ? 'Developer' : 'Developer'}
+                  </div>
                 )}
                 
                 <div className="text-[#C69635] text-[22px] font-bold mb-2 mt-8">Projects</div>
