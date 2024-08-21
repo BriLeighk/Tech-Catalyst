@@ -97,7 +97,7 @@ export default function TeamSection() {
                 className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-[300px] h-[450px] relative flex flex-col justify-center transition-transform duration-300 hover:translate-y-[-10px] cursor-pointer"
                 style={{ border: '2px solid #C69635' }}
               >
-                <div className="absolute top-2 left-2 text-[#C69635] text-xs font-bold px-2 py-1">Co-Founder</div>
+                <div className="absolute top-2 left-2 text-[#C69635] text-xs font-bold px-2 py-1">Founder</div>
                 <div className="flex flex-col items-center space-y-4">
                   <div className="relative">
                     <img 
