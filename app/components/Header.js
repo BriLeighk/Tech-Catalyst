@@ -6,11 +6,9 @@ import { checkUserLoggedIn } from '../utils/auth'; // Import the utility functio
 // Navigation bar
 const navigation = [
     { name: 'About Us', href: 'about' }, // Link to About section
-    { name: 'Features', href: 'features' }, // Link to Features section
     { name: 'Pricing', href: 'pricing' }, // Link to Pricing section
-    { name: 'Team', href: 'team' }, // Link to Team section
     { name: 'Contact', href: 'newsletter' }, // Link to Newsletter section
-    
+    { name: 'Resource Library', href: '/ResourceLibrary' } // Link to Resource Library page 
 ]
 
 export default function Header() {
@@ -29,34 +27,38 @@ export default function Header() {
         return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     };
 
-    const handleScroll = (id) => {
-        const scrollToSection = () => {
-            const element = document.getElementById(id);
-            if (element) {
-                const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
-                const startPosition = window.pageYOffset;
-                const distance = targetPosition - startPosition;
-                const duration = 1500; // Duration in milliseconds
-                let start = null;
-
-                window.requestAnimationFrame(function step(timestamp) {
-                    if (!start) start = timestamp;
-                    const progress = timestamp - start;
-                    const percent = Math.min(progress / duration, 1);
-                    const easedPercent = easeInOutCubic(percent);
-                    window.scrollTo(0, startPosition + distance * easedPercent);
-                    if (progress < duration) {
-                        window.requestAnimationFrame(step);
-                    }
-                });
-            }
-        };
-
-        if (window.location.pathname !== '/') {
-            window.location.href = `/#${id}`;
-            window.addEventListener('load', scrollToSection);
+    const handleScroll = (href) => {
+        if (href.startsWith('/')) {
+            window.location.href = href;
         } else {
-            scrollToSection();
+            const scrollToSection = () => {
+                const element = document.getElementById(href);
+                if (element) {
+                    const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                    const startPosition = window.pageYOffset;
+                    const distance = targetPosition - startPosition;
+                    const duration = 1500; // Duration in milliseconds
+                    let start = null;
+
+                    window.requestAnimationFrame(function step(timestamp) {
+                        if (!start) start = timestamp;
+                        const progress = timestamp - start;
+                        const percent = Math.min(progress / duration, 1);
+                        const easedPercent = easeInOutCubic(percent);
+                        window.scrollTo(0, startPosition + distance * easedPercent);
+                        if (progress < duration) {
+                            window.requestAnimationFrame(step);
+                        }
+                    });
+                }
+            };
+
+            if (window.location.pathname !== '/') {
+                window.location.href = `/#${href}`;
+                window.addEventListener('load', scrollToSection);
+            } else {
+                scrollToSection();
+            }
         }
     };
 

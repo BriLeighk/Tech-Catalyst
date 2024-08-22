@@ -12,7 +12,6 @@ import 'aos/dist/aos.css';
 
 
 export default function Home() {
-  const [userEmail, setUserEmail] = useState("");
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -23,17 +22,6 @@ export default function Home() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    console.log("Email submitted:", email);
-    setEmail("");
-    // Handle the email submission, like sending it to a backend API.
-  };
 
   const handleRegisterClick = async () => {
     const isLoggedIn = await checkUserLoggedIn();
