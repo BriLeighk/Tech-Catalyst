@@ -346,7 +346,6 @@ export default function Dashboard() {
   };
   
   const navigation = [
-    
       // add more tabs here
   ]
 
