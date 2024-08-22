@@ -99,9 +99,11 @@ export default function Login() {
           window.location.href = '/Dashboard';
         }, 3000); // Show success message for 3 seconds before redirecting
       } catch (error) {
-        setError('Error signing in with Google: ' + error.message);
-        setShowError(true);
-        setTimeout(() => setShowError(false), 3000); // Hide error message after 3 seconds
+        if (error.code !== 'auth/popup-closed-by-user') {
+          setError('Error signing in with Google');
+          setShowError(true);
+          setTimeout(() => setShowError(false), 3000); // Hide error message after 3 seconds
+        }
       }
     };
 

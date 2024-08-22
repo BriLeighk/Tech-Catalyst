@@ -12,14 +12,14 @@ export default function TeamSection() {
   const [hoveredUser, setHoveredUser] = useState(null); // New state to track which user's badge is hovered
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserData = async (email, setUser) => {
       try {
-        const userQuery = query(collection(db, 'users'), where('email', '==', 'kirchgessner@wisc.edu'));
+        const userQuery = query(collection(db, 'users'), where('email', '==', email));
         const querySnapshot = await getDocs(userQuery);
 
         if (!querySnapshot.empty) {
           const userDoc = querySnapshot.docs[0];
-          const userData = userDoc.data();
+          const userData = { id: userDoc.id, ...userDoc.data() }; // Include the document ID
           setUser(userData);
         } else {
           console.error('User data not found in Firestore');
@@ -29,43 +29,9 @@ export default function TeamSection() {
       }
     };
 
-    const fetchUser2Data = async () => {
-      try {
-        const userQuery = query(collection(db, 'users'), where('email', '==', 'tridhatriv@gmail.com'));
-        const querySnapshot = await getDocs(userQuery);
-
-        if (!querySnapshot.empty) {
-          const userDoc = querySnapshot.docs[0];
-          const userData = userDoc.data();
-          setUser2(userData);
-        } else {
-          console.error('User data not found in Firestore');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    const fetchUser3Data = async () => {
-      try {
-        const userQuery = query(collection(db, 'users'), where('email', '==', 'bethelbezabeh@gmail.com'));
-        const querySnapshot = await getDocs(userQuery);
-
-        if (!querySnapshot.empty) {
-          const userDoc = querySnapshot.docs[0];
-          const userData = userDoc.data();
-          setUser3(userData);
-        } else {
-          console.error('User data not found in Firestore');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    fetchUserData();
-    fetchUser2Data();
-    fetchUser3Data();
+    fetchUserData('kirchgessner@wisc.edu', setUser);
+    fetchUserData('tridhatriv@gmail.com', setUser2);
+    fetchUserData('bethelbezabeh@gmail.com', setUser3);
   }, []);
 
   const getOrdinalSuffix = (number) => {
@@ -91,7 +57,7 @@ export default function TeamSection() {
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-8" data-aos="fade-up" data-aos-duration="1000">
           {user && (
-            <Link href={`/ProfilePage/${encodeURIComponent(user.email)}`} passHref>
+            <Link href={`/ProfilePage/${encodeURIComponent(user.id)}`} passHref>
               <div
                 className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-[300px] h-[450px] relative flex flex-col justify-center transition-transform duration-300 hover:translate-y-[-10px] cursor-pointer"
                 style={{ border: '2px solid #C69635' }}
@@ -142,7 +108,7 @@ export default function TeamSection() {
           )}
 
           {user2 && (
-            <Link href={`/ProfilePage/${encodeURIComponent(user2.email)}`} passHref>
+            <Link href={`/ProfilePage/${encodeURIComponent(user2.id)}`} passHref>
               <div
                 className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-[300px] h-[450px] relative flex flex-col justify-center transition-transform duration-300 hover:translate-y-[-10px] cursor-pointer"
                 style={{ border: '2px solid #C69635' }}
@@ -193,7 +159,7 @@ export default function TeamSection() {
           )}
 
           {user3 && (
-            <Link href={`/ProfilePage/${encodeURIComponent(user3.email)}`} passHref>
+            <Link href={`/ProfilePage/${encodeURIComponent(user3.id)}`} passHref>
               <div
                 className="bg-[#1E1412] p-4 rounded-lg shadow-lg w-[300px] h-[450px] relative flex flex-col justify-center transition-transform duration-300 hover:translate-y-[-10px] cursor-pointer"
                 style={{ border: '2px solid #C69635' }}

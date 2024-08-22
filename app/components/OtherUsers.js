@@ -16,7 +16,7 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
       try {
         const usersCollection = collection(db, 'users');
         const querySnapshot = await getDocs(usersCollection);
-        const usersList = querySnapshot.docs.map(doc => doc.data());
+        const usersList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Include the document ID
         // Filter out the current user
         const filteredUsers = usersList.filter(user => user.email !== currentUserEmail);
         
@@ -118,7 +118,7 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
         </div>
         <div className="mt-5 flex flex-wrap justify-center" style={{ gap: '0rem' }} data-aos="fade-up" data-aos-duration="1000">
           {currentUsers.map((user, index) => (
-            <Link key={index} href={`/ProfilePage/${encodeURIComponent(user.email)}`} passHref>
+            <Link key={index} href={`/ProfilePage/${encodeURIComponent(user.id)}`} passHref>
               <div
                 className="bg-[#1E1412] p-2 rounded-lg shadow-lg w-[130px] h-[180px] relative flex flex-col justify-center transition-transform duration-300 hover:translate-y-[-10px] cursor-pointer transform scale-90"
                 style={{ border: `${['kirchgessner@wisc.edu', 'bethelbezabeh@gmail.com', 'tridhatriv@gmail.com'].includes(user.email) ? '1px solid #C69635' : '2px solid #2D1E1B'}` }}

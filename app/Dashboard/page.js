@@ -346,6 +346,7 @@ export default function Dashboard() {
   };
   
   const navigation = [
+    { name: 'Resource Library', href: '/ResourceLibrary', current: true },
       // add more tabs here
   ]
 
