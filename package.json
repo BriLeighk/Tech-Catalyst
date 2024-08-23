@@ -12,8 +12,12 @@
     "dotenv": "^16.4.5",
     "firebase": "^10.12.5",
     "firebase-admin": "^12.3.1",
+    "metascraper": "^5.45.23",
+    "metascraper-title": "^5.45.22",
+    "metascraper-url": "^5.45.22",
     "next": "^14.2.5",
     "postcss": "^8.4.41",
+    "puppeteer": "^23.1.1",
     "react": "^18.3.1",
     "react-beautiful-dnd": "^13.1.1",
     "react-dnd": "^16.0.1",
@@ -25,10 +29,16 @@
     "react-scroll": "^1.9.0",
     "react-switch": "^7.0.0",
     "sib-api-v3-sdk": "^8.5.0",
+    "simple-icons": "^13.6.0",
     "socket.io-client": "^4.7.5",
-    "tailwindcss": "^3.4.9"
+    "tailwindcss": "^3.4.9",
+    "url-metadata": "^4.1.1"
   },
   "scripts": {
     "dev": "next dev"
+  },
+  "devDependencies": {
+    "file-loader": "^6.2.0",
+    "url-loader": "^4.1.1"
   }
 }
