@@ -11,6 +11,7 @@ import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
 import './customQuill.css';
 import OtherUsers from '../components/OtherUsers';
+import UploadedResources from '../components/UploadedResources';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -669,11 +670,11 @@ export default function Dashboard() {
         <main>
         <div className={`flex ${activeTab === 'profile' ? 'flex-col md:flex-row' : 'flex justify-center'}`}>
 
-        {activeTab === 'profile' && (
-            <div className="w-full md:w-1/4 md:position-fixed justify-start order-last md:order-first">
-              <OtherUsers currentUserEmail={user?.email} />
+            {activeTab === 'profile' && (
+                <div className="w-full md:w-1/4 md:position-fixed justify-start order-last md:order-first">
+                  <OtherUsers currentUserEmail={user?.email} />
 
-            </div>
+        </div>
 
           )}
 
@@ -1107,8 +1108,17 @@ export default function Dashboard() {
             )}
           </div>
           </div>
+          {activeTab === 'profile' && (
+            <div className="w-full d:position-fixed justify-end md:w-1/4 order-last md:order-last">
+              <UploadedResources currentUserEmail={user?.email} />
+            </div>
+          )}
           </div>
+
+          
         </main>
+            
+            
 
       </div>
         
