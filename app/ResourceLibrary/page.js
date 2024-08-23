@@ -28,6 +28,13 @@ export default function ResourceLibrary() {
   const [resources, setResources] = useState([]); // State for resources
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
   const [imageErrors, setImageErrors] = useState([]); // State to track image errors
+  const [searchQuery, setSearchQuery] = useState(''); // State to track search query
+
+  const filteredResources = resources.filter(resource => 
+    resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    resource.domainName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    resource.contributor.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleClick = () => {
     setBorderColor('#C69635'); // Gold color
@@ -267,7 +274,13 @@ export default function ResourceLibrary() {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
                   </svg>
-                  <input className="bg-[#231715] outline-none ml-1 block text-white text-sm" type="text" name="" id="" placeholder="search..." />
+                  <input 
+                    className="bg-[#231715] outline-none ml-1 block text-white text-sm" 
+                    type="text" 
+                    placeholder="search..." 
+                    value={searchQuery} // Bind search query state
+                    onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
+                  />
                 </div>
                 <div className="ml-4 sm:ml-10 space-x-8">
                   <button className="bg-[#C69635] px-2 py-2 rounded-lg text-[#140D0C] text-xs font-semibold tracking-wide cursor-pointer sm:hidden" 
@@ -306,7 +319,7 @@ export default function ResourceLibrary() {
                     </tr>
                   </thead>
                   <tbody className="relative">
-                    {currentResources.map((resource, index) => (
+                    {filteredResources.slice(indexOfFirstResource, indexOfLastResource).map((resource, index) => (
                       <tr key={index}>
                         <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm">
                           <p className="text-white text-left whitespace-no-wrap">{resource.title}</p>
