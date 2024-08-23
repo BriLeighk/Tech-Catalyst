@@ -90,7 +90,7 @@ export default function ResourceLibrary() {
     }
 
     if (!resourceURL) {
-      alert('Please provide the URL of the resource.');
+      alert('Please provide a valid URL of the resource you wish to upload.');
       return;
     }
 
@@ -105,7 +105,7 @@ export default function ResourceLibrary() {
     const resourcesQuery = query(collection(db, 'community_resources'), where('link', '==', resourceURL.trim()));
     const querySnapshot = await getDocs(resourcesQuery);
     if (!querySnapshot.empty) {
-      setError('This URL is already in the database.');
+      setError('This URL is already a resource in the library.');
       setShowPopup(true);
       setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
       return;
@@ -171,7 +171,7 @@ export default function ResourceLibrary() {
       }
     } catch (error) {
       console.error('Error fetching metadata:', error);
-      setError('Site does not permit adding this resource.');
+      setError('Please provide a valid URL of the resource you wish to upload');
       setShowPopup(true);
       setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
       return;
@@ -188,8 +188,17 @@ export default function ResourceLibrary() {
     // Add the new resource to Firestore
     await addDoc(collection(db, 'community_resources'), newResource);
 
-    // Add the new resource to the local state
-    setResources([...resources, newResource]);
+    // Fetch the user's profile image
+    const userDocRef = doc(db, 'users', user.id);
+    const userDoc = await getDoc(userDocRef);
+    const userData = userDoc.data();
+
+    // Add the new resource to the local state with updated contributor image
+    setResources([...resources, {
+      ...newResource,
+      contributor: `${userData.firstname} ${userData.lastname}`,
+      imageUrl: userData.imageUrl || '/placeholder.png', // Use placeholder if no image URL
+    }]);
     setImageErrors([...imageErrors, false]); // Add new entry to image error state
     setIsUploadModalOpen(false);
   };
@@ -369,17 +378,55 @@ export default function ResourceLibrary() {
         {isUploadModalOpen && (
         <>
           <div className="fixed inset-0 bg-[#140D0C] opacity-75 z-40"></div> {/* Overlay */}
-          <div className="bg-[#1E1412] shadow-lg shadow-[#140D0C] w-[80%] max-w-[800px] h-[60%] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-md z-50 overflow-auto">
-            <div className="flex flex-col items-center h-full">
+          <div className="bg-[#1E1412] shadow-lg shadow-[#140D0C] w-[80%] max-w-[900px] h-[95%] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-md z-50 overflow-auto">
+            <div className="flex flex-col items-center">
                 <XMarkIcon className="h-5 w-5 text-[#C69635] cursor-pointer absolute top-2 right-2 mt-2 mr-2" onClick={() => setIsUploadModalOpen(false)} />
                 <h2 className="text-[#C69635] text-xl font-semibold align-start mt-10">Upload Resource</h2>
-                <p className="text-gray-400 text-xs mb-4 text-center pt-2 pb-0 px-14 w-full">Please fill out the form below to upload your resource. 
+                <p className="text-gray-300 text-xs mb-4 text-center pt-2 pb-0 px-14 w-full">Please fill out the form below to upload your resource. 
                     If the resource is not already part of the library, we will add it and credit you as the contributor.
                     Note that uploading inappropriate content will result in an immediate ban on your account.
                     </p>
+                    <h3 className="text-[#C69635] text-md text-left font-bold mb-0 mt-4 px-14 w-full">Common Errors</h3>
+                    <p className="text-gray-300 text-xs text-left pt-2 pb-0 px-14 w-full">If you encounter any errors that are not listed below,
+                      please contact us at support@thetechcatalyst.com for assistance.
+                    </p>
+                    <ul className="list-disc list-inside text-gray-400 text-xs mb-4 text-left pt-2 pb-0 px-14 w-full ">
+                        <li className="text-[#DDBA6C] font-bold mb-2">You must be logged in to upload a resource <br />
+                        <div className="ml-8">
+                        <em className="text-[#C9C4BB] text-[10px] font-normal"> To make a contribution to the resource library, you must be logged in.
+                          This will allow us to credit you as the contributor of the resource.
+                        </em>
+                        </div>
+                        </li>
+                        <li className="text-[#DDBA6C] font-bold mb-2">Please provide a valid URL of the resource you wish to upload <br />
+                          <div className="ml-8">
+                            <em className="text-[#C9C4BB] text-[10px] font-normal"> Ensure your provided URL is correct and accessible.</em>                          
+                          </div>
+                        </li>
+                          <li className="text-[#DDBA6C] font-bold mb-2">This URL is already a resource in the library <br />
+                        <div className="ml-8">
+                        <em className="text-[#C9C4BB] text-[10px] font-normal"> This contribution has already been made. Provide another resource if you wish to make a contribution.</em>
+                        </div>
+                        </li>
+                        <li className="text-[#DDBA6C] font-bold mb-2">The URL you provided is not safe. Detected threats: MALWARE <br />
+                        <div className="ml-8">
+                        <em className="text-[#C9C4BB] text-[10px] font-normal"> This URL poses a malware threat, intended to steal data and gain unauthorized access to your system. Please exercise caution when visiting this site.</em>
+                        </div>
+                        </li>
+                        <li className="text-[#DDBA6C] font-bold mb-2">The URL you provided is not safe. Detected threats: SOCIAL_ENGINEERING <br />
+                        <div className="ml-8">
+                        <em className="text-[#C9C4BB] text-[10px] font-normal"> This URL poses a social engineering threat, intended to trick you into providing personal information. Please exercise cuation when visiting this site.</em>
+                        </div>
+                        </li>
+                        <li className="text-[#DDBA6C] font-bold">The URL you provided is not safe. Detected threats: UNWANTED_SOFTWARE <br />
+                        <div className="ml-8">
+                        <em className="text-[#C9C4BB] text-[10px] font-normal"> This URL poses an unwanted software threat, intended to install software that performs actions not clearly disclosed or are deceptive. Please exercise caution when visiting this site.</em>
+                        </div>
+                        </li>
+                    </ul>
                 {/* Resource URL */}
-                <div className="mt-10 px-14 w-full">
-                <label className="text-[#C69635] text-md font-bold mb-0 mt-8">URL</label>
+                <div className="mt-4 px-14 w-full">
+                <label className="text-[#C69635] text-md font-bold mb-0 mt-0">URL</label>
                 <p className="text-gray-400 text-xs mb-4">Please provide the URL of the resource you are uploading.
                 </p>
                     <input
@@ -391,7 +438,7 @@ export default function ResourceLibrary() {
                     />
                 </div>
 
-                <button className="bg-[#C69635] px-4 py-2 rounded-md text-[#140D0C] text-xs font-semibold tracking-wide cursor-pointer mt-20"
+                <button className="bg-[#C69635] px-4 py-2 rounded-md text-[#140D0C] text-xs font-semibold tracking-wide cursor-pointer m-2 md:mt-8"
                 onClick={handleUpload}
                 >Upload</button>
             </div>
