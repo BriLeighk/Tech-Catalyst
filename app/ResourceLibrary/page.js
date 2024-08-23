@@ -3,12 +3,17 @@ import { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import { PlusIcon, ArrowTopRightOnSquareIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { db } from '../firebase'; 
-import { collection, addDoc, query, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, query, getDocs, doc, getDoc, where } from 'firebase/firestore';
 import { checkUserLoggedIn } from '../utils/auth'; // Import the auth function
 import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
 import Link from 'next/link';
 import axios from 'axios';
 import Image from 'next/image';
+
+// Utility function to capitalize the first letter of each word
+const capitalizeWords = (str) => {
+  return str.replace(/\b\w/g, char => char.toUpperCase());
+};
 
 export default function ResourceLibrary() {
   const [borderColor, setBorderColor] = useState('#33211E');
@@ -96,19 +101,64 @@ export default function ResourceLibrary() {
       return;
     }
 
+    // Check if the URL is already in the database
+    const resourcesQuery = query(collection(db, 'community_resources'), where('link', '==', resourceURL.trim()));
+    const querySnapshot = await getDocs(resourcesQuery);
+    if (!querySnapshot.empty) {
+      setError('This URL is already in the database.');
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
+      return;
+    }
+
+    // Check if the URL is safe using the server-side endpoint
+    try {
+      const response = await fetch('/api/check-url', {
+        method: 'POST',
+        body: JSON.stringify({ url: resourceURL.trim() }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Web Risk API error:', errorData);
+        setError(`Failed to check URL safety: ${errorData.error}`);
+        setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
+        return;
+      }
+
+      const data = await response.json();
+      console.log('Web Risk API response:', data); // Log the response for debugging
+
+      if (data && data.threat) {
+        const threatTypes = data.threat.threatTypes.join(', ');
+        setError(`The URL you provided is not safe. Detected threats: ${threatTypes}`);
+        setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking URL safety:', error);
+      setError('Failed to check URL safety.');
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
+      return;
+    }
+
     // Fetch the resource name and logo
     let resourceName = '';
     let logoUrl = '';
     let domainName = '';
 
     try {
-      const { data: metadata } = await axios.get(`/api/extract-metadata?url=${encodeURIComponent(resourceURL)}`);
+      const { data: metadata } = await axios.get(`/api/extract-metadata?url=${encodeURIComponent(resourceURL.trim())}`);
       if (metadata.error) {
         throw new Error(metadata.error);
       }
       resourceName = metadata.h1 || metadata.title || 'Unknown Resource';
       const domain = new URL(resourceURL).hostname;
-      domainName = domain.split('.')[0];
+      domainName = capitalizeWords(domain.split('.')[0]); // Capitalize each word in the domain name
       logoUrl = metadata.isValidLogo ? metadata.logoUrl : ''; // Use logoUrl only if it's valid
 
       // Extract the part after the last '/' in the URL
@@ -129,7 +179,7 @@ export default function ResourceLibrary() {
 
     const newResource = {
       title: resourceName,
-      link: resourceURL,
+      link: resourceURL.trim(), // Ensure URL is trimmed
       id: user.id, // Store user ID as a foreign key
       logoUrl: logoUrl,
       domainName: domainName,
@@ -252,7 +302,7 @@ export default function ResourceLibrary() {
                         <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm">
                           <p className="text-[#C69635] text-center whitespace-no-wrap">{resource.title}</p>
                         </td>
-                        <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm">
+                        <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm justify-center text-center align-middle items-center">
                           <div className="flex items-center justify-center">
                             {resource.logoUrl && !imageErrors[index] ? (
                               <Image
@@ -261,7 +311,7 @@ export default function ResourceLibrary() {
                                 width={20}
                                 height={20}
                                 quality={90} // Set image quality
-                                className="w-8 h-8 rounded-full border-2 border-[#231715] shadow-md shadow-[#140D0C] mr-2"
+                                className="w-8 h-8 rounded-full border-2 border-[#C69635] shadow-md shadow-[#140D0C] mr-2"
                                 onError={() => handleImageError(index)} // Handle broken image
                               />
                             ) : (

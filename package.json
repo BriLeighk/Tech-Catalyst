@@ -6,16 +6,24 @@
     "@stripe/stripe-js": "^4.2.0",
     "@tailwindcss/forms": "^0.5.7",
     "aos": "^2.3.4",
+    "assert": "^2.1.0",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.4",
+    "buffer": "^6.0.3",
     "classnames": "^2.5.1",
+    "crypto-browserify": "^3.12.0",
     "dotenv": "^16.4.5",
     "firebase": "^10.12.5",
     "firebase-admin": "^12.3.1",
+    "https-browserify": "^1.0.0",
     "metascraper": "^5.45.23",
     "metascraper-title": "^5.45.22",
     "metascraper-url": "^5.45.22",
-    "next": "^14.2.5",
+    "next": "^14.2.6",
+    "next-transpile-modules": "^10.0.1",
+    "node-fetch": "^3.3.2",
+    "node-polyfill-webpack-plugin": "^4.0.0",
+    "os-browserify": "^0.3.0",
     "postcss": "^8.4.41",
     "puppeteer": "^23.1.1",
     "react": "^18.3.1",
@@ -31,14 +39,20 @@
     "sib-api-v3-sdk": "^8.5.0",
     "simple-icons": "^13.6.0",
     "socket.io-client": "^4.7.5",
-    "tailwindcss": "^3.4.9",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "tailwindcss": "^3.4.10",
+    "url": "^0.11.4",
     "url-metadata": "^4.1.1"
   },
   "scripts": {
     "dev": "next dev"
   },
   "devDependencies": {
+    "css-loader": "^7.1.2",
     "file-loader": "^6.2.0",
-    "url-loader": "^4.1.1"
+    "style-loader": "^4.0.0",
+    "url-loader": "^4.1.1",
+    "webpack-node-externals": "^3.0.0"
   }
 }
