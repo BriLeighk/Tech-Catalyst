@@ -10,6 +10,8 @@ export default async function handler(req, res) {
 
     let title = metadata.title || '';
     let h1 = metadata['og:title'] || '';
+    let logoUrl = metadata['og:image'] || ''; // Attempt to get the logo from metadata
+    let isValidLogo = true;
 
     // If title or h1 is empty, parse the URL
     if (!title && !h1) {
@@ -25,7 +27,27 @@ export default async function handler(req, res) {
       }
     }
 
-    res.status(200).json({ title, h1 });
+    // If logoUrl is null or empty, use the domain name to generate a logo URL
+    if (!logoUrl) {
+      const domain = new URL(url).hostname;
+      const clearbitLogoUrl = `https://logo.clearbit.com/${domain}?size=256`;
+
+      // Check if the Clearbit logo URL is a valid image
+      try {
+        const response = await axios.head(clearbitLogoUrl);
+        if (response.headers['content-type'].startsWith('image/')) {
+          logoUrl = clearbitLogoUrl;
+        } else {
+          logoUrl = ''; // Set to empty if not a valid image
+          isValidLogo = false;
+        }
+      } catch (error) {
+        logoUrl = ''; // Set to empty if request fails
+        isValidLogo = false;
+      }
+    }
+
+    res.status(200).json({ title, h1, logoUrl, isValidLogo });
   } catch (error) {
     console.error('Error fetching metadata:', error);
     res.status(500).json({ error: 'Failed to fetch metadata' });

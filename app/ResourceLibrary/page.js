@@ -22,6 +22,7 @@ export default function ResourceLibrary() {
   const [error, setError] = useState(''); // Add state for error message
   const [resources, setResources] = useState([]); // State for resources
   const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+  const [imageErrors, setImageErrors] = useState([]); // State to track image errors
 
   const handleClick = () => {
     setBorderColor('#C69635'); // Gold color
@@ -64,6 +65,7 @@ export default function ResourceLibrary() {
         })
       );
       setResources(resourcesList);
+      setImageErrors(new Array(resourcesList.length).fill(false)); // Initialize image error state
     };
     fetchResources();
     document.addEventListener('mousedown', handleClickOutside);
@@ -107,7 +109,7 @@ export default function ResourceLibrary() {
       resourceName = metadata.h1 || metadata.title || 'Unknown Resource';
       const domain = new URL(resourceURL).hostname;
       domainName = domain.split('.')[0];
-      logoUrl = `https://logo.clearbit.com/${domain}?size=256`;
+      logoUrl = metadata.isValidLogo ? metadata.logoUrl : ''; // Use logoUrl only if it's valid
 
       // Extract the part after the last '/' in the URL
       const urlPath = new URL(resourceURL).pathname;
@@ -138,6 +140,7 @@ export default function ResourceLibrary() {
 
     // Add the new resource to the local state
     setResources([...resources, newResource]);
+    setImageErrors([...imageErrors, false]); // Add new entry to image error state
     setIsUploadModalOpen(false);
   };
 
@@ -157,6 +160,12 @@ export default function ResourceLibrary() {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+  };
+
+  const handleImageError = (index) => {
+    const newImageErrors = [...imageErrors];
+    newImageErrors[index] = true;
+    setImageErrors(newImageErrors);
   };
 
   return (
@@ -239,21 +248,20 @@ export default function ResourceLibrary() {
                   </thead>
                   <tbody className="relative">
                     {currentResources.map((resource, index) => (
-                        
                       <tr key={index}>
-                        
                         <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm">
                           <p className="text-[#C69635] text-center whitespace-no-wrap">{resource.title}</p>
                         </td>
                         <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm">
-                        <div className="flex items-center justify-center">
-                            {resource.imageUrl ? (
+                          <div className="flex items-center justify-center">
+                            {resource.logoUrl && !imageErrors[index] ? (
                               <Image
                                 src={resource.logoUrl}
                                 alt={resource.domainName}
                                 width={20}
                                 height={20}
                                 className="w-8 h-8 rounded-full border-2 border-[#231715] shadow-md shadow-[#140D0C] mr-2"
+                                onError={() => handleImageError(index)} // Handle broken image
                               />
                             ) : (
                               <p className="text-[#C69635] text-center">{resource.domainName}</p>
@@ -262,12 +270,12 @@ export default function ResourceLibrary() {
                         </td>
                         <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm relative">
                           <div className="flex items-center justify-center">
-                          <Link href={`/ProfilePage/${encodeURIComponent(resource.id)}`} passHref>
-                            <img
-                              src={resource.imageUrl || '/placeholder.png'}
-                              alt="Profile"
-                              className="w-8 h-8 rounded-full border-2 border-[#231715] shadow-md shadow-[#140D0C] mr-2"
-                            />
+                            <Link href={`/ProfilePage/${encodeURIComponent(resource.id)}`} passHref>
+                              <img
+                                src={resource.imageUrl || '/placeholder.png'}
+                                alt="Profile"
+                                className="w-8 h-8 rounded-full border-2 border-[#231715] shadow-md shadow-[#140D0C] mr-2"
+                              />
                             </Link>
                           </div>
                         </td>
