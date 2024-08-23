@@ -1,6 +1,5 @@
 import axios from 'axios';
-import simpleIcons from 'simple-icons'; // Import Simple Icons
-import urlMetadata from 'url-metadata'; // Import url-metadata
+import urlMetadata from 'url-metadata';
 
 export default async function handler(req, res) {
   const { url } = req.query;
@@ -10,12 +9,31 @@ export default async function handler(req, res) {
 
     let title = metadata.title || '';
     let h1 = metadata['og:title'] || '';
-    let logoUrl = metadata['og:image'] || ''; // Attempt to get the logo from metadata
-    let isValidLogo = true;
+    let logoUrl = '';
+    let isValidLogo = false;
+
+    // Try to get the logo from Clearbit first
+    const domain = new URL(url).hostname;
+    const clearbitLogoUrl = `https://logo.clearbit.com/${domain}?size=256`;
+
+    try {
+      const response = await axios.head(clearbitLogoUrl);
+      if (response.headers['content-type'].startsWith('image/')) {
+        logoUrl = clearbitLogoUrl;
+        isValidLogo = true;
+      }
+    } catch (error) {
+      console.warn('Clearbit logo fetch failed:', error);
+    }
+
+    // If Clearbit logo is not valid, fall back to og:image
+    if (!isValidLogo) {
+      logoUrl = metadata['og:image'] || '';
+      isValidLogo = !!logoUrl;
+    }
 
     // If title or h1 is empty, parse the URL
     if (!title && !h1) {
-      const domain = new URL(url).hostname;
       const domainName = domain.split('.')[0];
       const urlPath = new URL(url).pathname;
       let lastSegment = urlPath.substring(urlPath.lastIndexOf('/') + 1);
@@ -24,26 +42,6 @@ export default async function handler(req, res) {
         title = `${capitalizeWords(domainName)} | ${capitalizeWords(lastSegment)}`;
       } else {
         title = capitalizeWords(domainName);
-      }
-    }
-
-    // If logoUrl is null or empty, use the domain name to generate a logo URL
-    if (!logoUrl) {
-      const domain = new URL(url).hostname;
-      const clearbitLogoUrl = `https://logo.clearbit.com/${domain}?size=256`;
-
-      // Check if the Clearbit logo URL is a valid image
-      try {
-        const response = await axios.head(clearbitLogoUrl);
-        if (response.headers['content-type'].startsWith('image/')) {
-          logoUrl = clearbitLogoUrl;
-        } else {
-          logoUrl = ''; // Set to empty if not a valid image
-          isValidLogo = false;
-        }
-      } catch (error) {
-        logoUrl = ''; // Set to empty if request fails
-        isValidLogo = false;
       }
     }
 

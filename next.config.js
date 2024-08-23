@@ -1,7 +1,12 @@
 module.exports = {
   // Other Next.js configuration options...
   images: {
-    domains: ['firebasestorage.googleapis.com', 'logo.clearbit.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
   webpack: (config, { isServer }) => {
     config.module.rules.push({

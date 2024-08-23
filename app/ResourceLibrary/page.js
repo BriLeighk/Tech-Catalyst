@@ -260,6 +260,7 @@ export default function ResourceLibrary() {
                                 alt={resource.domainName}
                                 width={20}
                                 height={20}
+                                quality={90} // Set image quality
                                 className="w-8 h-8 rounded-full border-2 border-[#231715] shadow-md shadow-[#140D0C] mr-2"
                                 onError={() => handleImageError(index)} // Handle broken image
                               />
