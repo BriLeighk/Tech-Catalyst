@@ -309,11 +309,12 @@ export default function ResourceLibrary() {
                     {currentResources.map((resource, index) => (
                       <tr key={index}>
                         <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm">
-                          <p className="text-[#C69635] text-center whitespace-no-wrap">{resource.title}</p>
+                          <p className="text-white text-left whitespace-no-wrap">{resource.title}</p>
                         </td>
                         <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm justify-center text-center align-middle items-center">
                           <div className="flex items-center justify-center">
                             {resource.logoUrl && !imageErrors[index] ? (
+                              <a href={new URL(resource.link).origin} target="_blank" rel="noopener noreferrer">
                               <Image
                                 src={resource.logoUrl}
                                 alt={resource.domainName}
@@ -323,9 +324,12 @@ export default function ResourceLibrary() {
                                 className="w-8 h-8 rounded-full border-2 border-[#C69635] shadow-md shadow-[#140D0C] mr-2"
                                 onError={() => handleImageError(index)} // Handle broken image
                               />
-                            ) : (
+                            </a>
+                          ) : (
+                            <a href={new URL(resource.link).origin} target="_blank" rel="noopener noreferrer">
                               <p className="text-[#C69635] text-center">{resource.domainName}</p>
-                            )}
+                            </a>
+                          )}
                           </div>
                         </td>
                         <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm relative">
@@ -340,7 +344,7 @@ export default function ResourceLibrary() {
                           </div>
                         </td>
                         <td className="px-5 py-5 border-b border-[#33211E] bg-[#1E1412] text-sm text-center">
-                          <button className=" px-2 py-2 rounded-lg text-[#C69635] text-xs font-bold tracking-wide cursor-pointer" onClick={() => window.location.href = resource.link}>
+                          <button className=" px-2 py-2 rounded-lg text-[#C69635] text-xs font-bold tracking-wide cursor-pointer" onClick={() => window.open(resource.link, '_blank')}>
                             <ArrowTopRightOnSquareIcon className="h-5 w-5" />
                           </button>
                         </td>
