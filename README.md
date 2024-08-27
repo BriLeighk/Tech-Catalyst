@@ -6,9 +6,15 @@ courses, and job listings, empowering you to navigate the tech landscape and lan
 ## [Wireframes](https://motiff.com/file/y4k6ssqksKGS0KbrOJI1w4L?nodeId=0%3A1&type=design "The Tech Catalyst - Wire Frames")
 All wireframes for the below task breakdown can be referenced [here](https://motiff.com/file/y4k6ssqksKGS0KbrOJI1w4L?nodeId=0%3A1&type=design "The Tech Catalyst - Wire Frames").
 
+## Tech Stack
+- **Database**: Cloud Firestore
+- **Frontend**: React with Next.js, Tailwind CSS, and DaisyUI
+- **Messaging**: Socket.io
+- **Authentication**: Firebase Authentication
+- **Hosting**: Firebase Storage, Vercel
+- **APIs**: Google Safe Browsing API, Google LinkedIn Jobs API, Indeed API, GitHub API, SightEngine API, EventBrite API, Google Calendar API, Microsoft Graph API, 
+
 ## Task Breakdown
-### User Profile:
-- [ ] Can optionally integrate GitHub API, Stack Overflow API, and LinkedIn APIs to display on profiles.
 
 ### User Engagement Features
 - [ ] Design FirstContribution Badge
@@ -30,6 +36,12 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 - [ ] Handle deletion of flashcards (do not update flashcard limit).
 - [ ] Add edit button to collections list, onClick - displays delete icons next to each collection.
 - [ ] Handle deletion of collections (do not update flashcard limit).
+
+### Roadmap Generation Feature
+
+### Tech Chatbot Feature
+
+### Project Guidelines Generation Feature
 
 ### Resource Library
 - [x] Create resource library page with link to it from header component.
@@ -66,8 +78,21 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
      - [ ] Show list of the users' pinned repositories
 - [ ] **Potential Additional Feature:** Create "LeetCode Achievements" section
 
-
 ### Payments
+- [ ] Add payment policy page to prevent liability, add link to it in header component.
+- [ ] Set up checkout page with Stripe API for each payment plan (monthly, yearly, and lifetime).
+- [ ] Create _counter_ & _limit_ attributes for chatbot feature (limit set to ~25 message requests).
+- [ ] Create _counter_ & _limit_ attributes for flashcard feature (limit set to ~50 total generated flashcards).
+- [ ] When user payment is confirmed:
+     - [ ] Send confirmation email with receipt.
+     - [ ] Set limit to undefined (unlimited).
+     - [ ] Define start of payment plan to track auto-renewal.
+- [ ] Update preferences section in settings:
+     - [ ] Add “Cancel Plan” button if user is subscribed to a premium (non lifetime) plan.
+     - [ ] Add “Upgrade Plan” button if user is not subscribed to a plan.
+     - [ ] Add section to show, update, delete billing information (cannot delete billing information if on payment plan without having another billing record set up).
+     - [ ] Add section to show, modify, delete card information (same rule as above applies)
+     - [ ] Leave blank, or just display “Current Plan” if subscribed to lifetime plan
 
 ### Calendar of Tech Events
 - [ ] Add [CalendarDays](https://heroicons.com/) icon in Header component (should open separate page0
