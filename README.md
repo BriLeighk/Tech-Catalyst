@@ -16,10 +16,29 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 
 ## Task Breakdown
 
+### Homepage
+- [ ] **Feature Section**: add onHover or onClick modal popup to list all potential badges, awards, and highlights.
+
 ### User Engagement Features
-- [ ] Design FirstContribution Badge
-- [ ] Design TopContributor Badge
-- [ ] Design Feedback Badge
+- [x] **Founder's Emblem Badge:** Awarded to the first 100 users to join The Tech Catalyst, among the original architects of our hall of knowledge.
+- [ ] **Scribe's Mark Badge**: Awarded for contributing the first approved resource to the community, the ink that builds the foundation of our archives.
+- [ ] **Sage's Seal Badge**: Awarded for consistenly contributing top-quality resources to the resource library, earning the highest recognition among contributors.
+- [ ] **Illuminator Badge**: Awarded for providing feedback on new features during the testing phase.
+- [ ] **Alchemist's Bond Badge**: Granted for making first 5 connections through Swipe-to-Connect, the beginnings of blending your network, turning connections into valuable insights.
+- [ ] **Grand Alchemist Badge:** Granted after making 100 connections through Swipe-to-Connect, reflecting your ability to forge and sustain connections to transform your network into gold.
+- [ ] **Oracle's Insight Badge:** Achieved by attending five tech events and sharing key insights with the community, sharing foresight to help guide others through the halls of knowledge.
+- [ ] **Concordia Conqueror Badge:** Unlocked by successfully completing a project with a peer found through Swipe-to-Connect.
+- [ ] **Archivist's Quill Badge**: Awarded when you upload your first project, etching your contributions and documenting your work.
+- [ ] **Catalyst MVP Badge** (Most Valuable Peer): Earned through consistent activity and support in the community (making discussion forums, commenting, collaborating/messaging, engaging in features, etc.,)
+- [ ] **Technomancer's Glyph Badge**: Granted for mastering at least three tech stacks (similar to GitHubs Rainbow Lang Trophy), wielding arcane arts of technology with precision of expertise.
+- [ ] **Scholar's Crest Badge**: Achieved by completing your first skill-building roadmap, scholarly dedication of the renaissance thinkers.
+- [ ] **Seeker's Sigil Badge**: Unlocked after applying to 10 jobs through the job search tool, navigating the labyrinth of opportunities with relentless pursuit.
+- [ ] **Mnemosyne’s Grimoire Badge**: Create 20 sets of flashcards, or ace over 200 flashcards, mastering memory and sharpening scholarly prowess.
+- [ ] **Vanguard's Helm Badge**: Earned after participating in your first hackathon - _may require proof of participation._
+- [ ] **Sage of Solutions Badge**: Unlocked for asking an answering over 50 questions with the AI Tech Chatbot.
+- [ ] **Navigator's Compass Badge**: Earned through particing in your first tech event listed on our platform.
+- [ ] **Resume Artificer Badge**: Earned by creating a standout resume with one of our featured templates.
+- [ ] **Trailblazer's Torch Badge**: Awarded for completing the first of one of our featured roadmaps or certifications.
 
 ### Flashcard Feature
 - [ ] **Resource Library**: add button that links to flashcard feature page (see [wireframe](https://motiff.com/file/y4k6ssqksKGS0KbrOJI1w4L?nodeId=0%3A1&type=design "The Tech Catalyst - Wire Frames"))
@@ -68,15 +87,25 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 - [ ] Add Categories sidebar with filtering method to filter resources (community uploaded or otherwise) into categories (templates, videos, websites, SWE, Web Dev, App Dev, Cyber, etc.,)
 - [ ] Add Job Board section with LinkedIn API, Indeed API, and parse GitHub repositories of job listings.
 
+### User Authentication
+- [ ] modify verification feature to delete old verification codes and links instead of setting them to false.
+- [ ] Check if email on registration is of a valid domain.
+
 ### User Dashboard
 - [ ] Add section for favorited resources (separate tab)
+- [ ] Add cooldown for user read & write requests (prevent abuse - minimize future costs)
+- [ ] Modify profile deletion feature to remove image from database.
+- [ ] Add section to delete account.
 - [ ] Allow deleting, rearranging, & categorizing favorited resources.
+- [ ] Add search bar to "Other Users" section.
+- [ ] Add settings preference to display profile as public or private.
 - [ ] Add achievements/badge section.
 - [ ] Improve click & drag feature for projects in edit state (make responsive on mobile)
 - [ ] Create "GitHub Achievements" section, displayed only if GitHub state is set to true (user links their GitHub):
-     - [ ] List any badges and achievements earned through GitHub
-     - [ ] Show list of the users' pinned repositories
+     - [ ] List any badges/highlights/trophies and achievements earned through GitHub.
+     - [ ] Show list of the users' pinned repositories.
 - [ ] **Potential Additional Feature:** Create "LeetCode Achievements" section
+- [ ] Add + button next to each project for users to add skills (auto populates skills section)
 
 ### Payments
 - [ ] Add payment policy page to prevent liability, add link to it in header component.
@@ -106,3 +135,16 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 - [ ] Implement Websockets (Socket.io)
 
 ### Swipe-to-Connect Feature
+- [ ] Cooldown of 5 connections a day on free tier.
+- [ ] Create list of languages, frameworks, UIs, DBMSs, etc., (for dashboard skills section)
+- [ ] Pass users skills into AI with above list, with prompt to list complimentary/supplimentary skills, use as criteria for finding matches.
+- [ ] List all users with a higher ratio of matching skills to other/complimentary skills as "Similar"
+- [ ] List all users with a higher ratio of compliemntary skills to matching/other skills as "Complientary"
+
+### Discussions
+- [ ] Add tab in header component that links to discussion forum page.
+- [ ] List all discussions, with search bar to search existing forums.
+- [ ] Add [Plus](https://heroicons.com/) icon to start discussion:
+     - [ ] Type of discussion:
+          - [ ] Tech Events: selecting this option prompts user to choose the event from a dropdown menu and write key insights of the event (with min character limit). Possibly require proof of attendance for regulation of content.
+          - [ ] 
