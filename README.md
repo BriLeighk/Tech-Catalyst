@@ -20,9 +20,9 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 - [ ] **Feature Section**: add onHover or onClick modal popup to list all potential badges, awards, and highlights.
 
 ### User Engagement Features
-- [x] **Founder's Emblem Badge:** Awarded to the first 100 users to join The Tech Catalyst, among the original architects of our hall of knowledge.
-- [ ] **Scribe's Mark Badge**: Awarded for contributing the first approved resource to the community, the ink that builds the foundation of our archives.
-- [ ] **Sage's Seal Badge**: Awarded for consistenly contributing top-quality resources to the resource library, earning the highest recognition among contributors.
+- [x] **[Founder's Emblem Badge](https://drive.google.com/file/d/1wBf-zc7_xSvjSmsfrD_MNcOlFlaPHUU6/view?usp=sharing):** Awarded to the first 100 users to join The Tech Catalyst, among the original architects of our hall of knowledge.
+- [x] **[Scribe's Mark Badge](https://drive.google.com/file/d/1y-aZNFNRigh_qmDMRl7qQy_rGljpF5s5/view?usp=sharing)**: Awarded for contributing the first approved resource to the community, the ink that builds the foundation of our archives.
+- [ ] **[Sage's Seal Badge](https://drive.google.com/file/d/19UaPqp0JXI0bUsIezigaQfv7mxb4oUjB/view?usp=sharing)**: Awarded for consistenly contributing top-quality resources to the resource library, earning the highest recognition among contributors.
 - [ ] **Illuminator Badge**: Awarded for providing feedback on new features during the testing phase.
 - [ ] **Alchemist's Bond Badge**: Granted for making first 5 connections through Swipe-to-Connect, the beginnings of blending your network, turning connections into valuable insights.
 - [ ] **Grand Alchemist Badge:** Granted after making 100 connections through Swipe-to-Connect, reflecting your ability to forge and sustain connections to transform your network into gold.
@@ -30,15 +30,16 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 - [ ] **Concordia Conqueror Badge:** Unlocked by successfully completing a project with a peer found through Swipe-to-Connect.
 - [ ] **Archivist's Quill Badge**: Awarded when you upload your first project, etching your contributions and documenting your work.
 - [ ] **Catalyst MVP Badge** (Most Valuable Peer): Earned through consistent activity and support in the community (making discussion forums, commenting, collaborating/messaging, engaging in features, etc.,)
-- [ ] **Technomancer's Glyph Badge**: Granted for mastering at least three tech stacks (similar to GitHubs Rainbow Lang Trophy), wielding arcane arts of technology with precision of expertise.
+- [x] **[Technomancer's Glyph Badge](https://drive.google.com/file/d/1JyDdVgyomueSnemg5mz1qCadQZLsABNN/view?usp=sharing)**: Granted for mastering at least three tech stacks (similar to GitHubs Rainbow Lang Trophy), wielding arcane arts of technology with precision of expertise.
 - [ ] **Scholar's Crest Badge**: Achieved by completing your first skill-building roadmap, scholarly dedication of the renaissance thinkers.
 - [ ] **Seeker's Sigil Badge**: Unlocked after applying to 10 jobs through the job search tool, navigating the labyrinth of opportunities with relentless pursuit.
 - [ ] **Mnemosyne’s Grimoire Badge**: Create 20 sets of flashcards, or ace over 200 flashcards, mastering memory and sharpening scholarly prowess.
 - [ ] **Vanguard's Helm Badge**: Earned after participating in your first hackathon - _may require proof of participation._
 - [ ] **Sage of Solutions Badge**: Unlocked for asking an answering over 50 questions with the AI Tech Chatbot.
 - [ ] **Navigator's Compass Badge**: Earned through particing in your first tech event listed on our platform.
-- [ ] **Resume Artificer Badge**: Earned by creating a standout resume with one of our featured templates.
+- [x] **[Resume Artificer Badge](https://drive.google.com/file/d/1nCZlg2DR4J5g6IngmkuToYHEsioNql7a/view?usp=sharing)**: Earned by creating a standout resume with one of our featured templates.
 - [ ] **Trailblazer's Torch Badge**: Awarded for completing the first of one of our featured roadmaps or certifications.
+- [x] **[Eminent Scholar Badge](https://drive.google.com/file/d/1tobifi6okmo4OYWcg6Y5h9LH_sz2z3za/view?usp=sharing)**: exclusive access and privileges as an elite member of The Tech Catalyst community.
 
 ### Flashcard Feature
 - [ ] **Resource Library**: add button that links to flashcard feature page (see [wireframe](https://motiff.com/file/y4k6ssqksKGS0KbrOJI1w4L?nodeId=0%3A1&type=design "The Tech Catalyst - Wire Frames"))
@@ -147,4 +148,4 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 - [ ] Add [Plus](https://heroicons.com/) icon to start discussion:
      - [ ] Type of discussion:
           - [ ] Tech Events: selecting this option prompts user to choose the event from a dropdown menu and write key insights of the event (with min character limit). Possibly require proof of attendance for regulation of content.
-          - [ ] 
+  
