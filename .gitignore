@@ -38,6 +38,3 @@ coverage/
 
 # Service account key
 config/serviceAccountKey.json
-
-# Ignore Google Cloud service account credentials
-config/service-account.json
