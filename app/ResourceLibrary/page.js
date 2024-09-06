@@ -21,7 +21,6 @@ export default function ResourceLibrary() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const resourcesPerPage = 50;
-  const [resourceName, setResourceName] = useState('');
   const [resourceURL, setResourceURL] = useState('');
   const [user, setUser] = useState(null); // Add state for user
   const [error, setError] = useState(''); // Add state for error message
@@ -95,19 +94,19 @@ export default function ResourceLibrary() {
       setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
       return;
     }
-
+  
     if (!resourceURL) {
       alert('Please provide a valid URL of the resource you wish to upload.');
       return;
     }
-
+  
     if (!user) {
       setError('User information is missing.');
       setShowPopup(true);
       setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
       return;
     }
-
+  
     // Check if the URL is already in the database
     const resourcesQuery = query(collection(db, 'community_resources'), where('link', '==', resourceURL.trim()));
     const querySnapshot = await getDocs(resourcesQuery);
@@ -117,30 +116,34 @@ export default function ResourceLibrary() {
       setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
       return;
     }
-
-    // Check if the URL is safe using the server-side endpoint
+  
+    // Check if the URL is safe and appropriate using the server-side endpoint
     try {
       const response = await fetch('/api/check-url', {
         method: 'POST',
         body: JSON.stringify({ url: resourceURL.trim() }),
         headers: { 'Content-Type': 'application/json' }
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Web Risk API error:', errorData);
-        setError(`Failed to check URL safety: ${errorData.error}`);
+        setError('Please provide a valid URL of the resource you wish to upload.');
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
         return;
       }
-
+  
       const data = await response.json();
       console.log('Web Risk API response:', data); // Log the response for debugging
-
+  
       if (data && data.threat) {
-        const threatTypes = data.threat.threatTypes.join(', ');
-        setError(`The URL you provided is not safe. Detected threats: ${threatTypes}`);
+        const threatTypes = data.threatTypes ? data.threatTypes.join(', ') : data.categories.join(', ');
+        if (threatTypes.includes('Explicit Content Detected') || threatTypes.includes('Explicit Content Detected from Text')) {
+          setError('This content is explicit. Your account has been given a strike');
+        } else {
+          setError(`The URL you provided is not safe. Detected threats: ${threatTypes}`);
+        }
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
         return;
@@ -152,12 +155,12 @@ export default function ResourceLibrary() {
       setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
       return;
     }
-
+  
     // Fetch the resource name and logo
     let resourceName = '';
     let logoUrl = '';
     let domainName = '';
-
+  
     try {
       const { data: metadata } = await axios.get(`/api/extract-metadata?url=${encodeURIComponent(resourceURL.trim())}`);
       if (metadata.error) {
@@ -167,7 +170,7 @@ export default function ResourceLibrary() {
       const domain = new URL(resourceURL).hostname;
       domainName = capitalizeWords(domain.split('.')[0]); // Capitalize each word in the domain name
       logoUrl = metadata.isValidLogo ? metadata.logoUrl : ''; // Use logoUrl only if it's valid
-
+  
       // Extract the part after the last '/' in the URL
       const urlPath = new URL(resourceURL).pathname;
       let lastSegment = urlPath.substring(urlPath.lastIndexOf('/') + 1);
@@ -183,7 +186,7 @@ export default function ResourceLibrary() {
       setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
       return;
     }
-
+  
     const newResource = {
       title: resourceName,
       link: resourceURL.trim(), // Ensure URL is trimmed
@@ -191,15 +194,15 @@ export default function ResourceLibrary() {
       logoUrl: logoUrl,
       domainName: domainName,
     };
-
+  
     // Add the new resource to Firestore
     await addDoc(collection(db, 'community_resources'), newResource);
-
+  
     // Fetch the user's profile image
     const userDocRef = doc(db, 'users', user.id);
     const userDoc = await getDoc(userDocRef);
     const userData = userDoc.data();
-
+  
     // Add the new resource to the local state with updated contributor image
     setResources([...resources, {
       ...newResource,
@@ -208,8 +211,7 @@ export default function ResourceLibrary() {
     }]);
     setImageErrors([...imageErrors, false]); // Add new entry to image error state
     setIsUploadModalOpen(false);
-  };
-
+  }
   const indexOfLastResource = currentPage * resourcesPerPage;
   const indexOfFirstResource = indexOfLastResource - resourcesPerPage;
   const currentResources = resources.slice(indexOfFirstResource, indexOfLastResource);

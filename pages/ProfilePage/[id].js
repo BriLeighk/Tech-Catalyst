@@ -109,7 +109,7 @@ export default function ProfilePage() {
                   />
                   {user.userNumber && user.userNumber <= 100 && (
                     <img
-                      alt="First User Badge"
+                      alt="Founder's Emblem"
                       src="/firstUserBadge.png"
                       className="absolute -top-[32px] right-[34px] h-14 w-14 cursor-pointer"
                       onMouseEnter={() => {
@@ -129,11 +129,11 @@ export default function ProfilePage() {
                     >
                       <div className="absolute right-[-16px] top-1/3 transform -translate-y-1/2 w-0 h-0 border-8 border-transparent border-l-[#C69635] after:content-[''] after:absolute after:top-1/2 after:left-[-8px] after:transform after:-translate-y-1/2 after:border-8 after:border-transparent after:border-l-[#1E1412] after:ml-[-1px] md:right-[-16px] md:border-8">
                       </div>
-                      <img src="/firstUserBadge.png" alt="First User Badge" className="h-8 w-8 mx-auto mb-0.5 md:h-12 md:w-12"/>
-                      <h2 className="text-[#DDBA6C] text-[10px] font-bold mb-0.5 md:text-sm">First User Badge</h2>
+                      <img src="/firstUserBadge.png" alt="Founder's Emblem" className="h-8 w-8 mx-auto mb-0.5 md:h-12 md:w-12"/>
+                      <h2 className="text-[#DDBA6C] text-[10px] font-bold mb-1 md:text-sm">Founder's Emblem</h2>
                       <p className="text-[#DDBA6C] text-[8px] md:text-xs">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
-                      <p className="text-[#C69635] text-[8px] flex row text-left mt-0.5 md:text-xs">
-                        <TrophyIcon className="h-2 w-2 mr-0.5 md:h-3 md:w-3"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+                      <p className="text-[#C69635] text-[8px] flex row text-left mt-2 md:text-[10px]">
+                        <TrophyIcon className="h-8 w-8 mr-0.5 mt-0"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
                     </div>
                   )}
                 </div>
@@ -166,12 +166,15 @@ export default function ProfilePage() {
                   </div>
                   {user.email === 'kirchgessner@wisc.edu' && (
                     <>
-                      <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Lead Developer</div>
+                      <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[160px] text-center justify-center mx-auto">Lead Full Stack Developer</div>
                     </>
                   )}
                   {(user.email === 'bethelbezabeh@gmail.com' || user.email === 'tridhatriv@gmail.com') && (
-                    <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">
-                      {user.email === 'bethelbezabeh@gmail.com' ? 'Developer' : 'Developer'}
+                    <div 
+                    className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full text-center justify-center mx-auto"
+                    style={{ width: user.email === 'bethelbezabeh@gmail.com' ? '180px' : '100px' }}
+                  >
+                      {user.email === 'bethelbezabeh@gmail.com' ? 'Support Frontend Developer' : 'Team Member'}
                     </div>
                   )}
                   <div className="text-[#C69635] text-[22px] font-bold mb-2 mt-8">Projects</div>

@@ -136,7 +136,7 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
                     />
                     {user.userNumber && user.userNumber <= 100 && (
                       <img
-                        alt="First User Badge"
+                        alt="Founder's Emblem"
                         src="/firstUserBadge.png"
                         className="absolute -top-[18px] right-[16px] h-8 w-8 cursor-pointer"
                         onMouseEnter={() => {
@@ -154,11 +154,11 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
                             setIsBadgeModalOpen(false);
                         }}
                       >
-                        <img src="/firstUserBadge.png" alt="First User Badge" className="h-12 w-12 mx-auto mb-2"/>
-                        <h2 className="text-[#DDBA6C] text-sm font-bold mb-1">First User Badge</h2>
+                        <img src="/firstUserBadge.png" alt="Founder's Emblem" className="h-12 w-12 mx-auto mb-2"/>
+                        <h2 className="text-[#DDBA6C] text-sm font-bold mb-1">Founder's Emblem</h2>
                         <p className="text-[#DDBA6C] text-xs">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
-                        <p className="text-[#C69635] text-xs flex row text-left mt-2">
-                          <TrophyIcon className="h-3 w-3 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+                        <p className="text-[#C69635] text-xs flex row text-left mt-2 text-[10px] mb-1">
+                          <TrophyIcon className="h-8 w-8 mr-1"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
                       </div>
                     )}
                   </div>
@@ -166,11 +166,6 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
                   {user.email === 'kirchgessner@wisc.edu' && (
                     <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full">
                       Founder
-                    </div>
-                  )}
-                  {(user.email === 'bethelbezabeh@gmail.com' || user.email === 'tridhatriv@gmail.com') && (
-                    <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full">
-                      Co-Founder
                     </div>
                   )}
                 </div>

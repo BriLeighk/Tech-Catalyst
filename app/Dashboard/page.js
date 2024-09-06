@@ -694,7 +694,7 @@ export default function Dashboard() {
                   />
                   {user.userNumber && user.userNumber <= 100 && (
                     <img
-                      alt="First User Badge"
+                      alt="Founder's Emblem"
                       src="./firstUserBadge.png"
                       className="absolute -top-[32px] right-[34px] h-14 w-14 cursor-pointer"
                       onMouseEnter={() => {
@@ -714,11 +714,11 @@ export default function Dashboard() {
                     >
                     <div className="absolute right-[-16px] top-1/3 transform -translate-y-1/2 w-0 h-0 border-8 border-transparent border-l-[#C69635] after:content-[''] after:absolute after:top-1/2 after:left-[-8px] after:transform after:-translate-y-1/2 after:border-8 after:border-transparent after:border-l-[#1E1412] after:ml-[-1px] md:right-[-16px] md:border-8">
                     </div>
-                    <img src="/firstUserBadge.png" alt="First User Badge" className="h-8 w-8 mx-auto mb-0.5 md:h-12 md:w-12"/>
-                    <h2 className="text-[#DDBA6C] text-[10px] font-bold mb-0.5 md:text-sm">First User Badge</h2>
-                    <p className="text-[#DDBA6C] text-[8px] md:text-xs">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
+                    <img src="/firstUserBadge.png" alt="Founder's Emblem" className="h-8 w-8 mx-auto mb-0.5 md:h-12 md:w-12 mb-2"/>
+                    <h2 className="text-[#DDBA6C] text-[10px] font-bold mb-0.5 md:text-sm">Founder's Emblem</h2>
+                    <p className="text-[#DDBA6C] text-[8px] md:text-xs text-[10px] mb-2">{hoveredUser && `Earned as The Tech Catalysts' ${getOrdinalSuffix(hoveredUser.userNumber)} member.`}</p>
                     <p className="text-[#C69635] text-[8px] flex row text-left mt-0.5 md:text-xs">
-                      <TrophyIcon className="h-2 w-2 mr-0.5 md:h-3 md:w-3"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
+                      <TrophyIcon className="h-8 w-8 mr-0.5"/>Must be one of The Tech Catalysts' first 100 registered users to earn this badge.</p>
                     </div>
                     )}
                   <Menu as="div" className="absolute bottom-0 right-0">
@@ -853,9 +853,9 @@ export default function Dashboard() {
                       </div>
                       
 
-                      {!isEditing && (
+                      {!isEditing && user.email === 'kirchgessner@wisc.edu' && (
                         <div className="text-[#C69635] text-sm font-bold px-2 py-1 mb-0 text-center">
-                          {user.email === 'kirchgessner@wisc.edu' ? 'Founder' : user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' ? 'Co-Founder' : ''}
+                          Founder
                         </div>
                       )}
                       {isEditing && <div className="text-[#C69635] text-xl font-bold mb-2 pt-8 mt-0">Bio</div>}
@@ -879,12 +879,17 @@ export default function Dashboard() {
                         <>
                         {user.email === 'kirchgessner@wisc.edu' && (
                           <>
-                            <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Lead Developer</div>
+                            <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[160px] text-center justify-center mx-auto">Lead Full Stack Developer</div>
                           </>
                         )}
-                        {user.email === 'tridhatriv@gmail.com' || user.email === 'bethelbezabeh@gmail.com' && (
+                        {user.email === 'bethelbezabeh@gmail.com' && (
                           <>
-                            <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[120px] text-center justify-center mx-auto">Developer</div>
+                            <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[180px] text-center justify-center mx-auto">Support Frontend Developer</div>
+                          </>
+                        )}
+                        {user.email === 'tridhatriv@gmail.com' && (
+                          <>
+                            <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full w-[100px] text-center justify-center mx-auto">Team Member</div>
                           </>
                         )}
                         </>
