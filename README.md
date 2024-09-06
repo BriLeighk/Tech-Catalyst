@@ -18,6 +18,7 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 
 ### Homepage
 - [ ] **Feature Section**: add onHover or onClick modal popup to list all potential badges, awards, and highlights.
+- [x] Make height responsive on mobile (currently overflows white on narrow viewports)
 
 ### User Engagement Features
 - [x] **[Founder's Emblem Badge](https://drive.google.com/file/d/1wBf-zc7_xSvjSmsfrD_MNcOlFlaPHUU6/view?usp=sharing):** Awarded to the first 100 users to join The Tech Catalyst, among the original architects of our hall of knowledge.
@@ -58,6 +59,7 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 - [ ] Handle deletion of collections (do not update flashcard limit).
 
 ### Roadmap Generation Feature
+- [ ] make list of pre-defined roadmaps (similar to https://roadmap.sh/)
 
 ### Tech Chatbot Feature
 
@@ -96,7 +98,7 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 - [ ] Add section for favorited resources (separate tab)
 - [ ] Add cooldown for user read & write requests (prevent abuse - minimize future costs)
 - [ ] Modify profile deletion feature to remove image from database.
-- [ ] Add section to delete account.
+- [ ] Add "Delete Account" button to delete account with confirmation modal on click.
 - [ ] Allow deleting, rearranging, & categorizing favorited resources.
 - [ ] Add search bar to "Other Users" section.
 - [ ] Add settings preference to display profile as public or private.
