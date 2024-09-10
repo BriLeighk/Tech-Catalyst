@@ -113,8 +113,8 @@ All wireframes for the below task breakdown can be referenced [here](https://mot
 ### Payments
 - [ ] Add payment policy page to prevent liability, add link to it in header component.
 - [ ] Set up checkout page with Stripe API for each payment plan (monthly, yearly, and lifetime).
-- [ ] Create _counter_ & _limit_ attributes for chatbot feature (limit set to ~25 message requests).
-- [ ] Create _counter_ & _limit_ attributes for flashcard feature (limit set to ~50 total generated flashcards).
+- [ ] Create _counter_ & _limit_ attributes for chatbot feature (limit set to ~10 message requests).
+- [ ] Create _counter_ & _limit_ attributes for flashcard feature (limit set to ~15 total generated flashcards).
 - [ ] When user payment is confirmed:
      - [ ] Send confirmation email with receipt.
      - [ ] Set limit to undefined (unlimited).
