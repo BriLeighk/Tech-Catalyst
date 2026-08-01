@@ -1,17 +1,26 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../firebase'; // Ensure this import is correct
+import { db } from '../firebase';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 
-export default function OtherUsers({ currentUserEmail }) { // Accept currentUserEmail as a prop
-  const resourcesPerPage = 5; // Number of resources to display per page
+const statusStyles = {
+  pending: 'bg-[#33211E] text-[#DDBA6C]',
+  approved: 'bg-[#2A2418] text-[#C69635]',
+  rejected: 'bg-[#3A1F1A] text-[#C99F8A]',
+};
+
+export default function UploadedResources({ currentUserEmail }) {
+  const resourcesPerPage = 5;
   const [resources, setResources] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchUserResources = async () => {
+      if (!currentUserEmail) return;
+
       try {
-        // Fetch the current user's document ID
         const usersCollection = collection(db, 'users');
         const userQuery = query(usersCollection, where('email', '==', currentUserEmail));
         const userSnapshot = await getDocs(userQuery);
@@ -21,11 +30,13 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
         }
         const userId = userSnapshot.docs[0].id;
 
-        // Fetch resources for the current user
         const resourcesCollection = collection(db, 'community_resources');
         const resourcesQuery = query(resourcesCollection, where('id', '==', userId));
         const resourcesSnapshot = await getDocs(resourcesQuery);
-        const resourcesList = resourcesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const resourcesList = resourcesSnapshot.docs.map((resourceDoc) => ({
+          ...resourceDoc.data(),
+          docId: resourceDoc.id,
+        }));
         setResources(resourcesList);
       } catch (error) {
         console.error('Error fetching user resources:', error);
@@ -35,101 +46,95 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
     fetchUserResources();
   }, [currentUserEmail]);
 
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-  };
+  const handlePageChange = (newPage) => setCurrentPage(newPage);
 
   const indexOfLastResource = currentPage * resourcesPerPage;
   const indexOfFirstResource = indexOfLastResource - resourcesPerPage;
   const currentResources = resources.slice(indexOfFirstResource, indexOfLastResource);
-  const totalPages = Math.ceil(resources.length / resourcesPerPage);
-
-  const renderPagination = () => {
-    const pageNumbers = [];
-    const maxPagesToShow = 3;
-
-    if (totalPages <= maxPagesToShow + 2) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
-    } else {
-      for (let i = 1; i <= maxPagesToShow; i++) {
-        pageNumbers.push(i);
-      }
-      pageNumbers.push('...');
-      pageNumbers.push(totalPages);
-    }
-
-    return (
-      <div className="mt-4 flex justify-center">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="mx-1 px-3 py-1 rounded bg-[#1E1412] text-[#C69635] disabled:opacity-50"
-        >
-          &lt;
-        </button>
-        {pageNumbers.map((number, index) => (
-          <button
-            key={index}
-            onClick={() => number !== '...' && handlePageChange(number)}
-            className={`mx-1 px-3 py-1 rounded ${currentPage === number ? 'bg-[#C69635] text-[#1E1412]' : 'bg-[#1E1412] text-[#C69635]'}`}
-            disabled={number === '...'}
-          >
-            {number}
-          </button>
-        ))}
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages || totalPages === 0}
-          className="mx-1 px-3 py-1 rounded bg-[#1E1412] text-[#C69635] disabled:opacity-50"
-        >
-          &gt;
-        </button>
-      </div>
-    );
-  };
+  const totalPages = Math.ceil(resources.length / resourcesPerPage) || 1;
 
   return (
-    <div className="position-fixed">
-        <div className="py-24 sm:py-32 flex items-center justify-center">
-      <div className="mx-auto max-w-7xl px-4 sm:px-0 lg:px-8 ">
+    <aside className="w-full px-2 py-8 sm:px-0">
+      <div className="rounded-xl border border-[#33211E] bg-[#1E1412] p-5">
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-[#F2F4E6] sm:text-2xl pt-10">Your Contributions</h1>
+          <h2 className="text-lg font-semibold tracking-tight text-[#F2F4E6]">
+            Your Contributions
+          </h2>
+          <p className="mt-1 text-xs text-[#C9C4BB]">
+            Resources you&apos;ve submitted to the library
+          </p>
         </div>
-        
-        <div className="mt-5">
-          <div className="mt-5 flex flex-wrap justify-center" style={{ gap: '0rem' }} data-aos="fade-up" data-aos-duration="1000">
-            {currentResources.map((resource, index) => (
-              <div key={index} className="bg-[#1E1412] p-2 rounded-lg shadow-lg w-full relative flex flex-row justify-center transition-transform duration-300 hover:translate-y-[-10px] cursor-pointer transform scale-90"
-              onClick={() => window.open(resource.link, '_blank')}
-              >
-                
-                <div className="flex flex-row items-center space-y-1">
-                  <div className="relative">
-                    <img 
-                      alt="" 
-                      src={resource.logoUrl || '/placeholder.png'} 
-                      className="h-8 w-8 rounded-full shadow-lg shadow-[#140D0C]" 
-                      style={{ 
-                        border: `2px solid #C69635`,
-                        objectFit: 'cover' // Ensure images aren't distorted
-                      }}
-                      onClick={() => window.open(new URL(resource.link).origin, '_blank')}
-                    />
+
+        <div className="mt-5 space-y-3" data-aos="fade-up" data-aos-duration="1000">
+          {currentResources.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-[#33211E] px-3 py-6 text-center text-xs text-[#C9C4BB]">
+              No contributions yet.
+            </p>
+          ) : (
+            currentResources.map((resource) => {
+              const status = resource.status || 'approved';
+              return (
+                <div
+                  key={resource.docId}
+                  className="flex items-center gap-3 rounded-lg border border-[#33211E] bg-[#231715] p-3 transition-colors hover:border-[#C69635]/50"
+                >
+                  <img
+                    alt=""
+                    src={resource.logoUrl || '/placeholder.png'}
+                    className="h-9 w-9 shrink-0 rounded-full border border-[#C69635] object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-semibold text-[#C69635]">
+                      {resource.title}
+                    </p>
+                    <span
+                      className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                        statusStyles[status] || statusStyles.pending
+                      }`}
+                    >
+                      {status}
+                    </span>
                   </div>
-                  <div className="text-center text-[#C69635] text-[11px] font-bold">{resource.title}</div>
+                  {status === 'approved' && (
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-md p-1.5 text-[#C69635] hover:bg-[#1E1412]"
+                      onClick={() => window.open(resource.link, '_blank')}
+                      aria-label="Open resource"
+                    >
+                      <ArrowTopRightOnSquareIcon className="h-5 w-5" />
+                    </button>
+                  )}
                 </div>
-                <ArrowTopRightOnSquareIcon className="h-6 w-6 text-[#C69635] fixed right-4 top-2"
-                onClick={() => window.open(resource.link, '_blank')}
-                />
-              </div>
-            ))}
-          </div>
+              );
+            })
+          )}
         </div>
-        {renderPagination()}
+
+        {resources.length > resourcesPerPage && (
+          <div className="mt-4 flex justify-center gap-1">
+            <button
+              type="button"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="rounded px-3 py-1 text-[#C69635] disabled:opacity-40"
+            >
+              &lt;
+            </button>
+            <span className="px-2 py-1 text-xs text-[#C9C4BB]">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+              className="rounded px-3 py-1 text-[#C69635] disabled:opacity-40"
+            >
+              &gt;
+            </button>
+          </div>
+        )}
       </div>
-    </div>
-    </div>
+    </aside>
   );
 }

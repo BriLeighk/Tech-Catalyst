@@ -12,6 +12,7 @@ import 'react-quill/dist/quill.snow.css';
 import './customQuill.css';
 import OtherUsers from '../components/OtherUsers';
 import UploadedResources from '../components/UploadedResources';
+import PendingResources from '../components/PendingResources';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -1119,6 +1120,12 @@ export default function Dashboard() {
             </div>
           )}
           </div>
+
+          {activeTab === 'profile' && user?.email === 'hello@brianaleighstudio.com' && (
+            <div className="mx-auto max-w-5xl px-4 pb-10">
+              <PendingResources currentUserEmail={user.email} />
+            </div>
+          )}
 
           
         </main>
