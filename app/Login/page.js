@@ -44,30 +44,27 @@ export default function Login() {
         // Check if the user already exists in Firestore
         const userDoc = doc(db, 'users', user.uid);
         const userSnapshot = await getDoc(userDoc);
+        const usersCollection = collection(db, 'users');
+        const usersSnapshot = await getDocs(usersCollection);
 
         if (!userSnapshot.exists()) {
-          // Get the current number of users
-          const usersCollection = collection(db, 'users');
-          const usersSnapshot = await getDocs(usersCollection);
-          const userNumber = usersSnapshot.size + 1; // Assign the next available user number starting from 1
+          const userNumber = usersSnapshot.size + 1;
 
           // Store user data in Firestore
           await setDoc(userDoc, {
             firstname: user.displayName.split(' ')[0],
             lastname: user.displayName.split(' ')[1] || '',
             email: user.email,
-            userNumber, // Store the user number
+            userNumber,
             bio: '',
             projects: [],
           });
         } else {
-          // Get existing user data
           const existingData = userSnapshot.data();
 
-          // Prepare updated data
           const updateData = {
             email: user.email,
-            userNumber: existingData.userNumber || usersSnapshot.size + 1, // Ensure userNumber is stored
+            userNumber: existingData.userNumber || usersSnapshot.size + 1,
           };
 
           // Update name and bio only if they are null in the database
@@ -81,7 +78,6 @@ export default function Login() {
             updateData.bio = '';
           }
 
-          // Update user information in Firestore
           await setDoc(userDoc, updateData, { merge: true });
         }
 

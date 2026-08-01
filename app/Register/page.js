@@ -50,9 +50,10 @@ export default function Register() {
                 setTimeout(() => setError(''), 3000); // Clear error after 3 seconds
             }
         } catch (err) {
-            setError('Error creating account');
+            const apiError = err.response?.data?.error;
+            setError(apiError || 'Error creating account');
             setErrorColor('text-red-500');
-            setTimeout(() => setError(''), 3000); // Clear error after 3 seconds
+            setTimeout(() => setError(''), 5000);
         }
     };
 

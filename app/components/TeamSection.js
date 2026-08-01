@@ -29,9 +29,7 @@ export default function TeamSection() {
       }
     };
 
-    fetchUserData('kirchgessner@wisc.edu', setUser);
-    fetchUserData('tridhatriv@gmail.com', setUser2);
-    fetchUserData('bethelbezabeh@gmail.com', setUser3);
+    fetchUserData('hello@brianaleighstudio.com', setUser);
   }, []);
 
   const getOrdinalSuffix = (number) => {

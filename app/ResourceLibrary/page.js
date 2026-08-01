@@ -15,6 +15,13 @@ const capitalizeWords = (str) => {
   return str.replace(/\b\w/g, char => char.toUpperCase());
 };
 
+const normalizeResourceUrl = (rawUrl) => {
+  const trimmed = (rawUrl || '').trim();
+  if (!trimmed) return '';
+  if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+};
+
 export default function ResourceLibrary() {
   const [borderColor, setBorderColor] = useState('#33211E');
   const inputRef = useRef(null);
@@ -94,9 +101,20 @@ export default function ResourceLibrary() {
       setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
       return;
     }
+
+    const normalizedUrl = normalizeResourceUrl(resourceURL);
   
-    if (!resourceURL) {
+    if (!normalizedUrl) {
       alert('Please provide a valid URL of the resource you wish to upload.');
+      return;
+    }
+
+    try {
+      new URL(normalizedUrl);
+    } catch {
+      setError('Please provide a valid URL of the resource you wish to upload.');
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 3000);
       return;
     }
   
@@ -108,7 +126,7 @@ export default function ResourceLibrary() {
     }
   
     // Check if the URL is already in the database
-    const resourcesQuery = query(collection(db, 'community_resources'), where('link', '==', resourceURL.trim()));
+    const resourcesQuery = query(collection(db, 'community_resources'), where('link', '==', normalizedUrl));
     const querySnapshot = await getDocs(resourcesQuery);
     if (!querySnapshot.empty) {
       setError('This URL is already a resource in the library.');
@@ -121,21 +139,25 @@ export default function ResourceLibrary() {
     try {
       const response = await fetch('/api/check-url', {
         method: 'POST',
-        body: JSON.stringify({ url: resourceURL.trim() }),
+        body: JSON.stringify({ url: normalizedUrl }),
         headers: { 'Content-Type': 'application/json' }
       });
   
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Web Risk API error:', errorData);
-        setError('Please provide a valid URL of the resource you wish to upload.');
+        console.error('URL safety check error:', errorData);
+        setError(
+          response.status === 400
+            ? 'Please provide a valid URL of the resource you wish to upload.'
+            : 'Failed to check URL safety. Please try again.'
+        );
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
         return;
       }
   
       const data = await response.json();
-      console.log('Web Risk API response:', data); // Log the response for debugging
+      console.log('URL safety check response:', data);
   
       if (data && data.threat) {
         const threatTypes = data.threatTypes ? data.threatTypes.join(', ') : data.categories.join(', ');
@@ -162,17 +184,17 @@ export default function ResourceLibrary() {
     let domainName = '';
   
     try {
-      const { data: metadata } = await axios.get(`/api/extract-metadata?url=${encodeURIComponent(resourceURL.trim())}`);
+      const { data: metadata } = await axios.get(`/api/extract-metadata?url=${encodeURIComponent(normalizedUrl)}`);
       if (metadata.error) {
         throw new Error(metadata.error);
       }
       resourceName = metadata.h1 || metadata.title || 'Unknown Resource';
-      const domain = new URL(resourceURL).hostname;
+      const domain = new URL(normalizedUrl).hostname;
       domainName = capitalizeWords(domain.split('.')[0]); // Capitalize each word in the domain name
       logoUrl = metadata.isValidLogo ? metadata.logoUrl : ''; // Use logoUrl only if it's valid
   
       // Extract the part after the last '/' in the URL
-      const urlPath = new URL(resourceURL).pathname;
+      const urlPath = new URL(normalizedUrl).pathname;
       let lastSegment = urlPath.substring(urlPath.lastIndexOf('/') + 1);
       if (lastSegment) {
         // Replace '-' with spaces and remove any other unwanted characters
@@ -189,7 +211,7 @@ export default function ResourceLibrary() {
   
     const newResource = {
       title: resourceName,
-      link: resourceURL.trim(), // Ensure URL is trimmed
+      link: normalizedUrl,
       id: user.id, // Store user ID as a foreign key
       logoUrl: logoUrl,
       domainName: domainName,

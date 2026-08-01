@@ -24,9 +24,9 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
         filteredUsers.sort((a, b) => a.firstname.localeCompare(b.firstname));
 
         // Separate co-founders
-        const founders = filteredUsers.filter(user => user.email === 'kirchgessner@wisc.edu');
+        const founders = filteredUsers.filter(user => user.email === 'hello@brianaleighstudio.com');
         const coFounders = filteredUsers.filter(user => ['bethelbezabeh@gmail.com', 'tridhatriv@gmail.com'].includes(user.email));
-        const otherUsers = filteredUsers.filter(user => !['kirchgessner@wisc.edu', 'bethelbezabeh@gmail.com', 'tridhatriv@gmail.com'].includes(user.email));
+        const otherUsers = filteredUsers.filter(user => !['hello@brianaleighstudio.com', 'bethelbezabeh@gmail.com', 'tridhatriv@gmail.com'].includes(user.email));
 
         // Combine the lists
         const sortedUsers = [...founders, ...coFounders, ...otherUsers];
@@ -121,7 +121,7 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
             <Link key={index} href={`/ProfilePage/${encodeURIComponent(user.id)}`} passHref>
               <div
                 className="bg-[#1E1412] p-2 rounded-lg shadow-lg w-[130px] h-[180px] relative flex flex-col justify-center transition-transform duration-300 hover:translate-y-[-10px] cursor-pointer transform scale-90"
-                style={{ border: `${['kirchgessner@wisc.edu', 'bethelbezabeh@gmail.com', 'tridhatriv@gmail.com'].includes(user.email) ? '1px solid #C69635' : '2px solid #2D1E1B'}` }}
+                style={{ border: `${['hello@brianaleighstudio.com', 'bethelbezabeh@gmail.com', 'tridhatriv@gmail.com'].includes(user.email) ? '1px solid #C69635' : '2px solid #2D1E1B'}` }}
               >
                 <div className="flex flex-col items-center space-y-2">
                   <div className="relative">
@@ -163,7 +163,7 @@ export default function OtherUsers({ currentUserEmail }) { // Accept currentUser
                     )}
                   </div>
                   <div className="text-center text-[#C69635] text-[11px] font-bold">{user.firstname} {user.lastname}</div>
-                  {user.email === 'kirchgessner@wisc.edu' && (
+                  {user.email === 'hello@brianaleighstudio.com' && (
                     <div className="bg-[#C69635] text-[#1E1412] text-xs font-bold px-2 py-1 rounded-full">
                       Founder
                     </div>
